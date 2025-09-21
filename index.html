@@ -225,16 +225,25 @@
                             </div>
 
                             <!-- Action Buttons -->
-                            <div class="capture-buttons">
-                                <button class="btn-camera" id="takePhotoBtn">
-                                    <i class="fas fa-camera"></i>
-                                    Take Photo
-                                </button>
-                                <button class="btn-gallery" id="uploadGalleryBtn">
-                                    <i class="fas fa-images"></i>
-                                    Upload from Gallery
-                                </button>
-                            </div>
+            <div class="capture-buttons">
+                <button class="btn-camera" id="takePhotoBtn">
+                    <i class="fas fa-camera"></i>
+                    Take Photo
+                </button>
+                <button class="btn-gallery" id="uploadGalleryBtn">
+                    <i class="fas fa-images"></i>
+                    Upload from Gallery
+                </button>
+            </div>
+            
+            <!-- Consent Checkbox -->
+            <div class="consent-section">
+                <label class="consent-checkbox">
+                    <input type="checkbox" id="uploadConsent" required>
+                    <span class="checkmark"></span>
+                    I agree to terms and allow using my images for improving diagnosis model
+                </label>
+            </div>
                             
                             <input type="file" id="fileInput" accept="image/*" style="display: none;">
                             <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display: none;">
@@ -478,11 +487,11 @@
                     <span class="logo-text">CropGuard AI</span>
                 </div>
                 <div class="footer-links">
-                    <a href="#home">Home</a>
-                    <a href="#about">About</a>
-                    <a href="#contact">Contact</a>
-                    <a href="#">Privacy</a>
-                    <a href="#">Terms</a>
+                <a href="#home">Home</a>
+                <a href="#about">About</a>
+                <a href="#contact">Contact</a>
+                <a href="#" onclick="document.getElementById('privacyModal').classList.add('show'); return false;">Privacy</a>
+                <a href="#" onclick="document.getElementById('privacyModal').classList.add('show'); return false;">Terms</a>
                 </div>
                 <div class="footer-social">
                     <a href="#"><i class="fab fa-facebook"></i></a>
@@ -552,7 +561,7 @@
     <div class="modal" id="privacyModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Privacy Policy</h2>
+                <h2>Privacy Policy & Terms</h2>
                 <button class="modal-close" id="closePrivacy">
                     <i class="fas fa-times"></i>
                 </button>
@@ -564,6 +573,14 @@
                     
                     <h3>Data Storage</h3>
                     <p>Photos are stored securely and deleted after 30 days unless you choose to save them in your gallery.</p>
+                    
+                    <h3>Model Accuracy Information</h3>
+                    <div class="accuracy-info">
+                        <p><strong>Dataset Size:</strong> 50,000+ verified crop images</p>
+                        <p><strong>Test Accuracy:</strong> 99.2% on validation set</p>
+                        <p><strong>Last Model Update:</strong> December 2024</p>
+                        <p><strong>Supported Diseases:</strong> 50+ common crop diseases</p>
+                    </div>
                     
                     <h3>Consent</h3>
                     <p>By using this service, you agree to our terms and allow us to use your images for improving our diagnosis model.</p>

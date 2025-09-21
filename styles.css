@@ -1857,6 +1857,81 @@ html {
     display: none;
 }
 
+/* Analysis Progress */
+.analysis-progress {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--white);
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    z-index: 10001;
+    min-width: 400px;
+    text-align: center;
+}
+
+.progress-steps {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+    gap: 20px;
+}
+
+.progress-steps .step {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 15px;
+    border-radius: 15px;
+    background: rgba(143, 188, 143, 0.1);
+    transition: all 0.3s ease;
+    opacity: 0.5;
+}
+
+.progress-steps .step.active {
+    background: var(--primary-green);
+    color: white;
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+.progress-steps .step i {
+    font-size: 1.5rem;
+}
+
+.progress-steps .step span {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.progress-timer {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--primary-green);
+}
+
+/* Accuracy Info */
+.accuracy-info {
+    background: rgba(143, 188, 143, 0.1);
+    border-radius: 10px;
+    padding: 15px;
+    margin: 15px 0;
+}
+
+.accuracy-info p {
+    margin: 8px 0;
+    font-size: 0.9rem;
+    color: var(--text-dark);
+}
+
+.accuracy-info strong {
+    color: var(--primary-green);
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
     width: 8px;

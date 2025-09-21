@@ -655,11 +655,13 @@ function setupPhotoWorkflow() {
 
     // Take photo button
     takePhotoBtn.addEventListener('click', () => {
+        if (!checkConsent()) return;
         cameraInput.click();
     });
 
     // Upload from gallery button
     uploadGalleryBtn.addEventListener('click', () => {
+        if (!checkConsent()) return;
         fileInput.click();
     });
 
@@ -1252,3 +1254,230 @@ function logPerformance() {
 
 // Initialize performance monitoring
 logPerformance();
+
+// Check consent before allowing photo capture
+function checkConsent() {
+    const consentCheckbox = document.getElementById('uploadConsent');
+    if (!consentCheckbox.checked) {
+        alert('Please agree to the terms and conditions before uploading photos.');
+        return false;
+    }
+    return true;
+}
+
+// Enhanced image quality detection
+function detectImageQuality(imageUrl) {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+            
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+            
+            // Simple blur detection (variance of pixel values)
+            let variance = 0;
+            let mean = 0;
+            
+            // Calculate mean
+            for (let i = 0; i < data.length; i += 4) {
+                mean += (data[i] + data[i + 1] + data[i + 2]) / 3;
+            }
+            mean /= (data.length / 4);
+            
+            // Calculate variance
+            for (let i = 0; i < data.length; i += 4) {
+                const pixelValue = (data[i] + data[i + 1] + data[i + 2]) / 3;
+                variance += Math.pow(pixelValue - mean, 2);
+            }
+            variance /= (data.length / 4);
+            
+            // Simple lighting detection (brightness)
+            let brightness = 0;
+            for (let i = 0; i < data.length; i += 4) {
+                brightness += (data[i] + data[i + 1] + data[i + 2]) / 3;
+            }
+            brightness /= (data.length / 4);
+            
+            resolve({
+                isBlurry: variance < 100, // Low variance = blurry
+                isTooDark: brightness < 80,
+                isTooBright: brightness > 200,
+                quality: variance > 200 ? 'good' : variance > 100 ? 'fair' : 'poor'
+            });
+        };
+        img.src = imageUrl;
+    });
+}
+
+// Update image quality check with real detection
+async function checkImageQuality(imageUrl) {
+    const qualityItems = document.querySelectorAll('.quality-item');
+    
+    try {
+        const quality = await detectImageQuality(imageUrl);
+        
+        qualityItems.forEach((item, index) => {
+            const icon = item.querySelector('i');
+            const span = item.querySelector('span');
+            
+            if (index === 0) {
+                // Lighting check
+                if (quality.isTooDark || quality.isTooBright) {
+                    icon.className = 'fas fa-exclamation-triangle quality-warning';
+                    icon.style.color = '#f39c12';
+                    span.textContent = quality.isTooDark ? 'Too dark - improve lighting' : 'Too bright - avoid direct sun';
+                } else {
+                    icon.className = 'fas fa-check-circle quality-good';
+                    icon.style.color = '#27ae60';
+                    span.textContent = 'Good lighting';
+                }
+            } else if (index === 1) {
+                // Focus check
+                if (quality.isBlurry) {
+                    icon.className = 'fas fa-exclamation-triangle quality-warning';
+                    icon.style.color = '#f39c12';
+                    span.textContent = 'Image is blurry - retake photo';
+                } else {
+                    icon.className = 'fas fa-check-circle quality-good';
+                    icon.style.color = '#27ae60';
+                    span.textContent = 'Sharp focus';
+                }
+            } else if (index === 2) {
+                // Background check
+                if (quality.quality === 'poor') {
+                    icon.className = 'fas fa-exclamation-triangle quality-warning';
+                    icon.style.color = '#f39c12';
+                    span.textContent = 'Background too noisy - Retake photo';
+                } else {
+                    icon.className = 'fas fa-check-circle quality-good';
+                    icon.style.color = '#27ae60';
+                    span.textContent = 'Clean background';
+                }
+            }
+            item.style.display = 'flex';
+        });
+    } catch (error) {
+        console.error('Quality check failed:', error);
+        // Fallback to original behavior
+        setTimeout(() => {
+            qualityItems.forEach((item, index) => {
+                const icon = item.querySelector('i');
+                const span = item.querySelector('span');
+                
+                if (index < 2) {
+                    icon.className = 'fas fa-check-circle quality-good';
+                    icon.style.color = '#27ae60';
+                } else {
+                    icon.className = 'fas fa-exclamation-triangle quality-warning';
+                    icon.style.color = '#f39c12';
+                    span.textContent = 'Background too noisy - Retake photo';
+                }
+                item.style.display = 'flex';
+            });
+        }, 1000);
+    }
+}
+
+// Performance optimization - compress images before processing
+async function handlePhotoCapture(file) {
+    // Compress image first
+    const compressedFile = await compressImage(file, 800, 0.8);
+    
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+        currentPhotoData = {
+            file: compressedFile,
+            url: e.target.result,
+            step: currentStep
+        };
+        
+        // Show preview
+        showPhotoPreview(e.target.result);
+        
+        // Check image quality with real detection
+        await checkImageQuality(e.target.result);
+    };
+    reader.readAsDataURL(compressedFile);
+}
+
+// Add progress indicator for analysis
+function analyzePhotos() {
+    showLoadingSpinner();
+    
+    // Show progress indicator
+    const progressContainer = document.createElement('div');
+    progressContainer.className = 'analysis-progress';
+    progressContainer.innerHTML = `
+        <div class="progress-steps">
+            <div class="step active" data-step="1">
+                <i class="fas fa-image"></i>
+                <span>Processing Images</span>
+            </div>
+            <div class="step" data-step="2">
+                <i class="fas fa-brain"></i>
+                <span>AI Analysis</span>
+            </div>
+            <div class="step" data-step="3">
+                <i class="fas fa-check"></i>
+                <span>Generating Results</span>
+            </div>
+        </div>
+        <div class="progress-timer">
+            <span id="timer">0</span> seconds
+        </div>
+    `;
+    
+    document.body.appendChild(progressContainer);
+    
+    // Update progress steps
+    let currentProgressStep = 1;
+    const progressSteps = progressContainer.querySelectorAll('.step');
+    
+    const progressInterval = setInterval(() => {
+        progressSteps.forEach((step, index) => {
+            if (index + 1 <= currentProgressStep) {
+                step.classList.add('active');
+            } else {
+                step.classList.remove('active');
+            }
+        });
+        
+        if (currentProgressStep < 3) {
+            currentProgressStep++;
+        }
+    }, 1000);
+    
+    // Timer
+    let seconds = 0;
+    const timerInterval = setInterval(() => {
+        seconds++;
+        document.getElementById('timer').textContent = seconds;
+    }, 1000);
+    
+    // Simulate AI analysis
+    setTimeout(() => {
+        clearInterval(progressInterval);
+        clearInterval(timerInterval);
+        document.body.removeChild(progressContainer);
+        
+        hideLoadingSpinner();
+        
+        // Generate enhanced prediction
+        const prediction = generateEnhancedPrediction();
+        
+        // Show results
+        showResults(prediction);
+        
+        // Scroll to results
+        document.getElementById('results').scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start' 
+        });
+        
+    }, 3000); // 3 seconds for demo
+}
