@@ -861,23 +861,49 @@ function generateEnhancedPrediction() {
                 chemical: [
                     {
                         name: "Copper-based Fungicide",
-                        activeIngredient: "Copper Oxychloride",
-                        concentration: "3g per liter",
-                        frequency: "Every 7-10 days",
-                        phi: "7 days",
-                        safety: "Wear gloves and protective clothing",
-                        buyLink: "https://example.com/copper-fungicide",
-                        price: "₹450/500ml"
+                        activeIngredient: "Copper Oxychloride 50% WP",
+                        productExamples: ["Bordeaux Mixture", "Copper Sulphate", "Champion 77"],
+                        dosage: "3g per liter of water",
+                        frequency: "Spray every 7-10 days",
+                        safety: "Wear gloves, mask, and protective clothing. Avoid spraying before rain",
+                        buyLinks: [
+                            {
+                                name: "Amazon",
+                                url: "https://amazon.in/copper-fungicide",
+                                price: "₹450/500ml",
+                                rating: "4.2★"
+                            },
+                            {
+                                name: "AgroStar",
+                                url: "https://agrostar.in/copper-fungicide",
+                                price: "₹420/500ml",
+                                rating: "4.5★"
+                            }
+                        ]
                     }
                 ],
                 organic: [
                     {
                         name: "Neem Oil Treatment",
-                        method: "Spray neem oil solution",
-                        concentration: "2ml per liter",
-                        frequency: "Every 5-7 days",
-                        buyLink: "https://example.com/neem-oil",
-                        price: "₹200/250ml"
+                        activeIngredient: "Azadirachtin (Neem Oil)",
+                        productExamples: ["Neem Oil 3000 PPM", "Organic Neem Concentrate"],
+                        dosage: "2-3ml per liter of water",
+                        frequency: "Spray every 5-7 days",
+                        safety: "Safe for beneficial insects, no protective gear needed",
+                        buyLinks: [
+                            {
+                                name: "DeHaat",
+                                url: "https://dehaat.com/neem-oil",
+                                price: "₹200/250ml",
+                                rating: "4.3★"
+                            },
+                            {
+                                name: "BigHaat",
+                                url: "https://bighat.com/neem-oil",
+                                price: "₹180/250ml",
+                                rating: "4.1★"
+                            }
+                        ]
                     }
                 ]
             }
@@ -898,23 +924,43 @@ function generateEnhancedPrediction() {
                 chemical: [
                     {
                         name: "Chlorothalonil Fungicide",
-                        activeIngredient: "Chlorothalonil",
-                        concentration: "2g per liter",
-                        frequency: "Every 10-14 days",
-                        phi: "14 days",
-                        safety: "Avoid contact with skin and eyes",
-                        buyLink: "https://example.com/chlorothalonil",
-                        price: "₹380/500ml"
+                        activeIngredient: "Chlorothalonil 75% WP",
+                        productExamples: ["Daconil", "Bravo", "Chlorothalonil 75"],
+                        dosage: "2g per liter of water",
+                        frequency: "Spray every 10-14 days",
+                        safety: "Avoid contact with skin and eyes. Wear protective gear",
+                        buyLinks: [
+                            {
+                                name: "Amazon",
+                                url: "https://amazon.in/chlorothalonil",
+                                price: "₹380/500ml",
+                                rating: "4.0★"
+                            },
+                            {
+                                name: "AgroStar",
+                                url: "https://agrostar.in/chlorothalonil",
+                                price: "₹350/500ml",
+                                rating: "4.2★"
+                            }
+                        ]
                     }
                 ],
                 organic: [
                     {
                         name: "Baking Soda Spray",
-                        method: "Mix baking soda with water",
-                        concentration: "1 teaspoon per liter",
-                        frequency: "Every 7 days",
-                        buyLink: null,
-                        price: "Home remedy"
+                        activeIngredient: "Sodium Bicarbonate",
+                        productExamples: ["Home-made Baking Soda Solution"],
+                        dosage: "1 teaspoon per liter of water",
+                        frequency: "Spray every 7 days",
+                        safety: "Safe and eco-friendly, no protective gear needed",
+                        buyLinks: [
+                            {
+                                name: "Amazon",
+                                url: "https://amazon.in/baking-soda",
+                                price: "₹50/kg",
+                                rating: "4.5★"
+                            }
+                        ]
                     }
                 ]
             }
@@ -986,15 +1032,27 @@ function showResults(prediction) {
                 
                 ${prediction.treatments.chemical ? `
                 <div class="treatment-content active" id="chemical-treatment">
+                    <h3>a) Chemical Treatment:</h3>
                     ${prediction.treatments.chemical.map(treatment => `
                         <div class="treatment-item">
                             <h4>${treatment.name}</h4>
-                            <p><strong>Active Ingredient:</strong> ${treatment.activeIngredient}</p>
-                            <p><strong>Concentration:</strong> ${treatment.concentration}</p>
-                            <p><strong>Frequency:</strong> ${treatment.frequency}</p>
-                            <p><strong>Pre-harvest Interval:</strong> ${treatment.phi}</p>
-                            <p><strong>Safety Instructions:</strong> ${treatment.safety}</p>
-                            ${treatment.buyLink ? `<a href="${treatment.buyLink}" class="buy-link" target="_blank">Buy Now - ${treatment.price}</a>` : ''}
+                            <div class="treatment-details">
+                                <p><strong>Main Chemical/Active Ingredient:</strong> ${treatment.activeIngredient}</p>
+                                <p><strong>Example Product Names:</strong> ${treatment.productExamples.join(', ')}</p>
+                                <p><strong>Dosage:</strong> ${treatment.dosage}</p>
+                                <p><strong>Application Frequency:</strong> ${treatment.frequency}</p>
+                                <p><strong>Safety Instructions:</strong> ${treatment.safety}</p>
+                            </div>
+                            <div class="buy-links">
+                                <h5>Buy Now:</h5>
+                                ${treatment.buyLinks.map(link => `
+                                    <a href="${link.url}" class="buy-link" target="_blank">
+                                        <span class="buy-platform">${link.name}</span>
+                                        <span class="buy-price">${link.price}</span>
+                                        <span class="buy-rating">${link.rating}</span>
+                                    </a>
+                                `).join('')}
+                            </div>
                         </div>
                     `).join('')}
                 </div>
@@ -1002,13 +1060,27 @@ function showResults(prediction) {
                 
                 ${prediction.treatments.organic ? `
                 <div class="treatment-content" id="organic-treatment">
+                    <h3>b) Organic/Non-chemical Treatment:</h3>
                     ${prediction.treatments.organic.map(treatment => `
                         <div class="treatment-item">
                             <h4>${treatment.name}</h4>
-                            <p><strong>Method:</strong> ${treatment.method}</p>
-                            <p><strong>Concentration:</strong> ${treatment.concentration}</p>
-                            <p><strong>Frequency:</strong> ${treatment.frequency}</p>
-                            ${treatment.buyLink ? `<a href="${treatment.buyLink}" class="buy-link" target="_blank">Buy Now - ${treatment.price}</a>` : ''}
+                            <div class="treatment-details">
+                                <p><strong>Active Ingredient:</strong> ${treatment.activeIngredient}</p>
+                                <p><strong>Example Products:</strong> ${treatment.productExamples.join(', ')}</p>
+                                <p><strong>Dosage:</strong> ${treatment.dosage}</p>
+                                <p><strong>Usage Instructions:</strong> ${treatment.frequency}</p>
+                                <p><strong>Safety:</strong> ${treatment.safety}</p>
+                            </div>
+                            <div class="buy-links">
+                                <h5>Buy Now:</h5>
+                                ${treatment.buyLinks.map(link => `
+                                    <a href="${link.url}" class="buy-link" target="_blank">
+                                        <span class="buy-platform">${link.name}</span>
+                                        <span class="buy-price">${link.price}</span>
+                                        <span class="buy-rating">${link.rating}</span>
+                                    </a>
+                                `).join('')}
+                            </div>
                         </div>
                     `).join('')}
                 </div>
@@ -1029,7 +1101,12 @@ function showResults(prediction) {
             ` : ''}
             
             <div class="disclaimer">
-                <strong>⚠️ Important Disclaimer:</strong> This is for advisory purposes only. Always consult a local agricultural authority or agronomist before applying any treatments. Follow all safety instructions and read product labels carefully. Some chemicals may be restricted in certain regions.
+                <h4>⚠️ Important Disclaimers:</h4>
+                <ul>
+                    <li><strong>Check local pesticide rules before use.</strong></li>
+                    <li><strong>Use the recommended dose only. Overuse may damage soil or crops.</strong></li>
+                    <li><strong>Consult an agriculture expert if you are not sure.</strong></li>
+                </ul>
             </div>
         </div>
     `;
