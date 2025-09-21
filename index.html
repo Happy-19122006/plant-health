@@ -7,6 +7,12 @@
     <link rel="stylesheet" href="styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Performance Optimization -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#4a7c59">
 </head>
 <body>
     <!-- Navigation -->
@@ -18,10 +24,15 @@
             </div>
             <div class="nav-menu">
                 <a href="#home" class="nav-link active">Home</a>
-                <a href="#upload" class="nav-link">Upload</a>
-                <a href="#gallery" class="nav-link">Gallery</a>
+                <a href="#upload" class="nav-link">My Scans</a>
                 <a href="#about" class="nav-link">About</a>
                 <a href="#contact" class="nav-link">Contact</a>
+                <div class="language-toggle">
+                    <button class="lang-btn" onclick="toggleLanguage()">
+                        <i class="fas fa-globe"></i>
+                        <span id="currentLang">EN</span>
+                    </button>
+                </div>
                 <div class="theme-toggle">
                     <i class="fas fa-moon" id="theme-icon"></i>
                 </div>
@@ -49,16 +60,54 @@
                 <br>Smart Disease Detection for Healthy Crops
             </h1>
             <p class="hero-description">
-                Upload crop images and get instant AI-powered disease detection with detailed remedies and treatment recommendations.
+                Take three photos and get instant AI-powered disease detection with detailed treatment recommendations.
             </p>
+            
+            <!-- 3-Step Workflow -->
+            <div class="hero-workflow">
+                <div class="workflow-step">
+                    <div class="workflow-icon">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                    <div class="workflow-text">
+                        <h4>Step 1</h4>
+                        <p>Take 3 Photos</p>
+                    </div>
+                </div>
+                <div class="workflow-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+                <div class="workflow-step">
+                    <div class="workflow-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <div class="workflow-text">
+                        <h4>Step 2</h4>
+                        <p>AI Analysis</p>
+                    </div>
+                </div>
+                <div class="workflow-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+                <div class="workflow-step">
+                    <div class="workflow-icon">
+                        <i class="fas fa-pills"></i>
+                    </div>
+                    <div class="workflow-text">
+                        <h4>Step 3</h4>
+                        <p>Get Treatment</p>
+                    </div>
+                </div>
+            </div>
+
             <div class="hero-buttons">
                 <button class="btn-primary" onclick="scrollToSection('upload')">
-                    <i class="fas fa-upload"></i>
-                    Start Detection
+                    <i class="fas fa-camera"></i>
+                    Start Scanning
                 </button>
-                <button class="btn-secondary" onclick="scrollToSection('about')">
+                <button class="btn-secondary" onclick="showHowItWorks()">
                     <i class="fas fa-info-circle"></i>
-                    Learn More
+                    How it Works
                 </button>
             </div>
         </div>
@@ -82,23 +131,168 @@
     <section id="upload" class="upload-section">
         <div class="container">
             <div class="section-header">
-                <h2>Upload Crop Images</h2>
-                <p>Get instant AI-powered disease detection and treatment recommendations</p>
+                <h2>Smart Crop Disease Detection</h2>
+                <p>Take three photos for the most accurate diagnosis</p>
             </div>
             
-            <div class="upload-area" id="uploadArea">
-                <div class="upload-content">
-                    <i class="fas fa-cloud-upload-alt upload-icon"></i>
-                    <h3>Drag & Drop Images Here</h3>
-                    <p>or <span class="upload-link">click to browse</span></p>
-                    <input type="file" id="fileInput" multiple accept="image/*" style="display: none;">
-                    <div class="supported-formats">
-                        <small>Supports: JPG, PNG, JPEG (Max 10MB each)</small>
+            <!-- Photo Capture Workflow -->
+            <div class="photo-workflow" id="photoWorkflow">
+                <div class="workflow-steps">
+                    <div class="step active" data-step="1">
+                        <div class="step-number">1</div>
+                        <div class="step-title">Close-up Photo</div>
+                        <div class="step-desc">Affected leaf, stem, or fruit</div>
+                    </div>
+                    <div class="step" data-step="2">
+                        <div class="step-number">2</div>
+                        <div class="step-title">Full Plant View</div>
+                        <div class="step-desc">Entire plant structure</div>
+                    </div>
+                    <div class="step" data-step="3">
+                        <div class="step-number">3</div>
+                        <div class="step-title">Underside View</div>
+                        <div class="step-desc">Lower surface where pests hide</div>
+                    </div>
+                </div>
+
+                <!-- Photo Capture Interface -->
+                <div class="photo-capture-container">
+                    <div class="capture-area" id="captureArea">
+                        <div class="capture-content">
+                            <div class="capture-icon">
+                                <i class="fas fa-camera"></i>
+                            </div>
+                            <h3 id="captureTitle">Take Close-up Photo</h3>
+                            <p id="captureDescription">Focus on the affected part of the plant</p>
+                            
+                            <!-- Camera Guide -->
+                            <div class="camera-guide">
+                                <div class="guide-item">
+                                    <i class="fas fa-sun"></i>
+                                    <span>Good lighting</span>
+                                </div>
+                                <div class="guide-item">
+                                    <i class="fas fa-hand-paper"></i>
+                                    <span>Keep steady</span>
+                                </div>
+                                <div class="guide-item">
+                                    <i class="fas fa-crosshairs"></i>
+                                    <span>Tap to focus</span>
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="capture-buttons">
+                                <button class="btn-camera" id="takePhotoBtn">
+                                    <i class="fas fa-camera"></i>
+                                    Take Photo
+                                </button>
+                                <button class="btn-gallery" id="uploadGalleryBtn">
+                                    <i class="fas fa-images"></i>
+                                    Upload from Gallery
+                                </button>
+                            </div>
+                            
+                            <input type="file" id="fileInput" accept="image/*" style="display: none;">
+                            <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display: none;">
+                        </div>
+                    </div>
+
+                    <!-- Photo Preview -->
+                    <div class="photo-preview" id="photoPreview" style="display: none;">
+                        <div class="preview-container">
+                            <img id="previewImage" src="" alt="Captured photo">
+                            <div class="preview-actions">
+                                <button class="btn-retake" id="retakeBtn">
+                                    <i class="fas fa-redo"></i>
+                                    Retake
+                                </button>
+                                <button class="btn-confirm" id="confirmBtn">
+                                    <i class="fas fa-check"></i>
+                                    Use This Photo
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Image Quality Check -->
+                        <div class="quality-check" id="qualityCheck">
+                            <div class="quality-item">
+                                <i class="fas fa-check-circle quality-good"></i>
+                                <span>Good lighting</span>
+                            </div>
+                            <div class="quality-item">
+                                <i class="fas fa-check-circle quality-good"></i>
+                                <span>Sharp focus</span>
+                            </div>
+                            <div class="quality-item" id="backgroundCheck">
+                                <i class="fas fa-exclamation-triangle quality-warning"></i>
+                                <span>Background too noisy - Retake photo</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progress -->
+                <div class="photo-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="progress-text">
+                        <span id="progressText">Photo 1 of 3</span>
                     </div>
                 </div>
             </div>
 
+            <!-- Analyze Button -->
+            <div class="analyze-section" id="analyzeSection" style="display: none;">
+                <button class="btn-analyze" id="analyzeBtn">
+                    <i class="fas fa-search"></i>
+                    Analyze Photos (30 seconds)
+                </button>
+                <p class="analyze-note">We'll analyze your photos and provide detailed disease diagnosis with treatment recommendations</p>
+            </div>
+
             <div class="uploaded-images" id="uploadedImages"></div>
+        </div>
+    </section>
+
+    <!-- Enhanced Results Section -->
+    <section id="results" class="results-section" style="display: none;">
+        <div class="container">
+            <div class="results-header">
+                <h2>Disease Analysis Results</h2>
+                <p>Detailed diagnosis with treatment recommendations</p>
+            </div>
+
+            <div class="results-content" id="resultsContent">
+                <!-- Results will be populated by JavaScript -->
+            </div>
+
+            <!-- Feedback Section -->
+            <div class="feedback-section">
+                <h3>Was this result helpful?</h3>
+                <div class="feedback-buttons">
+                    <button class="feedback-btn feedback-yes" id="feedbackYes">
+                        <i class="fas fa-thumbs-up"></i>
+                        Yes, accurate
+                    </button>
+                    <button class="feedback-btn feedback-no" id="feedbackNo">
+                        <i class="fas fa-thumbs-down"></i>
+                        No, incorrect
+                    </button>
+                </div>
+                
+                <div class="feedback-form" id="feedbackForm" style="display: none;">
+                    <h4>Help us improve - What was the correct disease?</h4>
+                    <div class="feedback-input-group">
+                        <input type="text" id="correctDisease" placeholder="Enter correct disease name">
+                        <button class="btn-submit-feedback" id="submitFeedback">
+                            <i class="fas fa-paper-plane"></i>
+                            Submit
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -249,6 +443,91 @@
             <div class="spinner-inner"></div>
         </div>
         <p>Analyzing your crop image...</p>
+    </div>
+
+    <!-- How it Works Modal -->
+    <div class="modal" id="howItWorksModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>How CropGuard AI Works</h2>
+                <button class="modal-close" id="closeHowItWorks">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="how-it-works-content">
+                    <div class="step-explanation">
+                        <div class="step-visual">
+                            <i class="fas fa-camera"></i>
+                        </div>
+                        <div class="step-details">
+                            <h3>1. Take Three Photos</h3>
+                            <p>Capture close-up of affected area, full plant view, and underside where pests hide. Our AI needs multiple angles for accurate diagnosis.</p>
+                        </div>
+                    </div>
+                    <div class="step-explanation">
+                        <div class="step-visual">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <div class="step-details">
+                            <h3>2. AI Analysis</h3>
+                            <p>Our advanced machine learning model analyzes your photos in ~30 seconds, comparing against thousands of disease patterns.</p>
+                        </div>
+                    </div>
+                    <div class="step-explanation">
+                        <div class="step-visual">
+                            <i class="fas fa-pills"></i>
+                        </div>
+                        <div class="step-details">
+                            <h3>3. Get Treatment</h3>
+                            <p>Receive detailed treatment recommendations including chemical and organic options, with buy links for products available in India.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Privacy Policy Modal -->
+    <div class="modal" id="privacyModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Privacy Policy</h2>
+                <button class="modal-close" id="closePrivacy">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="privacy-content">
+                    <h3>How We Use Your Photos</h3>
+                    <p>Your uploaded photos are used solely for disease diagnosis. We may use anonymized data to improve our AI model accuracy.</p>
+                    
+                    <h3>Data Storage</h3>
+                    <p>Photos are stored securely and deleted after 30 days unless you choose to save them in your gallery.</p>
+                    
+                    <h3>Consent</h3>
+                    <p>By using this service, you agree to our terms and allow us to use your images for improving our diagnosis model.</p>
+                    
+                    <div class="privacy-checkbox">
+                        <label>
+                            <input type="checkbox" id="privacyConsent">
+                            I agree to the privacy policy and terms of service
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Consent Checkbox for Upload -->
+    <div class="consent-section" id="consentSection" style="display: none;">
+        <div class="consent-content">
+            <label class="consent-checkbox">
+                <input type="checkbox" id="uploadConsent">
+                <span class="checkmark"></span>
+                I agree to terms and allow using my images for improving diagnosis model
+            </label>
+        </div>
     </div>
 
     <script src="script.js"></script>

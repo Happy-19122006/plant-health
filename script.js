@@ -1,6 +1,74 @@
 // Global Variables
 let uploadedImages = [];
 let currentTheme = localStorage.getItem('theme') || 'light';
+let currentLanguage = localStorage.getItem('language') || 'en';
+let currentStep = 1;
+let capturedPhotos = [];
+let currentPhotoData = null;
+
+// Localization
+const translations = {
+    en: {
+        // Navigation
+        home: 'Home',
+        scans: 'My Scans',
+        about: 'About',
+        contact: 'Contact',
+        
+        // Hero
+        title: 'CropGuard AI',
+        subtitle: 'Smart Disease Detection for Healthy Crops',
+        description: 'Take three photos and get instant AI-powered disease detection with detailed treatment recommendations.',
+        startScanning: 'Start Scanning',
+        howItWorks: 'How it Works',
+        
+        // Upload
+        uploadTitle: 'Smart Crop Disease Detection',
+        uploadDesc: 'Take three photos for the most accurate diagnosis',
+        closeupPhoto: 'Close-up Photo',
+        fullPlantPhoto: 'Full Plant Photo',
+        undersidePhoto: 'Underside Photo',
+        takePhoto: 'Take Photo',
+        uploadGallery: 'Upload from Gallery',
+        goodLighting: 'Good lighting',
+        keepSteady: 'Keep steady',
+        tapToFocus: 'Tap to focus',
+        retake: 'Retake',
+        usePhoto: 'Use This Photo',
+        analyze: 'Analyze Photos (30 seconds)',
+        analyzeNote: 'We\'ll analyze your photos and provide detailed disease diagnosis with treatment recommendations'
+    },
+    hi: {
+        // Navigation
+        home: 'होम',
+        scans: 'मेरी जांच',
+        about: 'के बारे में',
+        contact: 'संपर्क',
+        
+        // Hero
+        title: 'CropGuard AI',
+        subtitle: 'स्वस्थ फसलों के लिए स्मार्ट बीमारी पहचान',
+        description: 'तीन फोटो लें और विस्तृत उपचार सिफारिशों के साथ तुरंत AI-संचालित बीमारी पहचान प्राप्त करें।',
+        startScanning: 'स्कैनिंग शुरू करें',
+        howItWorks: 'यह कैसे काम करता है',
+        
+        // Upload
+        uploadTitle: 'स्मार्ट फसल बीमारी पहचान',
+        uploadDesc: 'सबसे सटीक निदान के लिए तीन फोटो लें',
+        closeupPhoto: 'क्लोज-अप फोटो',
+        fullPlantPhoto: 'पूरा पौधा फोटो',
+        undersidePhoto: 'नीचे का फोटो',
+        takePhoto: 'फोटो लें',
+        uploadGallery: 'गैलरी से अपलोड',
+        goodLighting: 'अच्छी रोशनी',
+        keepSteady: 'स्थिर रखें',
+        tapToFocus: 'फोकस के लिए टैप करें',
+        retake: 'फिर से लें',
+        usePhoto: 'इस फोटो का उपयोग करें',
+        analyze: 'फोटो का विश्लेषण करें (30 सेकंड)',
+        analyzeNote: 'हम आपके फोटो का विश्लेषण करेंगे और विस्तृत बीमारी निदान और उपचार सिफारिशें प्रदान करेंगे'
+    }
+};
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
@@ -15,8 +83,9 @@ function initializeApp() {
     // Set active nav link based on current section
     updateActiveNavLink();
     
-    // Initialize theme
+    // Initialize theme and language
     document.documentElement.setAttribute('data-theme', currentTheme);
+    updateLanguage();
 }
 
 // Setup all event listeners
@@ -38,6 +107,15 @@ function setupEventListeners() {
     
     // Scroll events
     setupScrollEvents();
+    
+    // Photo capture workflow
+    setupPhotoWorkflow();
+    
+    // Modals
+    setupModals();
+    
+    // Feedback system
+    setupFeedbackSystem();
 }
 
 // Navigation functionality
@@ -564,3 +642,613 @@ document.addEventListener('DOMContentLoaded', () => {
         observer.observe(el);
     });
 });
+
+// Photo Workflow Functionality
+function setupPhotoWorkflow() {
+    const takePhotoBtn = document.getElementById('takePhotoBtn');
+    const uploadGalleryBtn = document.getElementById('uploadGalleryBtn');
+    const cameraInput = document.getElementById('cameraInput');
+    const fileInput = document.getElementById('fileInput');
+    const retakeBtn = document.getElementById('retakeBtn');
+    const confirmBtn = document.getElementById('confirmBtn');
+    const analyzeBtn = document.getElementById('analyzeBtn');
+
+    // Take photo button
+    takePhotoBtn.addEventListener('click', () => {
+        cameraInput.click();
+    });
+
+    // Upload from gallery button
+    uploadGalleryBtn.addEventListener('click', () => {
+        fileInput.click();
+    });
+
+    // Camera input change
+    cameraInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            handlePhotoCapture(e.target.files[0]);
+        }
+    });
+
+    // File input change
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            handlePhotoCapture(e.target.files[0]);
+        }
+    });
+
+    // Retake button
+    retakeBtn.addEventListener('click', () => {
+        document.getElementById('photoPreview').style.display = 'none';
+        document.getElementById('captureArea').style.display = 'block';
+    });
+
+    // Confirm button
+    confirmBtn.addEventListener('click', () => {
+        confirmPhoto();
+    });
+
+    // Analyze button
+    analyzeBtn.addEventListener('click', () => {
+        analyzePhotos();
+    });
+}
+
+// Handle photo capture
+function handlePhotoCapture(file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        currentPhotoData = {
+            file: file,
+            url: e.target.result,
+            step: currentStep
+        };
+        
+        // Show preview
+        showPhotoPreview(e.target.result);
+        
+        // Check image quality
+        checkImageQuality(e.target.result);
+    };
+    reader.readAsDataURL(file);
+}
+
+// Show photo preview
+function showPhotoPreview(imageUrl) {
+    const captureArea = document.getElementById('captureArea');
+    const photoPreview = document.getElementById('photoPreview');
+    const previewImage = document.getElementById('previewImage');
+    
+    previewImage.src = imageUrl;
+    captureArea.style.display = 'none';
+    photoPreview.style.display = 'block';
+}
+
+// Check image quality
+function checkImageQuality(imageUrl) {
+    const qualityItems = document.querySelectorAll('.quality-item');
+    
+    // Simulate quality check (in real implementation, use image processing)
+    setTimeout(() => {
+        // Randomly show quality warnings for demo
+        const isGoodQuality = Math.random() > 0.3; // 70% chance of good quality
+        
+        qualityItems.forEach((item, index) => {
+            const icon = item.querySelector('i');
+            const span = item.querySelector('span');
+            
+            if (index < 2) {
+                // First two items are always good for demo
+                icon.className = 'fas fa-check-circle quality-good';
+                icon.style.color = '#27ae60';
+            } else {
+                // Background check - show warning occasionally
+                if (!isGoodQuality) {
+                    icon.className = 'fas fa-exclamation-triangle quality-warning';
+                    icon.style.color = '#f39c12';
+                    span.textContent = 'Background too noisy - Retake photo';
+                    item.style.display = 'flex';
+                } else {
+                    icon.className = 'fas fa-check-circle quality-good';
+                    icon.style.color = '#27ae60';
+                    span.textContent = 'Clean background';
+                    item.style.display = 'flex';
+                }
+            }
+        });
+    }, 1000);
+}
+
+// Confirm photo
+function confirmPhoto() {
+    capturedPhotos.push(currentPhotoData);
+    
+    // Hide preview and reset
+    document.getElementById('photoPreview').style.display = 'none';
+    document.getElementById('captureArea').style.display = 'block';
+    
+    // Move to next step
+    if (currentStep < 3) {
+        currentStep++;
+        updateWorkflowStep();
+        updateProgress();
+    } else {
+        // All photos captured
+        showAnalyzeButton();
+    }
+    
+    currentPhotoData = null;
+}
+
+// Update workflow step
+function updateWorkflowStep() {
+    const steps = document.querySelectorAll('.step');
+    const titles = ['Take Close-up Photo', 'Take Full Plant Photo', 'Take Underside Photo'];
+    const descriptions = [
+        'Focus on the affected part of the plant',
+        'Capture the entire plant structure',
+        'Show the lower surface where pests hide'
+    ];
+    
+    steps.forEach((step, index) => {
+        step.classList.remove('active');
+        if (index + 1 === currentStep) {
+            step.classList.add('active');
+        }
+    });
+    
+    document.getElementById('captureTitle').textContent = titles[currentStep - 1];
+    document.getElementById('captureDescription').textContent = descriptions[currentStep - 1];
+}
+
+// Update progress
+function updateProgress() {
+    const progressFill = document.getElementById('progressFill');
+    const progressText = document.getElementById('progressText');
+    
+    const progress = (capturedPhotos.length / 3) * 100;
+    progressFill.style.width = progress + '%';
+    progressText.textContent = `Photo ${capturedPhotos.length} of 3`;
+}
+
+// Show analyze button
+function showAnalyzeButton() {
+    document.getElementById('analyzeSection').style.display = 'block';
+    document.getElementById('photoWorkflow').style.display = 'none';
+}
+
+// Analyze photos
+function analyzePhotos() {
+    showLoadingSpinner();
+    
+    // Simulate AI analysis
+    setTimeout(() => {
+        hideLoadingSpinner();
+        
+        // Generate enhanced prediction
+        const prediction = generateEnhancedPrediction();
+        
+        // Show results
+        showResults(prediction);
+        
+        // Scroll to results
+        document.getElementById('results').scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start' 
+        });
+        
+    }, 3000); // 30 seconds simulation
+}
+
+// Generate enhanced prediction
+function generateEnhancedPrediction() {
+    const diseases = [
+        {
+            name: "Late Blight",
+            scientific: "Phytophthora infestans",
+            confidence: 0.92,
+            description: "A serious fungal disease affecting potato and tomato plants. It spreads rapidly in cool, wet conditions and can devastate entire crops.",
+            symptoms: [
+                "Dark, water-soaked spots on leaves",
+                "White fungal growth on underside of leaves",
+                "Rapid leaf yellowing and death",
+                "Brown lesions on stems and fruits",
+                "Entire plant collapse within days"
+            ],
+            treatments: {
+                chemical: [
+                    {
+                        name: "Copper-based Fungicide",
+                        activeIngredient: "Copper Oxychloride",
+                        concentration: "3g per liter",
+                        frequency: "Every 7-10 days",
+                        phi: "7 days",
+                        safety: "Wear gloves and protective clothing",
+                        buyLink: "https://example.com/copper-fungicide",
+                        price: "₹450/500ml"
+                    }
+                ],
+                organic: [
+                    {
+                        name: "Neem Oil Treatment",
+                        method: "Spray neem oil solution",
+                        concentration: "2ml per liter",
+                        frequency: "Every 5-7 days",
+                        buyLink: "https://example.com/neem-oil",
+                        price: "₹200/250ml"
+                    }
+                ]
+            }
+        },
+        {
+            name: "Early Blight",
+            scientific: "Alternaria solani",
+            confidence: 0.88,
+            description: "A common fungal disease causing characteristic bull's-eye pattern spots on leaves and stems.",
+            symptoms: [
+                "Brown spots with concentric rings",
+                "Yellowing around spots",
+                "Premature leaf drop",
+                "Dark lesions on stems",
+                "Fruit rot at stem end"
+            ],
+            treatments: {
+                chemical: [
+                    {
+                        name: "Chlorothalonil Fungicide",
+                        activeIngredient: "Chlorothalonil",
+                        concentration: "2g per liter",
+                        frequency: "Every 10-14 days",
+                        phi: "14 days",
+                        safety: "Avoid contact with skin and eyes",
+                        buyLink: "https://example.com/chlorothalonil",
+                        price: "₹380/500ml"
+                    }
+                ],
+                organic: [
+                    {
+                        name: "Baking Soda Spray",
+                        method: "Mix baking soda with water",
+                        concentration: "1 teaspoon per liter",
+                        frequency: "Every 7 days",
+                        buyLink: null,
+                        price: "Home remedy"
+                    }
+                ]
+            }
+        },
+        {
+            name: "Healthy Plant",
+            scientific: "No disease detected",
+            confidence: 0.94,
+            description: "Your plant appears to be in excellent health! Continue with your current care routine.",
+            symptoms: [
+                "Vibrant green leaves",
+                "Strong stem structure",
+                "No visible spots or lesions",
+                "Good overall plant vigor",
+                "Normal growth patterns"
+            ],
+            treatments: {
+                preventive: [
+                    {
+                        name: "Maintain Current Care",
+                        method: "Continue existing routine",
+                        tips: "Monitor regularly for any changes",
+                        buyLink: null,
+                        price: "No additional cost"
+                    }
+                ]
+            }
+        }
+    ];
+    
+    return diseases[Math.floor(Math.random() * diseases.length)];
+}
+
+// Show results
+function showResults(prediction) {
+    const resultsSection = document.getElementById('results');
+    const resultsContent = document.getElementById('resultsContent');
+    
+    resultsContent.innerHTML = `
+        <div class="result-card">
+            <div class="result-header">
+                <div class="disease-info">
+                    <h2>${prediction.name}</h2>
+                    <div class="disease-scientific">${prediction.scientific}</div>
+                </div>
+                <div class="confidence-badge">
+                    ${Math.round(prediction.confidence * 100)}% Confidence
+                </div>
+            </div>
+            
+            <div class="disease-description">
+                ${prediction.description}
+            </div>
+            
+            <div class="symptoms-list">
+                <h3>Detected Symptoms</h3>
+                <ul>
+                    ${prediction.symptoms.map(symptom => `<li>${symptom}</li>`).join('')}
+                </ul>
+            </div>
+            
+            ${prediction.treatments.chemical || prediction.treatments.organic || prediction.treatments.preventive ? `
+            <div class="treatment-section">
+                <div class="treatment-tabs">
+                    ${prediction.treatments.chemical ? '<button class="treatment-tab active" data-tab="chemical">Chemical Treatment</button>' : ''}
+                    ${prediction.treatments.organic ? '<button class="treatment-tab" data-tab="organic">Organic Treatment</button>' : ''}
+                    ${prediction.treatments.preventive ? '<button class="treatment-tab active" data-tab="preventive">Preventive Care</button>' : ''}
+                </div>
+                
+                ${prediction.treatments.chemical ? `
+                <div class="treatment-content active" id="chemical-treatment">
+                    ${prediction.treatments.chemical.map(treatment => `
+                        <div class="treatment-item">
+                            <h4>${treatment.name}</h4>
+                            <p><strong>Active Ingredient:</strong> ${treatment.activeIngredient}</p>
+                            <p><strong>Concentration:</strong> ${treatment.concentration}</p>
+                            <p><strong>Frequency:</strong> ${treatment.frequency}</p>
+                            <p><strong>Pre-harvest Interval:</strong> ${treatment.phi}</p>
+                            <p><strong>Safety Instructions:</strong> ${treatment.safety}</p>
+                            ${treatment.buyLink ? `<a href="${treatment.buyLink}" class="buy-link" target="_blank">Buy Now - ${treatment.price}</a>` : ''}
+                        </div>
+                    `).join('')}
+                </div>
+                ` : ''}
+                
+                ${prediction.treatments.organic ? `
+                <div class="treatment-content" id="organic-treatment">
+                    ${prediction.treatments.organic.map(treatment => `
+                        <div class="treatment-item">
+                            <h4>${treatment.name}</h4>
+                            <p><strong>Method:</strong> ${treatment.method}</p>
+                            <p><strong>Concentration:</strong> ${treatment.concentration}</p>
+                            <p><strong>Frequency:</strong> ${treatment.frequency}</p>
+                            ${treatment.buyLink ? `<a href="${treatment.buyLink}" class="buy-link" target="_blank">Buy Now - ${treatment.price}</a>` : ''}
+                        </div>
+                    `).join('')}
+                </div>
+                ` : ''}
+                
+                ${prediction.treatments.preventive ? `
+                <div class="treatment-content active" id="preventive-treatment">
+                    ${prediction.treatments.preventive.map(treatment => `
+                        <div class="treatment-item">
+                            <h4>${treatment.name}</h4>
+                            <p><strong>Method:</strong> ${treatment.method}</p>
+                            <p><strong>Tips:</strong> ${treatment.tips}</p>
+                        </div>
+                    `).join('')}
+                </div>
+                ` : ''}
+            </div>
+            ` : ''}
+            
+            <div class="disclaimer">
+                <strong>⚠️ Important Disclaimer:</strong> This is for advisory purposes only. Always consult a local agricultural authority or agronomist before applying any treatments. Follow all safety instructions and read product labels carefully. Some chemicals may be restricted in certain regions.
+            </div>
+        </div>
+    `;
+    
+    // Setup treatment tabs
+    setupTreatmentTabs();
+    
+    resultsSection.style.display = 'block';
+}
+
+// Setup treatment tabs
+function setupTreatmentTabs() {
+    const tabs = document.querySelectorAll('.treatment-tab');
+    const contents = document.querySelectorAll('.treatment-content');
+    
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            // Remove active from all tabs and contents
+            tabs.forEach(t => t.classList.remove('active'));
+            contents.forEach(c => c.classList.remove('active'));
+            
+            // Add active to clicked tab and corresponding content
+            tab.classList.add('active');
+            const tabType = tab.getAttribute('data-tab');
+            const content = document.getElementById(tabType + '-treatment');
+            if (content) {
+                content.classList.add('active');
+            }
+        });
+    });
+}
+
+// Modal functionality
+function setupModals() {
+    // How it works modal
+    const howItWorksModal = document.getElementById('howItWorksModal');
+    const closeHowItWorks = document.getElementById('closeHowItWorks');
+    
+    closeHowItWorks.addEventListener('click', () => {
+        howItWorksModal.classList.remove('show');
+    });
+    
+    // Privacy modal
+    const privacyModal = document.getElementById('privacyModal');
+    const closePrivacy = document.getElementById('closePrivacy');
+    
+    closePrivacy.addEventListener('click', () => {
+        privacyModal.classList.remove('show');
+    });
+    
+    // Close modals when clicking outside
+    [howItWorksModal, privacyModal].forEach(modal => {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.remove('show');
+            }
+        });
+    });
+}
+
+// Show how it works modal
+function showHowItWorks() {
+    document.getElementById('howItWorksModal').classList.add('show');
+}
+
+// Feedback system
+function setupFeedbackSystem() {
+    const feedbackYes = document.getElementById('feedbackYes');
+    const feedbackNo = document.getElementById('feedbackNo');
+    const feedbackForm = document.getElementById('feedbackForm');
+    const submitFeedback = document.getElementById('submitFeedback');
+    
+    feedbackYes.addEventListener('click', () => {
+        // Store positive feedback
+        storeFeedback(true);
+        showFeedbackThankYou();
+    });
+    
+    feedbackNo.addEventListener('click', () => {
+        feedbackForm.style.display = 'block';
+    });
+    
+    submitFeedback.addEventListener('click', () => {
+        const correctDisease = document.getElementById('correctDisease').value;
+        if (correctDisease.trim()) {
+            storeFeedback(false, correctDisease);
+            showFeedbackThankYou();
+        }
+    });
+}
+
+// Store feedback
+function storeFeedback(isAccurate, correctDisease = null) {
+    const feedback = {
+        timestamp: new Date().toISOString(),
+        isAccurate: isAccurate,
+        correctDisease: correctDisease,
+        userAgent: navigator.userAgent
+    };
+    
+    // In real implementation, send to backend
+    console.log('Feedback stored:', feedback);
+    
+    // Store in localStorage for demo
+    let feedbacks = JSON.parse(localStorage.getItem('feedbacks') || '[]');
+    feedbacks.push(feedback);
+    localStorage.setItem('feedbacks', JSON.stringify(feedbacks));
+}
+
+// Show feedback thank you
+function showFeedbackThankYou() {
+    const feedbackSection = document.querySelector('.feedback-section');
+    feedbackSection.innerHTML = `
+        <div style="text-align: center; padding: 40px;">
+            <i class="fas fa-check-circle" style="font-size: 3rem; color: #27ae60; margin-bottom: 20px;"></i>
+            <h3 style="color: var(--primary-green); margin-bottom: 15px;">Thank you for your feedback!</h3>
+            <p style="color: var(--text-light);">Your input helps us improve our AI model accuracy.</p>
+        </div>
+    `;
+}
+
+// Reset workflow
+function resetWorkflow() {
+    currentStep = 1;
+    capturedPhotos = [];
+    currentPhotoData = null;
+    
+    document.getElementById('analyzeSection').style.display = 'none';
+    document.getElementById('photoWorkflow').style.display = 'block';
+    document.getElementById('results').style.display = 'none';
+    
+    updateWorkflowStep();
+    updateProgress();
+}
+
+// Show consent section
+function showConsentSection() {
+    document.getElementById('consentSection').style.display = 'block';
+}
+
+// Hide consent section
+function hideConsentSection() {
+    document.getElementById('consentSection').style.display = 'none';
+}
+
+// Language toggle functionality
+function toggleLanguage() {
+    currentLanguage = currentLanguage === 'en' ? 'hi' : 'en';
+    localStorage.setItem('language', currentLanguage);
+    updateLanguage();
+}
+
+// Update language
+function updateLanguage() {
+    const t = translations[currentLanguage];
+    
+    // Update navigation
+    document.querySelector('a[href="#home"]').textContent = t.home;
+    document.querySelector('a[href="#upload"]').textContent = t.scans;
+    document.querySelector('a[href="#about"]').textContent = t.about;
+    document.querySelector('a[href="#contact"]').textContent = t.contact;
+    
+    // Update hero section
+    document.querySelector('.hero-title .highlight').textContent = t.title;
+    document.querySelector('.hero-description').textContent = t.description;
+    document.querySelector('.btn-primary').innerHTML = `<i class="fas fa-camera"></i> ${t.startScanning}`;
+    document.querySelector('.btn-secondary').innerHTML = `<i class="fas fa-info-circle"></i> ${t.howItWorks}`;
+    
+    // Update upload section
+    document.querySelector('#upload .section-header h2').textContent = t.uploadTitle;
+    document.querySelector('#upload .section-header p').textContent = t.uploadDesc;
+    
+    // Update language button
+    document.getElementById('currentLang').textContent = currentLanguage.toUpperCase();
+    
+    // Update document direction for RTL languages if needed
+    document.documentElement.setAttribute('lang', currentLanguage);
+    if (currentLanguage === 'hi') {
+        document.documentElement.style.fontFamily = "'Poppins', 'Noto Sans Devanagari', sans-serif";
+    } else {
+        document.documentElement.style.fontFamily = "'Poppins', sans-serif";
+    }
+}
+
+// Image compression for performance
+function compressImage(file, maxWidth = 800, quality = 0.8) {
+    return new Promise((resolve) => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const img = new Image();
+        
+        img.onload = () => {
+            // Calculate new dimensions
+            let { width, height } = img;
+            if (width > maxWidth) {
+                height = (height * maxWidth) / width;
+                width = maxWidth;
+            }
+            
+            canvas.width = width;
+            canvas.height = height;
+            
+            // Draw and compress
+            ctx.drawImage(img, 0, 0, width, height);
+            canvas.toBlob(resolve, 'image/jpeg', quality);
+        };
+        
+        img.src = URL.createObjectURL(file);
+    });
+}
+
+// Performance monitoring
+function logPerformance() {
+    if ('performance' in window) {
+        window.addEventListener('load', () => {
+            const perfData = performance.getEntriesByType('navigation')[0];
+            console.log('Page Load Time:', perfData.loadEventEnd - perfData.loadEventStart, 'ms');
+            console.log('DOM Content Loaded:', perfData.domContentLoadedEventEnd - perfData.domContentLoadedEventStart, 'ms');
+        });
+    }
+}
+
+// Initialize performance monitoring
+logPerformance();
