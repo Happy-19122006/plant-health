@@ -22,12 +22,23 @@ const translations = {
         startScanning: 'Start Scanning',
         howItWorks: 'How it Works',
         
+        // Workflow Steps
+        step1: 'Step 1',
+        step2: 'Step 2',
+        step3: 'Step 3',
+        takePhotos: 'Take 3 Photos',
+        aiAnalysis: 'AI Analysis',
+        getTreatment: 'Get Treatment',
+        
         // Upload
         uploadTitle: 'Smart Crop Disease Detection',
         uploadDesc: 'Take three photos for the most accurate diagnosis',
         closeupPhoto: 'Close-up Photo',
         fullPlantPhoto: 'Full Plant Photo',
         undersidePhoto: 'Underside Photo',
+        closeupDesc: 'Affected leaf, stem, or fruit',
+        fullPlantDesc: 'Entire plant structure',
+        undersideDesc: 'Lower surface where pests hide',
         takePhoto: 'Take Photo',
         uploadGallery: 'Upload from Gallery',
         goodLighting: 'Good lighting',
@@ -36,7 +47,93 @@ const translations = {
         retake: 'Retake',
         usePhoto: 'Use This Photo',
         analyze: 'Analyze Photos (30 seconds)',
-        analyzeNote: 'We\'ll analyze your photos and provide detailed disease diagnosis with treatment recommendations'
+        analyzeNote: 'We\'ll analyze your photos and provide detailed disease diagnosis with treatment recommendations',
+        consentText: 'I agree to terms and allow using my images for improving diagnosis model',
+        
+        // Results
+        resultsTitle: 'Disease Analysis Results',
+        resultsDesc: 'Detailed diagnosis with treatment recommendations',
+        confidence: 'Confidence',
+        detectedSymptoms: 'Detected Symptoms',
+        chemicalTreatment: 'Chemical Treatment',
+        organicTreatment: 'Organic Treatment',
+        preventiveCare: 'Preventive Care',
+        buyNow: 'Buy Now',
+        importantDisclaimers: 'Important Disclaimers',
+        disclaimer1: 'Check local pesticide rules before use.',
+        disclaimer2: 'Use the recommended dose only. Overuse may damage soil or crops.',
+        disclaimer3: 'Consult an agriculture expert if you are not sure.',
+        
+        // Feedback
+        feedbackTitle: 'Was this result helpful?',
+        feedbackYes: 'Yes, accurate',
+        feedbackNo: 'No, incorrect',
+        feedbackFormTitle: 'Help us improve - What was the correct disease?',
+        feedbackPlaceholder: 'Enter correct disease name',
+        submitFeedback: 'Submit',
+        
+        // Gallery
+        galleryTitle: 'Detection Gallery',
+        galleryDesc: 'Browse previously analyzed crop images and their results',
+        all: 'All',
+        healthy: 'Healthy',
+        diseased: 'Diseased',
+        tomato: 'Tomato',
+        potato: 'Potato',
+        
+        // About
+        aboutTitle: 'About CropGuard AI',
+        aboutDesc: 'CropGuard AI is an advanced machine learning system designed to help farmers and agricultural professionals quickly identify crop diseases through image analysis. Our AI model has been trained on thousands of crop images and can detect over 50 different plant diseases with remarkable accuracy.',
+        aiPowered: 'AI-Powered Detection',
+        aiPoweredDesc: 'Advanced machine learning algorithms for accurate disease identification',
+        instantResults: 'Instant Results',
+        instantResultsDesc: 'Get detection results and recommendations within seconds',
+        mobileFriendly: 'Mobile Friendly',
+        mobileFriendlyDesc: 'Works seamlessly on desktop, tablet, and mobile devices',
+        aiInAgriculture: 'AI in Agriculture',
+        
+        // Contact
+        contactTitle: 'Get in Touch',
+        contactDesc: 'Have questions or feedback? We\'d love to hear from you',
+        email: 'Email',
+        phone: 'Phone',
+        location: 'Location',
+        yourName: 'Your Name',
+        yourEmail: 'Your Email',
+        yourMessage: 'Your Message',
+        sendMessage: 'Send Message',
+        
+        // Footer
+        privacy: 'Privacy',
+        terms: 'Terms',
+        allRightsReserved: 'All rights reserved.',
+        
+        // Modals
+        howItWorksTitle: 'How CropGuard AI Works',
+        step1Title: '1. Take Three Photos',
+        step1Desc: 'Capture close-up of affected area, full plant view, and underside where pests hide. Our AI needs multiple angles for accurate diagnosis.',
+        step2Title: '2. AI Analysis',
+        step2Desc: 'Our advanced machine learning model analyzes your photos in ~30 seconds, comparing against thousands of disease patterns.',
+        step3Title: '3. Get Treatment',
+        step3Desc: 'Receive detailed treatment recommendations including chemical and organic options, with buy links for products available in India.',
+        privacyTitle: 'Privacy Policy & Terms',
+        howWeUsePhotos: 'How We Use Your Photos',
+        howWeUsePhotosDesc: 'Your uploaded photos are used solely for disease diagnosis. We may use anonymized data to improve our AI model accuracy.',
+        dataStorage: 'Data Storage',
+        dataStorageDesc: 'Photos are stored securely and deleted after 30 days unless you choose to save them in your gallery.',
+        modelAccuracy: 'Model Accuracy Information',
+        datasetSize: 'Dataset Size:',
+        testAccuracy: 'Test Accuracy:',
+        lastUpdate: 'Last Model Update:',
+        supportedDiseases: 'Supported Diseases:',
+        consent: 'Consent',
+        consentDesc: 'By using this service, you agree to our terms and allow us to use your images for improving our diagnosis model.',
+        agreeToPrivacy: 'I agree to the privacy policy and terms of service',
+        
+        // Stats
+        accuracy: 'Accuracy',
+        diseases: 'Diseases',
+        images: 'Images'
     },
     hi: {
         // Navigation
@@ -52,12 +149,23 @@ const translations = {
         startScanning: 'स्कैनिंग शुरू करें',
         howItWorks: 'यह कैसे काम करता है',
         
+        // Workflow Steps
+        step1: 'चरण 1',
+        step2: 'चरण 2',
+        step3: 'चरण 3',
+        takePhotos: '3 फोटो लें',
+        aiAnalysis: 'AI विश्लेषण',
+        getTreatment: 'उपचार प्राप्त करें',
+        
         // Upload
         uploadTitle: 'स्मार्ट फसल बीमारी पहचान',
         uploadDesc: 'सबसे सटीक निदान के लिए तीन फोटो लें',
         closeupPhoto: 'क्लोज-अप फोटो',
         fullPlantPhoto: 'पूरा पौधा फोटो',
         undersidePhoto: 'नीचे का फोटो',
+        closeupDesc: 'प्रभावित पत्ती, तना या फल',
+        fullPlantDesc: 'पूरी पौध संरचना',
+        undersideDesc: 'नीचे की सतह जहां कीट छुपते हैं',
         takePhoto: 'फोटो लें',
         uploadGallery: 'गैलरी से अपलोड',
         goodLighting: 'अच्छी रोशनी',
@@ -66,7 +174,93 @@ const translations = {
         retake: 'फिर से लें',
         usePhoto: 'इस फोटो का उपयोग करें',
         analyze: 'फोटो का विश्लेषण करें (30 सेकंड)',
-        analyzeNote: 'हम आपके फोटो का विश्लेषण करेंगे और विस्तृत बीमारी निदान और उपचार सिफारिशें प्रदान करेंगे'
+        analyzeNote: 'हम आपके फोटो का विश्लेषण करेंगे और विस्तृत बीमारी निदान और उपचार सिफारिशें प्रदान करेंगे',
+        consentText: 'मैं नियमों से सहमत हूं और निदान मॉडल में सुधार के लिए अपनी छवियों के उपयोग की अनुमति देता हूं',
+        
+        // Results
+        resultsTitle: 'बीमारी विश्लेषण परिणाम',
+        resultsDesc: 'विस्तृत निदान और उपचार सिफारिशों के साथ',
+        confidence: 'विश्वसनीयता',
+        detectedSymptoms: 'पाए गए लक्षण',
+        chemicalTreatment: 'रासायनिक उपचार',
+        organicTreatment: 'जैविक उपचार',
+        preventiveCare: 'निवारक देखभाल',
+        buyNow: 'अभी खरीदें',
+        importantDisclaimers: 'महत्वपूर्ण अस्वीकरण',
+        disclaimer1: 'उपयोग से पहले स्थानीय कीटनाशक नियमों की जांच करें।',
+        disclaimer2: 'केवल अनुशंसित खुराक का उपयोग करें। अधिक उपयोग मिट्टी या फसलों को नुकसान पहुंचा सकता है।',
+        disclaimer3: 'यदि आप निश्चित नहीं हैं तो कृषि विशेषज्ञ से सलाह लें।',
+        
+        // Feedback
+        feedbackTitle: 'क्या यह परिणाम सहायक था?',
+        feedbackYes: 'हां, सटीक',
+        feedbackNo: 'नहीं, गलत',
+        feedbackFormTitle: 'हमें बेहतर बनाने में मदद करें - सही बीमारी क्या थी?',
+        feedbackPlaceholder: 'सही बीमारी का नाम दर्ज करें',
+        submitFeedback: 'जमा करें',
+        
+        // Gallery
+        galleryTitle: 'पहचान गैलरी',
+        galleryDesc: 'पहले विश्लेषित फसल छवियों और उनके परिणामों को ब्राउज़ करें',
+        all: 'सभी',
+        healthy: 'स्वस्थ',
+        diseased: 'बीमार',
+        tomato: 'टमाटर',
+        potato: 'आलू',
+        
+        // About
+        aboutTitle: 'CropGuard AI के बारे में',
+        aboutDesc: 'CropGuard AI एक उन्नत मशीन लर्निंग सिस्टम है जो किसानों और कृषि पेशेवरों को छवि विश्लेषण के माध्यम से फसल रोगों की तुरंत पहचान करने में मदद करने के लिए डिज़ाइन किया गया है। हमारे AI मॉडल को हजारों फसल छवियों पर प्रशिक्षित किया गया है और यह 50 से अधिक विभिन्न पौध रोगों का उल्लेखनीय सटीकता के साथ पता लगा सकता है।',
+        aiPowered: 'AI-संचालित पहचान',
+        aiPoweredDesc: 'सटीक रोग पहचान के लिए उन्नत मशीन लर्निंग एल्गोरिदम',
+        instantResults: 'तुरंत परिणाम',
+        instantResultsDesc: 'सेकंडों में पहचान परिणाम और सिफारिशें प्राप्त करें',
+        mobileFriendly: 'मोबाइल अनुकूल',
+        mobileFriendlyDesc: 'डेस्कटॉप, टैबलेट और मोबाइल डिवाइस पर निर्बाध रूप से काम करता है',
+        aiInAgriculture: 'कृषि में AI',
+        
+        // Contact
+        contactTitle: 'संपर्क करें',
+        contactDesc: 'प्रश्न या प्रतिक्रिया है? हम आपसे सुनना पसंद करेंगे',
+        email: 'ईमेल',
+        phone: 'फोन',
+        location: 'स्थान',
+        yourName: 'आपका नाम',
+        yourEmail: 'आपका ईमेल',
+        yourMessage: 'आपका संदेश',
+        sendMessage: 'संदेश भेजें',
+        
+        // Footer
+        privacy: 'गोपनीयता',
+        terms: 'नियम',
+        allRightsReserved: 'सभी अधिकार सुरक्षित।',
+        
+        // Modals
+        howItWorksTitle: 'CropGuard AI कैसे काम करता है',
+        step1Title: '1. तीन फोटो लें',
+        step1Desc: 'प्रभावित क्षेत्र का क्लोज-अप, पूरे पौधे का दृश्य और नीचे की सतह कैप्चर करें जहां कीट छुपते हैं। हमारे AI को सटीक निदान के लिए कई कोणों की आवश्यकता है।',
+        step2Title: '2. AI विश्लेषण',
+        step2Desc: 'हमारा उन्नत मशीन लर्निंग मॉडल आपके फोटो का ~30 सेकंड में विश्लेषण करता है, हजारों रोग पैटर्न के खिलाफ तुलना करता है।',
+        step3Title: '3. उपचार प्राप्त करें',
+        step3Desc: 'रासायनिक और जैविक विकल्पों सहित विस्तृत उपचार सिफारिशें प्राप्त करें, भारत में उपलब्ध उत्पादों के लिए खरीद लिंक के साथ।',
+        privacyTitle: 'गोपनीयता नीति और नियम',
+        howWeUsePhotos: 'हम आपके फोटो का उपयोग कैसे करते हैं',
+        howWeUsePhotosDesc: 'आपके अपलोड किए गए फोटो का उपयोग केवल रोग निदान के लिए किया जाता है। हम अपने AI मॉडल की सटीकता में सुधार के लिए गुमनाम डेटा का उपयोग कर सकते हैं।',
+        dataStorage: 'डेटा भंडारण',
+        dataStorageDesc: 'फोटो सुरक्षित रूप से संग्रहीत किए जाते हैं और 30 दिनों के बाद हटा दिए जाते हैं जब तक कि आप उन्हें अपनी गैलरी में सहेजना न चुनें।',
+        modelAccuracy: 'मॉडल सटीकता जानकारी',
+        datasetSize: 'डेटासेट आकार:',
+        testAccuracy: 'परीक्षण सटीकता:',
+        lastUpdate: 'अंतिम मॉडल अपडेट:',
+        supportedDiseases: 'समर्थित रोग:',
+        consent: 'सहमति',
+        consentDesc: 'इस सेवा का उपयोग करके, आप हमारे नियमों से सहमत होते हैं और हमें अपने निदान मॉडल में सुधार के लिए अपनी छवियों का उपयोग करने की अनुमति देते हैं।',
+        agreeToPrivacy: 'मैं गोपनीयता नीति और सेवा की शर्तों से सहमत हूं',
+        
+        // Stats
+        accuracy: 'सटीकता',
+        diseases: 'रोग',
+        images: 'छवियां'
     }
 };
 
@@ -534,7 +728,10 @@ function setupContactForm() {
         
         setTimeout(() => {
             hideLoadingSpinner();
-            alert('Thank you for your message! We\'ll get back to you soon.');
+            const message = currentLanguage === 'hi' 
+                ? 'आपके संदेश के लिए धन्यवाद! हम जल्द ही आपसे संपर्क करेंगे।'
+                : 'Thank you for your message! We\'ll get back to you soon.';
+            alert(message);
             contactForm.reset();
         }, 1500);
     });
@@ -598,6 +795,12 @@ function scrollToSection(sectionId) {
 
 function showLoadingSpinner() {
     const spinner = document.getElementById('loadingSpinner');
+    const spinnerText = spinner.querySelector('p');
+    if (spinnerText) {
+        spinnerText.textContent = currentLanguage === 'hi' 
+            ? 'आपकी फसल छवि का विश्लेषण...'
+            : 'Analyzing your crop image...';
+    }
     spinner.classList.add('show');
 }
 
@@ -785,12 +988,9 @@ function confirmPhoto() {
 // Update workflow step
 function updateWorkflowStep() {
     const steps = document.querySelectorAll('.step');
-    const titles = ['Take Close-up Photo', 'Take Full Plant Photo', 'Take Underside Photo'];
-    const descriptions = [
-        'Focus on the affected part of the plant',
-        'Capture the entire plant structure',
-        'Show the lower surface where pests hide'
-    ];
+    const t = translations[currentLanguage];
+    const titles = [t.closeupPhoto, t.fullPlantPhoto, t.undersidePhoto];
+    const descriptions = [t.closeupDesc, t.fullPlantDesc, t.undersideDesc];
     
     steps.forEach((step, index) => {
         step.classList.remove('active');
@@ -810,7 +1010,9 @@ function updateProgress() {
     
     const progress = (capturedPhotos.length / 3) * 100;
     progressFill.style.width = progress + '%';
-    progressText.textContent = `Photo ${capturedPhotos.length} of 3`;
+    progressText.textContent = currentLanguage === 'hi' 
+        ? `फोटो ${capturedPhotos.length} में से 3` 
+        : `Photo ${capturedPhotos.length} of 3`;
 }
 
 // Show analyze button
@@ -998,6 +1200,7 @@ function generateEnhancedPrediction() {
 function showResults(prediction) {
     const resultsSection = document.getElementById('results');
     const resultsContent = document.getElementById('resultsContent');
+    const t = translations[currentLanguage];
     
     resultsContent.innerHTML = `
         <div class="result-card">
@@ -1007,7 +1210,7 @@ function showResults(prediction) {
                     <div class="disease-scientific">${prediction.scientific}</div>
                 </div>
                 <div class="confidence-badge">
-                    ${Math.round(prediction.confidence * 100)}% Confidence
+                    ${Math.round(prediction.confidence * 100)}% ${t.confidence}
                 </div>
             </div>
             
@@ -1016,7 +1219,7 @@ function showResults(prediction) {
             </div>
             
             <div class="symptoms-list">
-                <h3>Detected Symptoms</h3>
+                <h3>${t.detectedSymptoms}</h3>
                 <ul>
                     ${prediction.symptoms.map(symptom => `<li>${symptom}</li>`).join('')}
                 </ul>
@@ -1025,14 +1228,14 @@ function showResults(prediction) {
             ${prediction.treatments.chemical || prediction.treatments.organic || prediction.treatments.preventive ? `
             <div class="treatment-section">
                 <div class="treatment-tabs">
-                    ${prediction.treatments.chemical ? '<button class="treatment-tab active" data-tab="chemical">Chemical Treatment</button>' : ''}
-                    ${prediction.treatments.organic ? '<button class="treatment-tab" data-tab="organic">Organic Treatment</button>' : ''}
-                    ${prediction.treatments.preventive ? '<button class="treatment-tab active" data-tab="preventive">Preventive Care</button>' : ''}
+                    ${prediction.treatments.chemical ? `<button class="treatment-tab active" data-tab="chemical">${t.chemicalTreatment}</button>` : ''}
+                    ${prediction.treatments.organic ? `<button class="treatment-tab" data-tab="organic">${t.organicTreatment}</button>` : ''}
+                    ${prediction.treatments.preventive ? `<button class="treatment-tab active" data-tab="preventive">${t.preventiveCare}</button>` : ''}
                 </div>
                 
                 ${prediction.treatments.chemical ? `
                 <div class="treatment-content active" id="chemical-treatment">
-                    <h3>a) Chemical Treatment:</h3>
+                    <h3>a) ${t.chemicalTreatment}:</h3>
                     ${prediction.treatments.chemical.map(treatment => `
                         <div class="treatment-item">
                             <h4>${treatment.name}</h4>
@@ -1044,7 +1247,7 @@ function showResults(prediction) {
                                 <p><strong>Safety Instructions:</strong> ${treatment.safety}</p>
                             </div>
                             <div class="buy-links">
-                                <h5>Buy Now:</h5>
+                                <h5>${t.buyNow}:</h5>
                                 ${treatment.buyLinks.map(link => `
                                     <a href="${link.url}" class="buy-link" target="_blank">
                                         <span class="buy-platform">${link.name}</span>
@@ -1060,7 +1263,7 @@ function showResults(prediction) {
                 
                 ${prediction.treatments.organic ? `
                 <div class="treatment-content" id="organic-treatment">
-                    <h3>b) Organic/Non-chemical Treatment:</h3>
+                    <h3>b) ${t.organicTreatment}:</h3>
                     ${prediction.treatments.organic.map(treatment => `
                         <div class="treatment-item">
                             <h4>${treatment.name}</h4>
@@ -1072,7 +1275,7 @@ function showResults(prediction) {
                                 <p><strong>Safety:</strong> ${treatment.safety}</p>
                             </div>
                             <div class="buy-links">
-                                <h5>Buy Now:</h5>
+                                <h5>${t.buyNow}:</h5>
                                 ${treatment.buyLinks.map(link => `
                                     <a href="${link.url}" class="buy-link" target="_blank">
                                         <span class="buy-platform">${link.name}</span>
@@ -1101,11 +1304,11 @@ function showResults(prediction) {
             ` : ''}
             
             <div class="disclaimer">
-                <h4>⚠️ Important Disclaimers:</h4>
+                <h4>⚠️ ${t.importantDisclaimers}:</h4>
                 <ul>
-                    <li><strong>Check local pesticide rules before use.</strong></li>
-                    <li><strong>Use the recommended dose only. Overuse may damage soil or crops.</strong></li>
-                    <li><strong>Consult an agriculture expert if you are not sure.</strong></li>
+                    <li><strong>${t.disclaimer1}</strong></li>
+                    <li><strong>${t.disclaimer2}</strong></li>
+                    <li><strong>${t.disclaimer3}</strong></li>
                 </ul>
             </div>
         </div>
@@ -1153,6 +1356,47 @@ function setupModals() {
     const privacyModal = document.getElementById('privacyModal');
     const closePrivacy = document.getElementById('closePrivacy');
     
+    // Update privacy modal content
+    const t = translations[currentLanguage];
+    const privacyHeader = privacyModal.querySelector('.modal-header h2');
+    const privacyContent = privacyModal.querySelector('.privacy-content');
+    
+    if (privacyHeader) privacyHeader.textContent = t.privacyTitle;
+    
+    if (privacyContent) {
+        const headings = privacyContent.querySelectorAll('h3');
+        const paragraphs = privacyContent.querySelectorAll('p');
+        const accuracyInfo = privacyContent.querySelector('.accuracy-info');
+        const consentCheckbox = privacyContent.querySelector('.privacy-checkbox label');
+        
+        if (headings.length >= 4) {
+            headings[0].textContent = t.howWeUsePhotos;
+            headings[1].textContent = t.dataStorage;
+            headings[2].textContent = t.modelAccuracy;
+            headings[3].textContent = t.consent;
+        }
+        
+        if (paragraphs.length >= 4) {
+            paragraphs[0].textContent = t.howWeUsePhotosDesc;
+            paragraphs[1].textContent = t.dataStorageDesc;
+            paragraphs[3].textContent = t.consentDesc;
+        }
+        
+        if (accuracyInfo) {
+            const accuracyParagraphs = accuracyInfo.querySelectorAll('p');
+            if (accuracyParagraphs.length >= 4) {
+                accuracyParagraphs[0].innerHTML = `<strong>${t.datasetSize}</strong> 50,000+ verified crop images`;
+                accuracyParagraphs[1].innerHTML = `<strong>${t.testAccuracy}</strong> 99.2% on validation set`;
+                accuracyParagraphs[2].innerHTML = `<strong>${t.lastUpdate}</strong> December 2024`;
+                accuracyParagraphs[3].innerHTML = `<strong>${t.supportedDiseases}</strong> 50+ common crop diseases`;
+            }
+        }
+        
+        if (consentCheckbox) {
+            consentCheckbox.textContent = t.agreeToPrivacy;
+        }
+    }
+    
     closePrivacy.addEventListener('click', () => {
         privacyModal.classList.remove('show');
     });
@@ -1169,7 +1413,27 @@ function setupModals() {
 
 // Show how it works modal
 function showHowItWorks() {
-    document.getElementById('howItWorksModal').classList.add('show');
+    const modal = document.getElementById('howItWorksModal');
+    const t = translations[currentLanguage];
+    
+    // Update modal content
+    const modalHeader = modal.querySelector('.modal-header h2');
+    const stepTitles = modal.querySelectorAll('.step-details h3');
+    const stepDescs = modal.querySelectorAll('.step-details p');
+    
+    if (modalHeader) modalHeader.textContent = t.howItWorksTitle;
+    if (stepTitles.length >= 3) {
+        stepTitles[0].textContent = t.step1Title;
+        stepTitles[1].textContent = t.step2Title;
+        stepTitles[2].textContent = t.step3Title;
+    }
+    if (stepDescs.length >= 3) {
+        stepDescs[0].textContent = t.step1Desc;
+        stepDescs[1].textContent = t.step2Desc;
+        stepDescs[2].textContent = t.step3Desc;
+    }
+    
+    modal.classList.add('show');
 }
 
 // Feedback system
@@ -1178,6 +1442,22 @@ function setupFeedbackSystem() {
     const feedbackNo = document.getElementById('feedbackNo');
     const feedbackForm = document.getElementById('feedbackForm');
     const submitFeedback = document.getElementById('submitFeedback');
+    
+    // Update feedback elements with current language
+    const t = translations[currentLanguage];
+    if (feedbackYes) feedbackYes.innerHTML = `<i class="fas fa-thumbs-up"></i> ${t.feedbackYes}`;
+    if (feedbackNo) feedbackNo.innerHTML = `<i class="fas fa-thumbs-down"></i> ${t.feedbackNo}`;
+    
+    const feedbackTitle = document.querySelector('.feedback-section h3');
+    if (feedbackTitle) feedbackTitle.textContent = t.feedbackTitle;
+    
+    const feedbackFormTitle = document.querySelector('.feedback-form h4');
+    if (feedbackFormTitle) feedbackFormTitle.textContent = t.feedbackFormTitle;
+    
+    const feedbackInput = document.getElementById('correctDisease');
+    if (feedbackInput) feedbackInput.placeholder = t.feedbackPlaceholder;
+    
+    if (submitFeedback) submitFeedback.innerHTML = `<i class="fas fa-paper-plane"></i> ${t.submitFeedback}`;
     
     feedbackYes.addEventListener('click', () => {
         // Store positive feedback
@@ -1219,11 +1499,12 @@ function storeFeedback(isAccurate, correctDisease = null) {
 // Show feedback thank you
 function showFeedbackThankYou() {
     const feedbackSection = document.querySelector('.feedback-section');
+    const t = translations[currentLanguage];
     feedbackSection.innerHTML = `
         <div style="text-align: center; padding: 40px;">
             <i class="fas fa-check-circle" style="font-size: 3rem; color: #27ae60; margin-bottom: 20px;"></i>
-            <h3 style="color: var(--primary-green); margin-bottom: 15px;">Thank you for your feedback!</h3>
-            <p style="color: var(--text-light);">Your input helps us improve our AI model accuracy.</p>
+            <h3 style="color: var(--primary-green); margin-bottom: 15px;">${currentLanguage === 'hi' ? 'आपकी प्रतिक्रिया के लिए धन्यवाद!' : 'Thank you for your feedback!'}</h3>
+            <p style="color: var(--text-light);">${currentLanguage === 'hi' ? 'आपका इनपुट हमारे AI मॉडल की सटीकता में सुधार करने में मदद करता है।' : 'Your input helps us improve our AI model accuracy.'}</p>
         </div>
     `;
 }
@@ -1275,12 +1556,220 @@ function updateLanguage() {
     document.querySelector('.btn-primary').innerHTML = `<i class="fas fa-camera"></i> ${t.startScanning}`;
     document.querySelector('.btn-secondary').innerHTML = `<i class="fas fa-info-circle"></i> ${t.howItWorks}`;
     
+    // Update hero workflow steps
+    const workflowSteps = document.querySelectorAll('.workflow-text h4');
+    const workflowTexts = document.querySelectorAll('.workflow-text p');
+    if (workflowSteps.length >= 3) {
+        workflowSteps[0].textContent = t.step1;
+        workflowSteps[1].textContent = t.step2;
+        workflowSteps[2].textContent = t.step3;
+        workflowTexts[0].textContent = t.takePhotos;
+        workflowTexts[1].textContent = t.aiAnalysis;
+        workflowTexts[2].textContent = t.getTreatment;
+    }
+    
     // Update upload section
     document.querySelector('#upload .section-header h2').textContent = t.uploadTitle;
     document.querySelector('#upload .section-header p').textContent = t.uploadDesc;
     
+    // Update workflow steps in upload section
+    const uploadSteps = document.querySelectorAll('.step');
+    if (uploadSteps.length >= 3) {
+        uploadSteps[0].querySelector('.step-title').textContent = t.closeupPhoto;
+        uploadSteps[1].querySelector('.step-title').textContent = t.fullPlantPhoto;
+        uploadSteps[2].querySelector('.step-title').textContent = t.undersidePhoto;
+        uploadSteps[0].querySelector('.step-desc').textContent = t.closeupDesc;
+        uploadSteps[1].querySelector('.step-desc').textContent = t.fullPlantDesc;
+        uploadSteps[2].querySelector('.step-desc').textContent = t.undersideDesc;
+    }
+    
+    // Update photo capture interface
+    const takePhotoBtn = document.getElementById('takePhotoBtn');
+    const uploadGalleryBtn = document.getElementById('uploadGalleryBtn');
+    const retakeBtn = document.getElementById('retakeBtn');
+    const confirmBtn = document.getElementById('confirmBtn');
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    
+    if (takePhotoBtn) takePhotoBtn.innerHTML = `<i class="fas fa-camera"></i> ${t.takePhoto}`;
+    if (uploadGalleryBtn) uploadGalleryBtn.innerHTML = `<i class="fas fa-images"></i> ${t.uploadGallery}`;
+    if (retakeBtn) retakeBtn.innerHTML = `<i class="fas fa-redo"></i> ${t.retake}`;
+    if (confirmBtn) confirmBtn.innerHTML = `<i class="fas fa-check"></i> ${t.usePhoto}`;
+    if (analyzeBtn) analyzeBtn.innerHTML = `<i class="fas fa-search"></i> ${t.analyze}`;
+    
+    // Update camera guide
+    const guideItems = document.querySelectorAll('.guide-item span');
+    if (guideItems.length >= 3) {
+        guideItems[0].textContent = t.goodLighting;
+        guideItems[1].textContent = t.keepSteady;
+        guideItems[2].textContent = t.tapToFocus;
+    }
+    
+    // Update consent text
+    const consentCheckbox = document.getElementById('uploadConsent');
+    if (consentCheckbox && consentCheckbox.nextElementSibling) {
+        consentCheckbox.nextElementSibling.textContent = t.consentText;
+    }
+    
+    // Update analyze note
+    const analyzeNote = document.querySelector('.analyze-note');
+    if (analyzeNote) analyzeNote.textContent = t.analyzeNote;
+    
+    // Update results section
+    const resultsHeader = document.querySelector('#results .results-header h2');
+    const resultsDesc = document.querySelector('#results .results-header p');
+    if (resultsHeader) resultsHeader.textContent = t.resultsTitle;
+    if (resultsDesc) resultsDesc.textContent = t.resultsDesc;
+    
+    // Update gallery section
+    const galleryHeader = document.querySelector('#gallery .section-header h2');
+    const galleryDesc = document.querySelector('#gallery .section-header p');
+    if (galleryHeader) galleryHeader.textContent = t.galleryTitle;
+    if (galleryDesc) galleryDesc.textContent = t.galleryDesc;
+    
+    // Update gallery filters
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const filterTexts = [t.all, t.healthy, t.diseased, t.tomato, t.potato];
+    filterBtns.forEach((btn, index) => {
+        if (index < filterTexts.length) {
+            btn.textContent = filterTexts[index];
+        }
+    });
+    
+    // Update about section
+    const aboutHeader = document.querySelector('#about .about-text h2');
+    const aboutDesc = document.querySelector('#about .about-text p');
+    const aboutImageText = document.querySelector('.image-placeholder p');
+    if (aboutHeader) aboutHeader.textContent = t.aboutTitle;
+    if (aboutDesc) aboutDesc.textContent = t.aboutDesc;
+    if (aboutImageText) aboutImageText.textContent = t.aiInAgriculture;
+    
+    // Update about features
+    const features = document.querySelectorAll('.feature h4');
+    const featureDescs = document.querySelectorAll('.feature p');
+    if (features.length >= 3) {
+        features[0].textContent = t.aiPowered;
+        features[1].textContent = t.instantResults;
+        features[2].textContent = t.mobileFriendly;
+        featureDescs[0].textContent = t.aiPoweredDesc;
+        featureDescs[1].textContent = t.instantResultsDesc;
+        featureDescs[2].textContent = t.mobileFriendlyDesc;
+    }
+    
+    // Update contact section
+    const contactHeader = document.querySelector('#contact .section-header h2');
+    const contactDesc = document.querySelector('#contact .section-header p');
+    if (contactHeader) contactHeader.textContent = t.contactTitle;
+    if (contactDesc) contactDesc.textContent = t.contactDesc;
+    
+    // Update contact form
+    const contactInputs = document.querySelectorAll('.contact-form input, .contact-form textarea');
+    const contactLabels = [t.yourName, t.yourEmail, t.yourMessage];
+    contactInputs.forEach((input, index) => {
+        if (index < contactLabels.length) {
+            input.placeholder = contactLabels[index];
+        }
+    });
+    
+    const sendBtn = document.querySelector('.contact-form .btn-primary');
+    if (sendBtn) sendBtn.innerHTML = `<i class="fas fa-paper-plane"></i> ${t.sendMessage}`;
+    
+    // Update contact info
+    const contactItems = document.querySelectorAll('.contact-item h4');
+    const contactLabels2 = [t.email, t.phone, t.location];
+    contactItems.forEach((item, index) => {
+        if (index < contactLabels2.length) {
+            item.textContent = contactLabels2[index];
+        }
+    });
+    
+    // Update footer
+    const footerLinks = document.querySelectorAll('.footer-links a');
+    const footerTexts = [t.home, t.about, t.contact, t.privacy, t.terms];
+    footerLinks.forEach((link, index) => {
+        if (index < footerTexts.length) {
+            link.textContent = footerTexts[index];
+        }
+    });
+    
+    const footerBottom = document.querySelector('.footer-bottom p');
+    if (footerBottom) {
+        footerBottom.innerHTML = `&copy; 2024 CropGuard AI. ${t.allRightsReserved}`;
+    }
+    
+    // Update stats
+    const statLabels = document.querySelectorAll('.stat-label');
+    const statTexts = [t.accuracy, t.diseases, t.images];
+    statLabels.forEach((label, index) => {
+        if (index < statTexts.length) {
+            label.textContent = statTexts[index];
+        }
+    });
+    
     // Update language button
     document.getElementById('currentLang').textContent = currentLanguage.toUpperCase();
+    
+    // Update modal content
+    const howItWorksModal = document.getElementById('howItWorksModal');
+    const privacyModal = document.getElementById('privacyModal');
+    
+    if (howItWorksModal) {
+        const modalHeader = howItWorksModal.querySelector('.modal-header h2');
+        const stepTitles = howItWorksModal.querySelectorAll('.step-details h3');
+        const stepDescs = howItWorksModal.querySelectorAll('.step-details p');
+        
+        if (modalHeader) modalHeader.textContent = t.howItWorksTitle;
+        if (stepTitles.length >= 3) {
+            stepTitles[0].textContent = t.step1Title;
+            stepTitles[1].textContent = t.step2Title;
+            stepTitles[2].textContent = t.step3Title;
+        }
+        if (stepDescs.length >= 3) {
+            stepDescs[0].textContent = t.step1Desc;
+            stepDescs[1].textContent = t.step2Desc;
+            stepDescs[2].textContent = t.step3Desc;
+        }
+    }
+    
+    if (privacyModal) {
+        const privacyHeader = privacyModal.querySelector('.modal-header h2');
+        const privacyContent = privacyModal.querySelector('.privacy-content');
+        
+        if (privacyHeader) privacyHeader.textContent = t.privacyTitle;
+        
+        if (privacyContent) {
+            const headings = privacyContent.querySelectorAll('h3');
+            const paragraphs = privacyContent.querySelectorAll('p');
+            const accuracyInfo = privacyContent.querySelector('.accuracy-info');
+            const consentCheckbox = privacyContent.querySelector('.privacy-checkbox label');
+            
+            if (headings.length >= 4) {
+                headings[0].textContent = t.howWeUsePhotos;
+                headings[1].textContent = t.dataStorage;
+                headings[2].textContent = t.modelAccuracy;
+                headings[3].textContent = t.consent;
+            }
+            
+            if (paragraphs.length >= 4) {
+                paragraphs[0].textContent = t.howWeUsePhotosDesc;
+                paragraphs[1].textContent = t.dataStorageDesc;
+                paragraphs[3].textContent = t.consentDesc;
+            }
+            
+            if (accuracyInfo) {
+                const accuracyParagraphs = accuracyInfo.querySelectorAll('p');
+                if (accuracyParagraphs.length >= 4) {
+                    accuracyParagraphs[0].innerHTML = `<strong>${t.datasetSize}</strong> 50,000+ verified crop images`;
+                    accuracyParagraphs[1].innerHTML = `<strong>${t.testAccuracy}</strong> 99.2% on validation set`;
+                    accuracyParagraphs[2].innerHTML = `<strong>${t.lastUpdate}</strong> December 2024`;
+                    accuracyParagraphs[3].innerHTML = `<strong>${t.supportedDiseases}</strong> 50+ common crop diseases`;
+                }
+            }
+            
+            if (consentCheckbox) {
+                consentCheckbox.textContent = t.agreeToPrivacy;
+            }
+        }
+    }
     
     // Update document direction for RTL languages if needed
     document.documentElement.setAttribute('lang', currentLanguage);
@@ -1336,7 +1825,10 @@ logPerformance();
 function checkConsent() {
     const consentCheckbox = document.getElementById('uploadConsent');
     if (!consentCheckbox.checked) {
-        alert('Please agree to the terms and conditions before uploading photos.');
+        const message = currentLanguage === 'hi' 
+            ? 'कृपया फोटो अपलोड करने से पहले नियमों और शर्तों से सहमत हों।'
+            : 'Please agree to the terms and conditions before uploading photos.';
+        alert(message);
         return false;
     }
     return true;
@@ -1407,33 +1899,35 @@ async function checkImageQuality(imageUrl) {
                 if (quality.isTooDark || quality.isTooBright) {
                     icon.className = 'fas fa-exclamation-triangle quality-warning';
                     icon.style.color = '#f39c12';
-                    span.textContent = quality.isTooDark ? 'Too dark - improve lighting' : 'Too bright - avoid direct sun';
+                    span.textContent = quality.isTooDark 
+                        ? (currentLanguage === 'hi' ? 'बहुत अंधेरा - रोशनी बेहतर करें' : 'Too dark - improve lighting')
+                        : (currentLanguage === 'hi' ? 'बहुत उज्ज्वल - सीधी धूप से बचें' : 'Too bright - avoid direct sun');
                 } else {
                     icon.className = 'fas fa-check-circle quality-good';
                     icon.style.color = '#27ae60';
-                    span.textContent = 'Good lighting';
+                    span.textContent = currentLanguage === 'hi' ? 'अच्छी रोशनी' : 'Good lighting';
                 }
             } else if (index === 1) {
                 // Focus check
                 if (quality.isBlurry) {
                     icon.className = 'fas fa-exclamation-triangle quality-warning';
                     icon.style.color = '#f39c12';
-                    span.textContent = 'Image is blurry - retake photo';
+                    span.textContent = currentLanguage === 'hi' ? 'छवि धुंधली है - फोटो फिर से लें' : 'Image is blurry - retake photo';
                 } else {
                     icon.className = 'fas fa-check-circle quality-good';
                     icon.style.color = '#27ae60';
-                    span.textContent = 'Sharp focus';
+                    span.textContent = currentLanguage === 'hi' ? 'तेज फोकस' : 'Sharp focus';
                 }
             } else if (index === 2) {
                 // Background check
                 if (quality.quality === 'poor') {
                     icon.className = 'fas fa-exclamation-triangle quality-warning';
                     icon.style.color = '#f39c12';
-                    span.textContent = 'Background too noisy - Retake photo';
+                    span.textContent = currentLanguage === 'hi' ? 'पृष्ठभूमि बहुत शोर - फोटो फिर से लें' : 'Background too noisy - Retake photo';
                 } else {
                     icon.className = 'fas fa-check-circle quality-good';
                     icon.style.color = '#27ae60';
-                    span.textContent = 'Clean background';
+                    span.textContent = currentLanguage === 'hi' ? 'साफ पृष्ठभूमि' : 'Clean background';
                 }
             }
             item.style.display = 'flex';
@@ -1452,7 +1946,7 @@ async function checkImageQuality(imageUrl) {
                 } else {
                     icon.className = 'fas fa-exclamation-triangle quality-warning';
                     icon.style.color = '#f39c12';
-                    span.textContent = 'Background too noisy - Retake photo';
+                    span.textContent = currentLanguage === 'hi' ? 'पृष्ठभूमि बहुत शोर - फोटो फिर से लें' : 'Background too noisy - Retake photo';
                 }
                 item.style.display = 'flex';
             });
@@ -1489,23 +1983,29 @@ function analyzePhotos() {
     // Show progress indicator
     const progressContainer = document.createElement('div');
     progressContainer.className = 'analysis-progress';
+    const t = translations[currentLanguage];
+    const stepTexts = currentLanguage === 'hi' 
+        ? ['छवियां प्रसंस्करण', 'AI विश्लेषण', 'परिणाम उत्पन्न करना']
+        : ['Processing Images', 'AI Analysis', 'Generating Results'];
+    const secondsText = currentLanguage === 'hi' ? 'सेकंड' : 'seconds';
+    
     progressContainer.innerHTML = `
         <div class="progress-steps">
             <div class="step active" data-step="1">
                 <i class="fas fa-image"></i>
-                <span>Processing Images</span>
+                <span>${stepTexts[0]}</span>
             </div>
             <div class="step" data-step="2">
                 <i class="fas fa-brain"></i>
-                <span>AI Analysis</span>
+                <span>${stepTexts[1]}</span>
             </div>
             <div class="step" data-step="3">
                 <i class="fas fa-check"></i>
-                <span>Generating Results</span>
+                <span>${stepTexts[2]}</span>
             </div>
         </div>
         <div class="progress-timer">
-            <span id="timer">0</span> seconds
+            <span id="timer">0</span> ${secondsText}
         </div>
     `;
     
