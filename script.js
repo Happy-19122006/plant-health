@@ -266,10 +266,24 @@ const translations = {
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM Content Loaded, initializing app...');
     initializeApp();
     setupEventListeners();
     loadGallery();
     setTheme(currentTheme);
+    
+    // Ensure photo workflow is set up after a short delay
+    setTimeout(() => {
+        console.log('Setting up photo workflow after delay...');
+        setupPhotoWorkflow();
+        
+        // Test if elements exist
+        console.log('Testing photo workflow elements:');
+        console.log('takePhotoBtn:', document.getElementById('takePhotoBtn'));
+        console.log('uploadGalleryBtn:', document.getElementById('uploadGalleryBtn'));
+        console.log('cameraInput:', document.getElementById('cameraInput'));
+        console.log('fileInput:', document.getElementById('fileInput'));
+    }, 100);
 });
 
 // Initialize app
@@ -284,6 +298,8 @@ function initializeApp() {
 
 // Setup all event listeners
 function setupEventListeners() {
+    console.log('Setting up event listeners...');
+    
     // Navigation
     setupNavigation();
     
@@ -310,6 +326,8 @@ function setupEventListeners() {
     
     // Feedback system
     setupFeedbackSystem();
+    
+    console.log('All event listeners set up');
 }
 
 // Navigation functionality
@@ -846,63 +864,134 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// Photo Workflow Functionality
+// Photo Workflow Functionality - NEW VERSION
 function setupPhotoWorkflow() {
+    console.log('EMERGENCY FIX: Setting up photo workflow...');
+    
+    // Get buttons
     const takePhotoBtn = document.getElementById('takePhotoBtn');
     const uploadGalleryBtn = document.getElementById('uploadGalleryBtn');
-    const cameraInput = document.getElementById('cameraInput');
-    const fileInput = document.getElementById('fileInput');
     const retakeBtn = document.getElementById('retakeBtn');
     const confirmBtn = document.getElementById('confirmBtn');
     const analyzeBtn = document.getElementById('analyzeBtn');
+    const previewCloseBtn = document.getElementById('previewCloseBtn');
 
-    // Take photo button
-    takePhotoBtn.addEventListener('click', () => {
-        if (!checkConsent()) return;
-        cameraInput.click();
-    });
+    // Check if buttons exist
+    if (!takePhotoBtn) {
+        console.error('takePhotoBtn not found');
+        return;
+    }
+    if (!uploadGalleryBtn) {
+        console.error('uploadGalleryBtn not found');
+        return;
+    }
 
-    // Upload from gallery button
-    uploadGalleryBtn.addEventListener('click', () => {
-        if (!checkConsent()) return;
-        fileInput.click();
-    });
+    console.log('Buttons found, setting up SIMPLE event listeners');
 
-    // Camera input change
-    cameraInput.addEventListener('change', (e) => {
-        if (e.target.files.length > 0) {
-            handlePhotoCapture(e.target.files[0]);
+    // SIMPLE TAKE PHOTO BUTTON
+    takePhotoBtn.onclick = function(e) {
+        e.preventDefault();
+        console.log('TAKE PHOTO CLICKED');
+        
+        // Check consent
+        const consent = document.getElementById('uploadConsent');
+        if (!consent || !consent.checked) {
+            alert('Please check the consent box first!');
+            return;
         }
-    });
+        
+        // Show camera interface
+        showCameraInterface();
+    };
 
-    // File input change
-    fileInput.addEventListener('change', (e) => {
-        if (e.target.files.length > 0) {
-            handlePhotoCapture(e.target.files[0]);
+    // SIMPLE UPLOAD GALLERY BUTTON
+    uploadGalleryBtn.onclick = function(e) {
+        e.preventDefault();
+        console.log('UPLOAD GALLERY CLICKED');
+        
+        // Check consent
+        const consent = document.getElementById('uploadConsent');
+        if (!consent || !consent.checked) {
+            alert('Please check the consent box first!');
+            return;
         }
-    });
+        
+        // Create simple file input
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        
+        input.onchange = function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                console.log('Gallery photo selected:', file.name);
+                handlePhotoFile(file);
+            }
+        };
+        
+        input.click();
+    };
 
-    // Retake button
-    retakeBtn.addEventListener('click', () => {
-        document.getElementById('photoPreview').style.display = 'none';
-        document.getElementById('captureArea').style.display = 'block';
-    });
+    // Other buttons
+    if (retakeBtn) {
+        retakeBtn.onclick = function() {
+            console.log('Retake clicked');
+            hidePhotoPreview();
+        };
+    }
 
-    // Confirm button
-    confirmBtn.addEventListener('click', () => {
-        confirmPhoto();
-    });
+    if (confirmBtn) {
+        confirmBtn.onclick = function() {
+            console.log('Confirm clicked');
+            confirmPhoto();
+        };
+    }
 
-    // Analyze button
-    analyzeBtn.addEventListener('click', () => {
-        analyzePhotos();
-    });
+    if (analyzeBtn) {
+        analyzeBtn.onclick = function() {
+            console.log('Analyze clicked');
+            if (currentPhotoData) {
+                analyzePhotos();
+            }
+        };
+    }
+
+    if (previewCloseBtn) {
+        previewCloseBtn.onclick = function() {
+            console.log('Preview close clicked');
+            hidePhotoPreview();
+        };
+    }
+
+    console.log('EMERGENCY FIX: Photo workflow setup complete');
 }
 
-// Handle photo capture
-function handlePhotoCapture(file) {
+// SIMPLE Photo Processing Function
+function handlePhotoFile(file) {
+    console.log('Handling photo file:', file.name);
+    
+    if (!file) {
+        console.error('No file selected');
+        return;
+    }
+    
+    // Simple validation
+    if (!file.type.startsWith('image/')) {
+        console.error('Invalid file type');
+        return;
+    }
+    
+    if (file.size > 10 * 1024 * 1024) {
+        console.error('File too large');
+        return;
+    }
+    
+    // Read file
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = function(e) {
+        console.log('Photo loaded successfully');
+        
+        // Store photo data
         currentPhotoData = {
             file: file,
             url: e.target.result,
@@ -912,31 +1001,365 @@ function handlePhotoCapture(file) {
         // Show preview
         showPhotoPreview(e.target.result);
         
-        // Check image quality
+        // Check quality
         checkImageQuality(e.target.result);
     };
+    
+    reader.onerror = function() {
+        console.error('Error reading photo file');
+    };
+    
+    reader.readAsDataURL(file);
+}
+
+// GLOBAL FUNCTIONS FOR HTML ONCLICK (BACKUP METHOD)
+window.handleTakePhoto = function() {
+    console.log('GLOBAL: Take Photo clicked');
+    
+    // Check consent
+    const consent = document.getElementById('uploadConsent');
+    if (!consent || !consent.checked) {
+        alert('Please check the consent box first!');
+        return;
+    }
+    
+    // Show camera interface
+    showCameraInterface();
+}
+
+// Global variables for camera
+let currentStream = null;
+let cameraVideo = null;
+let cameraCanvas = null;
+let cameraContext = null;
+
+// Show camera interface
+function showCameraInterface() {
+    console.log('Showing camera interface');
+    
+    // Hide capture area
+    const captureArea = document.getElementById('captureArea');
+    if (captureArea) {
+        captureArea.style.display = 'none';
+    }
+    
+    // Create camera interface
+    const cameraInterface = document.createElement('div');
+    cameraInterface.id = 'cameraInterface';
+    cameraInterface.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: black;
+        z-index: 10000;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    `;
+    
+    // Create video element
+    cameraVideo = document.createElement('video');
+    cameraVideo.style.cssText = `
+        width: 100%;
+        height: 80%;
+        object-fit: cover;
+    `;
+    cameraVideo.autoplay = true;
+    cameraVideo.muted = true;
+    
+    // Create controls
+    const controls = document.createElement('div');
+    controls.style.cssText = `
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 20px;
+        align-items: center;
+    `;
+    
+    // Capture button
+    const captureBtn = document.createElement('button');
+    captureBtn.innerHTML = '📷';
+    captureBtn.style.cssText = `
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        border: 4px solid white;
+        background: white;
+        font-size: 30px;
+        cursor: pointer;
+    `;
+    captureBtn.onclick = capturePhoto;
+    
+    // Close button
+    const closeBtn = document.createElement('button');
+    closeBtn.innerHTML = '✕';
+    closeBtn.style.cssText = `
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        border: 2px solid white;
+        background: rgba(255,255,255,0.3);
+        color: white;
+        font-size: 20px;
+        cursor: pointer;
+    `;
+    closeBtn.onclick = closeCameraInterface;
+    
+    // Add elements
+    controls.appendChild(closeBtn);
+    controls.appendChild(captureBtn);
+    cameraInterface.appendChild(cameraVideo);
+    cameraInterface.appendChild(controls);
+    document.body.appendChild(cameraInterface);
+    
+    // Start camera
+    startCamera();
+}
+
+// Start camera
+function startCamera() {
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        navigator.mediaDevices.getUserMedia({ 
+            video: { 
+                facingMode: 'environment' // Back camera
+            } 
+        })
+        .then(function(stream) {
+            currentStream = stream;
+            cameraVideo.srcObject = stream;
+            console.log('Camera started successfully');
+        })
+        .catch(function(error) {
+            console.log('Camera access failed:', error);
+            alert('Camera access failed. Please try again.');
+            closeCameraInterface();
+        });
+    } else {
+        console.log('Camera not supported');
+        alert('Camera not supported on this device.');
+        closeCameraInterface();
+    }
+}
+
+// Capture photo
+function capturePhoto() {
+    console.log('Capturing photo');
+    
+    if (!cameraVideo || !currentStream) {
+        console.error('Camera not ready');
+        return;
+    }
+    
+    // Create canvas
+    cameraCanvas = document.createElement('canvas');
+    cameraContext = cameraCanvas.getContext('2d');
+    
+    // Set canvas size to video size
+    cameraCanvas.width = cameraVideo.videoWidth;
+    cameraCanvas.height = cameraVideo.videoHeight;
+    
+    // Draw video frame to canvas
+    cameraContext.drawImage(cameraVideo, 0, 0);
+    
+    // Convert to blob
+    cameraCanvas.toBlob(function(blob) {
+        // Stop camera
+        currentStream.getTracks().forEach(track => track.stop());
+        
+        // Create file
+        const file = new File([blob], 'camera-photo.jpg', { type: 'image/jpeg' });
+        console.log('Photo captured:', file.name);
+        
+        // Close camera interface
+        closeCameraInterface();
+        
+        // Process photo
+        handlePhotoFile(file);
+    }, 'image/jpeg', 0.8);
+}
+
+// Close camera interface
+function closeCameraInterface() {
+    console.log('Closing camera interface');
+    
+    // Stop camera stream
+    if (currentStream) {
+        currentStream.getTracks().forEach(track => track.stop());
+        currentStream = null;
+    }
+    
+    // Remove camera interface
+    const cameraInterface = document.getElementById('cameraInterface');
+    if (cameraInterface) {
+        document.body.removeChild(cameraInterface);
+    }
+    
+    // Show capture area
+    const captureArea = document.getElementById('captureArea');
+    if (captureArea) {
+        captureArea.style.display = 'block';
+    }
+    
+    // Reset variables
+    cameraVideo = null;
+    cameraCanvas = null;
+    cameraContext = null;
+}
+
+window.handleUploadGallery = function() {
+    console.log('GLOBAL: Upload Gallery clicked');
+    
+    // Check consent
+    const consent = document.getElementById('uploadConsent');
+    if (!consent || !consent.checked) {
+        alert('Please check the consent box first!');
+        return;
+    }
+    
+    // Create file input for gallery
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    
+    input.onchange = function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            console.log('GLOBAL: Gallery photo selected:', file.name);
+            handlePhotoFile(file);
+        }
+    };
+    
+    input.click();
+}
+
+// GLOBAL FUNCTIONS - Make them accessible from HTML onclick
+window.hidePhotoPreview = function() {
+    console.log('hidePhotoPreview function called');
+    
+    const photoPreview = document.getElementById('photoPreview');
+    const captureArea = document.getElementById('captureArea');
+    
+    console.log('Elements found:', {
+        photoPreview: !!photoPreview,
+        captureArea: !!captureArea
+    });
+    
+    if (photoPreview) {
+        photoPreview.style.display = 'none';
+        console.log('Photo preview hidden');
+    }
+    if (captureArea) {
+        captureArea.style.display = 'block';
+        console.log('Capture area shown');
+    }
+    
+    currentPhotoData = null; // Reset photo data
+    console.log('Photo preview hidden and data reset');
+}
+
+// Handle photo capture
+function handlePhotoCapture(file) {
+    if (!file) {
+        console.error('No file provided to handlePhotoCapture');
+        alert(currentLanguage === 'hi' ? 'कोई फोटो चयनित नहीं है' : 'No photo selected. Please try again.');
+        return;
+    }
+    
+    console.log('Handling photo capture for file:', file.name, file.type, 'Size:', file.size);
+    console.log('Current step:', currentStep);
+    
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+        console.error('Invalid file type:', file.type);
+        alert(currentLanguage === 'hi' ? 'कृपया एक वैध छवि फ़ाइल चुनें' : 'Please select a valid image file.');
+        return;
+    }
+    
+    // Validate file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+        console.error('File too large:', file.size);
+        alert(currentLanguage === 'hi' ? 'फ़ाइल बहुत बड़ी है। कृपया 10MB से छोटी छवि चुनें' : 'File size too large. Please select an image smaller than 10MB.');
+        return;
+    }
+    
+    console.log('File validation passed, reading file...');
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        try {
+            currentPhotoData = {
+                file: file,
+                url: e.target.result,
+                step: currentStep
+            };
+            
+            console.log('Photo captured successfully, showing preview');
+            console.log('Current photo data:', currentPhotoData);
+            
+            // Show preview
+            showPhotoPreview(e.target.result);
+            
+            // Check image quality
+            checkImageQuality(e.target.result);
+        } catch (error) {
+            console.error('Error processing photo:', error);
+            alert(currentLanguage === 'hi' ? 'फोटो प्रोसेस करने में त्रुटि हुई' : 'Error processing the photo. Please try again.');
+        }
+    };
+    
+    reader.onerror = (error) => {
+        console.error('Error reading file:', error);
+        alert(currentLanguage === 'hi' ? 'फोटो पढ़ने में त्रुटि हुई' : 'Error reading photo file');
+    };
+    
     reader.readAsDataURL(file);
 }
 
 // Show photo preview
 function showPhotoPreview(imageUrl) {
+    console.log('Showing photo preview');
+    
     const captureArea = document.getElementById('captureArea');
     const photoPreview = document.getElementById('photoPreview');
     const previewImage = document.getElementById('previewImage');
     
+    console.log('Preview elements check:', {
+        captureArea: !!captureArea,
+        photoPreview: !!photoPreview,
+        previewImage: !!previewImage
+    });
+    
+    if (!captureArea || !photoPreview || !previewImage) {
+        console.error('Preview elements not found');
+        return;
+    }
+    
     previewImage.src = imageUrl;
     captureArea.style.display = 'none';
     photoPreview.style.display = 'block';
+    
+    console.log('Photo preview displayed successfully');
+    console.log('Image URL set:', imageUrl);
 }
 
 // Check image quality
 function checkImageQuality(imageUrl) {
+    console.log('Checking image quality for:', imageUrl);
+    
     const qualityItems = document.querySelectorAll('.quality-item');
+    console.log('Quality items found:', qualityItems.length);
     
     // Simulate quality check (in real implementation, use image processing)
     setTimeout(() => {
         // Randomly show quality warnings for demo
         const isGoodQuality = Math.random() > 0.3; // 70% chance of good quality
+        console.log('Quality check result:', isGoodQuality);
         
         qualityItems.forEach((item, index) => {
             const icon = item.querySelector('i');
@@ -961,24 +1384,49 @@ function checkImageQuality(imageUrl) {
                 }
             }
         });
+        
+        console.log('Quality check completed');
     }, 1000);
 }
 
-// Confirm photo
-function confirmPhoto() {
+// Confirm photo - Make it global
+window.confirmPhoto = function() {
+    console.log('confirmPhoto function called');
+    console.log('Confirming photo for step:', currentStep);
+    
+    if (!currentPhotoData) {
+        console.error('No photo data to confirm');
+        alert('No photo data to confirm');
+        return;
+    }
+    
     capturedPhotos.push(currentPhotoData);
+    console.log('Photo confirmed, total photos:', capturedPhotos.length);
+    console.log('Captured photos array:', capturedPhotos);
     
     // Hide preview and reset
-    document.getElementById('photoPreview').style.display = 'none';
-    document.getElementById('captureArea').style.display = 'block';
+    const photoPreview = document.getElementById('photoPreview');
+    const captureArea = document.getElementById('captureArea');
+    
+    if (photoPreview) {
+        photoPreview.style.display = 'none';
+        console.log('Photo preview hidden');
+    }
+    
+    if (captureArea) {
+        captureArea.style.display = 'block';
+        console.log('Capture area shown');
+    }
     
     // Move to next step
     if (currentStep < 3) {
         currentStep++;
+        console.log('Moving to next step:', currentStep);
         updateWorkflowStep();
         updateProgress();
     } else {
         // All photos captured
+        console.log('All photos captured, showing analyze button');
         showAnalyzeButton();
     }
     
@@ -987,10 +1435,16 @@ function confirmPhoto() {
 
 // Update workflow step
 function updateWorkflowStep() {
+    console.log('Updating workflow step to:', currentStep);
+    
     const steps = document.querySelectorAll('.step');
     const t = translations[currentLanguage];
     const titles = [t.closeupPhoto, t.fullPlantPhoto, t.undersidePhoto];
     const descriptions = [t.closeupDesc, t.fullPlantDesc, t.undersideDesc];
+    
+    console.log('Found steps:', steps.length);
+    console.log('Titles:', titles);
+    console.log('Descriptions:', descriptions);
     
     steps.forEach((step, index) => {
         step.classList.remove('active');
@@ -999,8 +1453,18 @@ function updateWorkflowStep() {
         }
     });
     
-    document.getElementById('captureTitle').textContent = titles[currentStep - 1];
-    document.getElementById('captureDescription').textContent = descriptions[currentStep - 1];
+    const captureTitle = document.getElementById('captureTitle');
+    const captureDescription = document.getElementById('captureDescription');
+    
+    if (captureTitle) {
+        captureTitle.textContent = titles[currentStep - 1];
+        console.log('Updated capture title:', titles[currentStep - 1]);
+    }
+    
+    if (captureDescription) {
+        captureDescription.textContent = descriptions[currentStep - 1];
+        console.log('Updated capture description:', descriptions[currentStep - 1]);
+    }
 }
 
 // Update progress
@@ -1008,17 +1472,43 @@ function updateProgress() {
     const progressFill = document.getElementById('progressFill');
     const progressText = document.getElementById('progressText');
     
-    const progress = (capturedPhotos.length / 3) * 100;
-    progressFill.style.width = progress + '%';
-    progressText.textContent = currentLanguage === 'hi' 
-        ? `फोटो ${capturedPhotos.length} में से 3` 
-        : `Photo ${capturedPhotos.length} of 3`;
+    console.log('Updating progress, captured photos:', capturedPhotos.length);
+    
+    if (progressFill && progressText) {
+        const progress = (capturedPhotos.length / 3) * 100;
+        progressFill.style.width = progress + '%';
+        progressText.textContent = currentLanguage === 'hi' 
+            ? `फोटो ${capturedPhotos.length} में से 3` 
+            : `Photo ${capturedPhotos.length} of 3`;
+        console.log('Progress updated:', progress + '%');
+    } else {
+        console.error('Progress elements not found');
+    }
 }
 
 // Show analyze button
 function showAnalyzeButton() {
-    document.getElementById('analyzeSection').style.display = 'block';
-    document.getElementById('photoWorkflow').style.display = 'none';
+    console.log('Showing analyze button');
+    
+    const analyzeSection = document.getElementById('analyzeSection');
+    const photoWorkflow = document.getElementById('photoWorkflow');
+    
+    console.log('Analyze section found:', !!analyzeSection);
+    console.log('Photo workflow found:', !!photoWorkflow);
+    
+    if (analyzeSection) {
+        analyzeSection.style.display = 'block';
+        console.log('Analyze section displayed');
+    } else {
+        console.error('Analyze section not found');
+    }
+    
+    if (photoWorkflow) {
+        photoWorkflow.style.display = 'none';
+        console.log('Photo workflow hidden');
+    } else {
+        console.error('Photo workflow not found');
+    }
 }
 
 // Analyze photos
@@ -1344,22 +1834,64 @@ function setupTreatmentTabs() {
 
 // Modal functionality
 function setupModals() {
+    console.log('Setting up modals...');
+    
     // How it works modal
     const howItWorksModal = document.getElementById('howItWorksModal');
     const closeHowItWorks = document.getElementById('closeHowItWorks');
     
-    closeHowItWorks.addEventListener('click', () => {
-        howItWorksModal.classList.remove('show');
+    console.log('Modal elements check:', {
+        howItWorksModal: !!howItWorksModal,
+        closeHowItWorks: !!closeHowItWorks
     });
+    
+    if (closeHowItWorks && howItWorksModal) {
+        // Create a new event handler function
+        const closeModalHandler = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Close button clicked, hiding modal');
+            howItWorksModal.classList.remove('show');
+        };
+        
+        // Remove any existing event listeners first
+        closeHowItWorks.removeEventListener('click', closeModalHandler);
+        
+        // Add the event listener
+        closeHowItWorks.addEventListener('click', closeModalHandler);
+        console.log('Close button event listener added successfully');
+    } else {
+        console.error('Modal close elements not found:', {
+            closeHowItWorks: !!closeHowItWorks,
+            howItWorksModal: !!howItWorksModal
+        });
+    }
     
     // Privacy modal
     const privacyModal = document.getElementById('privacyModal');
     const closePrivacy = document.getElementById('closePrivacy');
     
+    console.log('Privacy modal elements check:', {
+        privacyModal: !!privacyModal,
+        closePrivacy: !!closePrivacy
+    });
+    
+    if (closePrivacy && privacyModal) {
+        closePrivacy.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Privacy modal close button clicked');
+            privacyModal.classList.remove('show');
+        });
+        console.log('Privacy modal close button event listener added');
+    } else {
+        console.error('Privacy modal close elements not found');
+    }
+    
     // Update privacy modal content
     const t = translations[currentLanguage];
-    const privacyHeader = privacyModal.querySelector('.modal-header h2');
-    const privacyContent = privacyModal.querySelector('.privacy-content');
+    const privacyHeader = privacyModal?.querySelector('.modal-header h2');
+    const privacyContent = privacyModal?.querySelector('.privacy-content');
     
     if (privacyHeader) privacyHeader.textContent = t.privacyTitle;
     
@@ -1368,6 +1900,13 @@ function setupModals() {
         const paragraphs = privacyContent.querySelectorAll('p');
         const accuracyInfo = privacyContent.querySelector('.accuracy-info');
         const consentCheckbox = privacyContent.querySelector('.privacy-checkbox label');
+        
+        console.log('Privacy modal content elements found:', {
+            headings: headings.length,
+            paragraphs: paragraphs.length,
+            accuracyInfo: !!accuracyInfo,
+            consentCheckbox: !!consentCheckbox
+        });
         
         if (headings.length >= 4) {
             headings[0].textContent = t.howWeUsePhotos;
@@ -1397,29 +1936,59 @@ function setupModals() {
         }
     }
     
-    closePrivacy.addEventListener('click', () => {
-        privacyModal.classList.remove('show');
-    });
-    
     // Close modals when clicking outside
     [howItWorksModal, privacyModal].forEach(modal => {
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.classList.remove('show');
-            }
-        });
+        if (modal) {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    console.log('Modal background clicked, closing modal');
+                    modal.classList.remove('show');
+                }
+            });
+        }
     });
+    
+    // Add escape key functionality
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            if (howItWorksModal && howItWorksModal.classList.contains('show')) {
+                console.log('Escape key pressed, closing how it works modal');
+                howItWorksModal.classList.remove('show');
+            }
+            if (privacyModal && privacyModal.classList.contains('show')) {
+                console.log('Escape key pressed, closing privacy modal');
+                privacyModal.classList.remove('show');
+            }
+        }
+    });
+    
+    console.log('Modal setup completed');
 }
 
 // Show how it works modal
 function showHowItWorks() {
+    console.log('Showing how it works modal');
+    
     const modal = document.getElementById('howItWorksModal');
     const t = translations[currentLanguage];
+    
+    console.log('Modal found:', !!modal);
+    
+    if (!modal) {
+        console.error('How it works modal not found');
+        return;
+    }
     
     // Update modal content
     const modalHeader = modal.querySelector('.modal-header h2');
     const stepTitles = modal.querySelectorAll('.step-details h3');
     const stepDescs = modal.querySelectorAll('.step-details p');
+    
+    console.log('Modal content elements found:', {
+        modalHeader: !!modalHeader,
+        stepTitles: stepTitles.length,
+        stepDescs: stepDescs.length
+    });
     
     if (modalHeader) modalHeader.textContent = t.howItWorksTitle;
     if (stepTitles.length >= 3) {
@@ -1434,6 +2003,19 @@ function showHowItWorks() {
     }
     
     modal.classList.add('show');
+    console.log('Modal shown successfully');
+    
+    // Ensure close button works when modal is shown
+    const closeBtn = modal.querySelector('#closeHowItWorks');
+    if (closeBtn) {
+        closeBtn.onclick = function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Direct close button click - hiding modal');
+            modal.classList.remove('show');
+        };
+        console.log('Direct close button handler added');
+    }
 }
 
 // Feedback system
@@ -1824,7 +2406,10 @@ logPerformance();
 // Check consent before allowing photo capture
 function checkConsent() {
     const consentCheckbox = document.getElementById('uploadConsent');
-    if (!consentCheckbox.checked) {
+    console.log('Checking consent, checkbox found:', !!consentCheckbox);
+    console.log('Checkbox checked:', consentCheckbox?.checked);
+    
+    if (!consentCheckbox || !consentCheckbox.checked) {
         const message = currentLanguage === 'hi' 
             ? 'कृपया फोटो अपलोड करने से पहले नियमों और शर्तों से सहमत हों।'
             : 'Please agree to the terms and conditions before uploading photos.';
@@ -1955,7 +2540,7 @@ async function checkImageQuality(imageUrl) {
 }
 
 // Performance optimization - compress images before processing
-async function handlePhotoCapture(file) {
+async function handlePhotoCaptureOptimized(file) {
     // Compress image first
     const compressedFile = await compressImage(file, 800, 0.8);
     

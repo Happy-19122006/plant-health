@@ -225,25 +225,25 @@
                             </div>
 
                             <!-- Action Buttons -->
-            <div class="capture-buttons">
-                <button class="btn-camera" id="takePhotoBtn">
-                    <i class="fas fa-camera"></i>
-                    Take Photo
-                </button>
-                <button class="btn-gallery" id="uploadGalleryBtn">
-                    <i class="fas fa-images"></i>
-                    Upload from Gallery
-                </button>
-            </div>
-            
-            <!-- Consent Checkbox -->
-            <div class="consent-section">
-                <label class="consent-checkbox">
-                    <input type="checkbox" id="uploadConsent" required>
-                    <span class="checkmark"></span>
-                    I agree to terms and allow using my images for improving diagnosis model
-                </label>
-            </div>
+                            <div class="capture-buttons">
+                                <button class="btn-camera" id="takePhotoBtn" onclick="handleTakePhoto()">
+                                    <i class="fas fa-camera"></i>
+                                    Take Photo
+                                </button>
+                                <button class="btn-gallery" id="uploadGalleryBtn" onclick="handleUploadGallery()">
+                                    <i class="fas fa-images"></i>
+                                    Upload from Gallery
+                                </button>
+                            </div>
+                            
+                            <!-- Consent Checkbox -->
+                            <div class="consent-section">
+                                <label class="consent-checkbox">
+                                    <input type="checkbox" id="uploadConsent" required>
+                                    <span class="checkmark"></span>
+                                    I agree to terms and allow using my images for improving diagnosis model
+                                </label>
+                            </div>
                             
                             <input type="file" id="fileInput" accept="image/*" style="display: none;">
                             <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display: none;">
@@ -253,13 +253,16 @@
                     <!-- Photo Preview -->
                     <div class="photo-preview" id="photoPreview" style="display: none;">
                         <div class="preview-container">
+                            <button class="preview-close" id="previewCloseBtn" onclick="hidePhotoPreview()">
+                                <i class="fas fa-times"></i>
+                            </button>
                             <img id="previewImage" src="" alt="Captured photo">
                             <div class="preview-actions">
-                                <button class="btn-retake" id="retakeBtn">
+                                <button class="btn-retake" id="retakeBtn" onclick="hidePhotoPreview()">
                                     <i class="fas fa-redo"></i>
                                     Retake
                                 </button>
-                                <button class="btn-confirm" id="confirmBtn">
+                                <button class="btn-confirm" id="confirmBtn" onclick="confirmPhoto()">
                                     <i class="fas fa-check"></i>
                                     Use This Photo
                                 </button>

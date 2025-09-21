@@ -645,6 +645,32 @@ body {
 .preview-container {
     text-align: center;
     margin-bottom: 20px;
+    position: relative;
+}
+
+.preview-close {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+    z-index: 10;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.preview-close:hover {
+    background: #c0392b;
+    transform: scale(1.1);
 }
 
 .preview-container img {
@@ -1788,19 +1814,43 @@ html {
 }
 
 .modal-close {
-    background: none;
+    background: #e74c3c;
     border: none;
-    font-size: 1.5rem;
-    color: var(--text-light);
+    font-size: 1.2rem;
+    color: white;
     cursor: pointer;
-    padding: 5px;
+    padding: 8px;
     border-radius: 50%;
     transition: all 0.3s ease;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .modal-close:hover {
-    background: rgba(143, 188, 143, 0.1);
-    color: var(--primary-green);
+    background: #c0392b;
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Mobile responsiveness for close buttons */
+@media (max-width: 768px) {
+    .modal-close {
+        width: 40px;
+        height: 40px;
+        font-size: 1.3rem;
+    }
+    
+    .preview-close {
+        width: 45px;
+        height: 45px;
+        font-size: 1.4rem;
+        top: -15px;
+        right: -15px;
+    }
 }
 
 .modal-body {
@@ -1898,6 +1948,17 @@ html {
     cursor: pointer;
     color: var(--text-dark);
     font-weight: 500;
+    padding: 15px;
+    background: rgba(34, 139, 34, 0.1);
+    border: 2px solid var(--primary-green);
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    margin: 20px 0;
+}
+
+.consent-checkbox:hover {
+    background: rgba(34, 139, 34, 0.2);
+    transform: translateY(-2px);
 }
 
 .consent-checkbox input[type="checkbox"] {
