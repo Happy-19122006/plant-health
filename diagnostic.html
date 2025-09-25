@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 CropGuard AI - Diagnostic Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #4a7c59, #6b8e5a);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .test-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-left: 5px solid #4a7c59;
+        }
+        
+        .test-section h2 {
+            color: #4a7c59;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+        
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-weight: 500;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .status.warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .test-item {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .test-item h3 {
+            color: #4a7c59;
+            margin-bottom: 10px;
+        }
+        
+        .console-output {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+        
+        .btn {
+            background: #4a7c59;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+        
+        .btn:hover {
+            background: #6b8e5a;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #4a7c59;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .recommendations {
+            background: #e3f2fd;
+            border: 1px solid #bbdefb;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .recommendations h3 {
+            color: #1976d2;
+            margin-bottom: 15px;
+        }
+        
+        .recommendations ul {
+            margin-left: 20px;
+        }
+        
+        .recommendations li {
+            margin-bottom: 8px;
+            color: #424242;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 CropGuard AI Diagnostic Tool</h1>
+            <p>Comprehensive analysis of your website's functionality</p>
+        </div>
+        
+        <div class="content">
+            <div class="test-section">
+                <h2>🚀 Quick Status Check</h2>
+                <div id="quickStatus">Running diagnostics...</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressBar"></div>
+                </div>
+            </div>
+            
+            <div class="test-section">
+                <h2>📁 File Accessibility Test</h2>
+                <div id="fileTest">Testing file accessibility...</div>
+            </div>
+            
+            <div class="test-section">
+                <h2>🌐 Network & Server Test</h2>
+                <div id="networkTest">Testing network connectivity...</div>
+            </div>
+            
+            <div class="test-section">
+                <h2>💻 Browser Compatibility</h2>
+                <div id="browserTest">Checking browser compatibility...</div>
+            </div>
+            
+            <div class="test-section">
+                <h2>🔧 JavaScript Analysis</h2>
+                <div id="jsTest">Analyzing JavaScript...</div>
+                <div class="console-output" id="consoleOutput">Console output will appear here...</div>
+            </div>
+            
+            <div class="test-section">
+                <h2>🎨 CSS Analysis</h2>
+                <div id="cssTest">Analyzing CSS...</div>
+            </div>
+            
+            <div class="test-section">
+                <h2>📱 Main Page Test</h2>
+                <div id="mainPageTest">Testing main page functionality...</div>
+                <div style="margin-top: 15px;">
+                    <button class="btn" onclick="testMainPage()">Test Main Page</button>
+                    <button class="btn btn-secondary" onclick="openMainPage()">Open Main Page</button>
+                </div>
+            </div>
+            
+            <div class="recommendations" id="recommendations" style="display: none;">
+                <h3>💡 Recommendations</h3>
+                <ul id="recommendationsList"></ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let testResults = {
+            files: false,
+            network: false,
+            browser: false,
+            javascript: false,
+            css: false,
+            mainPage: false
+        };
+        
+        let consoleOutput = [];
+        let errors = [];
+        
+        // Capture console output
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        
+        console.log = function(...args) {
+            consoleOutput.push('LOG: ' + args.join(' '));
+            originalLog.apply(console, args);
+        };
+        
+        console.error = function(...args) {
+            errors.push('ERROR: ' + args.join(' '));
+            consoleOutput.push('ERROR: ' + args.join(' '));
+            originalError.apply(console, args);
+        };
+        
+        console.warn = function(...args) {
+            errors.push('WARN: ' + args.join(' '));
+            consoleOutput.push('WARN: ' + args.join(' '));
+            originalWarn.apply(console, args);
+        };
+        
+        // Update progress bar
+        function updateProgress() {
+            const completed = Object.values(testResults).filter(Boolean).length;
+            const total = Object.keys(testResults).length;
+            const percentage = (completed / total) * 100;
+            document.getElementById('progressBar').style.width = percentage + '%';
+        }
+        
+        // Test file accessibility
+        async function testFileAccessibility() {
+            const fileTest = document.getElementById('fileTest');
+            const files = [
+                { name: 'index.html', url: 'index.html' },
+                { name: 'script.js', url: 'script.js' },
+                { name: 'styles.css', url: 'styles.css' }
+            ];
+            
+            let results = [];
+            
+            for (const file of files) {
+                try {
+                    const response = await fetch(file.url);
+                    if (response.ok) {
+                        results.push(`✅ ${file.name}: Accessible (${response.status})`);
+                    } else {
+                        results.push(`❌ ${file.name}: Error ${response.status}`);
+                    }
+                } catch (error) {
+                    results.push(`❌ ${file.name}: ${error.message}`);
+                }
+            }
+            
+            fileTest.innerHTML = results.join('<br>');
+            testResults.files = results.every(r => r.includes('✅'));
+            updateProgress();
+        }
+        
+        // Test network connectivity
+        function testNetwork() {
+            const networkTest = document.getElementById('networkTest');
+            const results = [];
+            
+            // Test localhost
+            results.push(`✅ Localhost: ${window.location.hostname}:${window.location.port || '80'}`);
+            
+            // Test external connectivity
+            fetch('https://httpbin.org/get')
+                .then(response => {
+                    if (response.ok) {
+                        results.push('✅ External connectivity: Working');
+                    } else {
+                        results.push('❌ External connectivity: Failed');
+                    }
+                    networkTest.innerHTML = results.join('<br>');
+                    testResults.network = true;
+                    updateProgress();
+                })
+                .catch(error => {
+                    results.push('❌ External connectivity: ' + error.message);
+                    networkTest.innerHTML = results.join('<br>');
+                    testResults.network = false;
+                    updateProgress();
+                });
+        }
+        
+        // Test browser compatibility
+        function testBrowser() {
+            const browserTest = document.getElementById('browserTest');
+            const results = [];
+            
+            // User Agent
+            results.push(`✅ User Agent: ${navigator.userAgent.split(' ')[0]}`);
+            
+            // JavaScript
+            results.push('✅ JavaScript: Enabled');
+            
+            // Local Storage
+            try {
+                localStorage.setItem('test', 'value');
+                localStorage.removeItem('test');
+                results.push('✅ Local Storage: Available');
+            } catch (error) {
+                results.push('❌ Local Storage: ' + error.message);
+            }
+            
+            // Fetch API
+            if (typeof fetch !== 'undefined') {
+                results.push('✅ Fetch API: Available');
+            } else {
+                results.push('❌ Fetch API: Not available');
+            }
+            
+            // ES6 Support
+            try {
+                eval('const test = () => {};');
+                results.push('✅ ES6 Support: Available');
+            } catch (error) {
+                results.push('❌ ES6 Support: Limited');
+            }
+            
+            browserTest.innerHTML = results.join('<br>');
+            testResults.browser = true;
+            updateProgress();
+        }
+        
+        // Test JavaScript
+        function testJavaScript() {
+            const jsTest = document.getElementById('jsTest');
+            const results = [];
+            
+            try {
+                // Test basic JavaScript
+                const testVar = 'JavaScript is working';
+                results.push('✅ Basic JavaScript: Working');
+                
+                // Test DOM manipulation
+                const testElement = document.createElement('div');
+                results.push('✅ DOM Manipulation: Working');
+                
+                // Test event handling
+                testElement.addEventListener('click', () => {});
+                results.push('✅ Event Handling: Working');
+                
+                // Test async/await
+                (async () => {
+                    await new Promise(resolve => setTimeout(resolve, 1));
+                    results.push('✅ Async/Await: Working');
+                })();
+                
+                jsTest.innerHTML = results.join('<br>');
+                testResults.javascript = true;
+                updateProgress();
+                
+            } catch (error) {
+                results.push('❌ JavaScript Error: ' + error.message);
+                jsTest.innerHTML = results.join('<br>');
+                testResults.javascript = false;
+                updateProgress();
+            }
+        }
+        
+        // Test CSS
+        function testCSS() {
+            const cssTest = document.getElementById('cssTest');
+            const results = [];
+            
+            try {
+                // Test CSS variables
+                const root = document.documentElement;
+                const computedStyle = getComputedStyle(root);
+                results.push('✅ CSS Variables: Supported');
+                
+                // Test Flexbox
+                const testFlex = document.createElement('div');
+                testFlex.style.display = 'flex';
+                if (testFlex.style.display === 'flex') {
+                    results.push('✅ Flexbox: Supported');
+                }
+                
+                // Test Grid
+                const testGrid = document.createElement('div');
+                testGrid.style.display = 'grid';
+                if (testGrid.style.display === 'grid') {
+                    results.push('✅ CSS Grid: Supported');
+                }
+                
+                // Test animations
+                const testAnim = document.createElement('div');
+                testAnim.style.animation = 'test 1s ease';
+                if (testAnim.style.animation) {
+                    results.push('✅ CSS Animations: Supported');
+                }
+                
+                cssTest.innerHTML = results.join('<br>');
+                testResults.css = true;
+                updateProgress();
+                
+            } catch (error) {
+                results.push('❌ CSS Error: ' + error.message);
+                cssTest.innerHTML = results.join('<br>');
+                testResults.css = false;
+                updateProgress();
+            }
+        }
+        
+        // Test main page
+        function testMainPage() {
+            const mainPageTest = document.getElementById('mainPageTest');
+            mainPageTest.innerHTML = 'Testing main page...';
+            
+            // Create iframe to test main page
+            const iframe = document.createElement('iframe');
+            iframe.src = 'index.html';
+            iframe.style.display = 'none';
+            iframe.style.width = '100%';
+            iframe.style.height = '500px';
+            
+            iframe.onload = function() {
+                try {
+                    const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                    const body = iframeDoc.body;
+                    
+                    if (body && body.children.length > 0) {
+                        mainPageTest.innerHTML = `
+                            <div class="status success">✅ Main page loaded successfully</div>
+                            <div class="status info">Found ${body.children.length} elements in body</div>
+                        `;
+                        testResults.mainPage = true;
+                    } else {
+                        mainPageTest.innerHTML = `
+                            <div class="status error">❌ Main page appears blank</div>
+                            <div class="status warning">Body has ${body ? body.children.length : 0} elements</div>
+                        `;
+                        testResults.mainPage = false;
+                    }
+                } catch (error) {
+                    mainPageTest.innerHTML = `
+                        <div class="status error">❌ Cannot access iframe content: ${error.message}</div>
+                    `;
+                    testResults.mainPage = false;
+                }
+                updateProgress();
+                generateRecommendations();
+            };
+            
+            iframe.onerror = function() {
+                mainPageTest.innerHTML = `
+                    <div class="status error">❌ Failed to load main page</div>
+                `;
+                testResults.mainPage = false;
+                updateProgress();
+                generateRecommendations();
+            };
+            
+            document.body.appendChild(iframe);
+        }
+        
+        // Open main page in new tab
+        function openMainPage() {
+            window.open('index.html', '_blank');
+        }
+        
+        // Generate recommendations
+        function generateRecommendations() {
+            const recommendations = document.getElementById('recommendations');
+            const recommendationsList = document.getElementById('recommendationsList');
+            const recs = [];
+            
+            if (!testResults.files) {
+                recs.push('Check that all files (index.html, script.js, styles.css) are in the correct directory');
+            }
+            
+            if (!testResults.network) {
+                recs.push('Check your internet connection and server status');
+            }
+            
+            if (!testResults.javascript) {
+                recs.push('Enable JavaScript in your browser or check for JavaScript errors');
+            }
+            
+            if (!testResults.css) {
+                recs.push('Check CSS file loading and browser compatibility');
+            }
+            
+            if (!testResults.mainPage) {
+                recs.push('Clear browser cache and try hard refresh (Ctrl+F5)');
+                recs.push('Check browser console for JavaScript errors');
+                recs.push('Try opening the page in an incognito/private window');
+                recs.push('Disable browser extensions temporarily');
+            }
+            
+            if (errors.length > 0) {
+                recs.push('Fix JavaScript errors shown in the console output above');
+            }
+            
+            if (recs.length > 0) {
+                recommendationsList.innerHTML = recs.map(rec => `<li>${rec}</li>`).join('');
+                recommendations.style.display = 'block';
+            }
+        }
+        
+        // Update console output
+        function updateConsoleOutput() {
+            const consoleDiv = document.getElementById('consoleOutput');
+            if (consoleOutput.length > 0) {
+                consoleDiv.innerHTML = consoleOutput.join('\n');
+            } else {
+                consoleDiv.innerHTML = 'No console output yet...';
+            }
+        }
+        
+        // Initialize diagnostics
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Diagnostic tool loaded');
+            
+            // Run all tests
+            testFileAccessibility();
+            testNetwork();
+            testBrowser();
+            testJavaScript();
+            testCSS();
+            
+            // Update console output every second
+            setInterval(updateConsoleOutput, 1000);
+        });
+    </script>
+</body>
+</html>

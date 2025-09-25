@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minimal Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .test {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Minimal Test Page</h1>
+    
+    <div class="test">
+        <h2>Basic HTML Test</h2>
+        <p>If you can see this, HTML is working.</p>
+    </div>
+    
+    <div class="test">
+        <h2>CSS Test</h2>
+        <p>If this has white background and rounded corners, CSS is working.</p>
+    </div>
+    
+    <div class="test">
+        <h2>JavaScript Test</h2>
+        <p id="jsTest">JavaScript test will appear here...</p>
+    </div>
+    
+    <div class="test">
+        <h2>External Files Test</h2>
+        <p id="externalTest">Testing external files...</p>
+    </div>
+
+    <script>
+        console.log('Minimal test page loaded');
+        
+        // Test JavaScript
+        document.getElementById('jsTest').innerHTML = '✅ JavaScript is working!';
+        
+        // Test external files
+        function testExternalFiles() {
+            const externalTest = document.getElementById('externalTest');
+            
+            // Test CSS
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = 'styles.css?v=2025';
+            link.onload = function() {
+                externalTest.innerHTML += '<br>✅ CSS loaded';
+            };
+            link.onerror = function() {
+                externalTest.innerHTML += '<br>❌ CSS failed to load';
+            };
+            document.head.appendChild(link);
+            
+            // Test JavaScript
+            const script = document.createElement('script');
+            script.src = 'script.js?v=2025';
+            script.onload = function() {
+                externalTest.innerHTML += '<br>✅ JavaScript loaded';
+            };
+            script.onerror = function() {
+                externalTest.innerHTML += '<br>❌ JavaScript failed to load';
+            };
+            document.head.appendChild(script);
+        }
+        
+        // Test main page
+        function testMainPage() {
+            fetch('index.html')
+                .then(response => {
+                    if (response.ok) {
+                        document.getElementById('externalTest').innerHTML += '<br>✅ Main page accessible';
+                    } else {
+                        document.getElementById('externalTest').innerHTML += '<br>❌ Main page not accessible';
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('externalTest').innerHTML += '<br>❌ Main page error: ' + error.message;
+                });
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            testExternalFiles();
+            testMainPage();
+        });
+    </script>
+</body>
+</html>

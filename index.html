@@ -617,14 +617,56 @@
     <!-- Cache bust: 2025 - Updated at 2025-01-27 -->
     <script>
         console.log('Page loaded at:', new Date().toISOString());
+        
+        // Error handling for blank page issues
+        window.addEventListener('error', function(e) {
+            console.error('JavaScript Error:', e.error);
+            console.error('Error details:', e.filename, e.lineno, e.colno);
+            
+            // Show error message to user if page is blank
+            setTimeout(() => {
+                if (document.body.children.length === 0) {
+                    document.body.innerHTML = `
+                        <div style="padding: 20px; font-family: Arial, sans-serif; text-align: center;">
+                            <h1>⚠️ Page Loading Issue</h1>
+                            <p>There was an error loading the page. Please try:</p>
+                            <ul style="text-align: left; max-width: 400px; margin: 20px auto;">
+                                <li>Refresh the page (F5 or Ctrl+R)</li>
+                                <li>Clear browser cache (Ctrl+Shift+Delete)</li>
+                                <li>Try incognito/private mode</li>
+                                <li>Disable browser extensions</li>
+                            </ul>
+                            <button onclick="location.reload()" style="padding: 10px 20px; font-size: 16px; background: #4a7c59; color: white; border: none; border-radius: 5px; cursor: pointer;">Reload Page</button>
+                        </div>
+                    `;
+                }
+            }, 2000);
+        });
+        
         // Force update copyright year
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM Content Loaded');
             const copyrightElement = document.querySelector('.footer-bottom p');
             if (copyrightElement) {
                 copyrightElement.innerHTML = '&copy; 2025 CropGuard AI. All rights reserved. | Updated 2025';
                 console.log('Copyright updated to 2025');
             }
+            
+            // Check if page content is visible
+            setTimeout(() => {
+                const heroSection = document.querySelector('.hero');
+                if (!heroSection || heroSection.offsetHeight === 0) {
+                    console.warn('Hero section not visible - possible CSS issue');
+                }
+            }, 1000);
         });
+        
+        // Fallback for if main script fails to load
+        setTimeout(() => {
+            if (typeof setupPhotoWorkflow === 'undefined') {
+                console.warn('Main script may not have loaded properly');
+            }
+        }, 3000);
     </script>
 </body>
 </html>

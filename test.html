@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .test-box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+        .error {
+            color: red;
+            background: #ffe6e6;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .success {
+            color: green;
+            background: #e6ffe6;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🌱 CropGuard AI - Test Page</h1>
+    
+    <div class="test-box">
+        <h2>File Loading Test</h2>
+        <div id="fileTest">Testing file loading...</div>
+    </div>
+    
+    <div class="test-box">
+        <h2>JavaScript Test</h2>
+        <div id="jsTest">Testing JavaScript...</div>
+    </div>
+    
+    <div class="test-box">
+        <h2>CSS Test</h2>
+        <div id="cssTest">Testing CSS...</div>
+    </div>
+    
+    <div class="test-box">
+        <h2>Console Errors</h2>
+        <div id="consoleErrors">No errors detected</div>
+    </div>
+
+    <script>
+        console.log('Test page loaded successfully');
+        
+        // Test file loading
+        function testFileLoading() {
+            const fileTest = document.getElementById('fileTest');
+            try {
+                // Test if we can access the main files
+                const testScript = document.createElement('script');
+                testScript.src = 'script.js';
+                testScript.onload = function() {
+                    fileTest.innerHTML = '<div class="success">✅ script.js loaded successfully</div>';
+                };
+                testScript.onerror = function() {
+                    fileTest.innerHTML = '<div class="error">❌ script.js failed to load</div>';
+                };
+                document.head.appendChild(testScript);
+                
+                const testLink = document.createElement('link');
+                testLink.rel = 'stylesheet';
+                testLink.href = 'styles.css';
+                testLink.onload = function() {
+                    document.getElementById('cssTest').innerHTML = '<div class="success">✅ styles.css loaded successfully</div>';
+                };
+                testLink.onerror = function() {
+                    document.getElementById('cssTest').innerHTML = '<div class="error">❌ styles.css failed to load</div>';
+                };
+                document.head.appendChild(testLink);
+                
+            } catch (error) {
+                fileTest.innerHTML = '<div class="error">❌ Error testing files: ' + error.message + '</div>';
+            }
+        }
+        
+        // Test JavaScript functionality
+        function testJavaScript() {
+            const jsTest = document.getElementById('jsTest');
+            try {
+                // Test basic JavaScript
+                const testVar = 'JavaScript is working';
+                jsTest.innerHTML = '<div class="success">✅ JavaScript is working: ' + testVar + '</div>';
+            } catch (error) {
+                jsTest.innerHTML = '<div class="error">❌ JavaScript error: ' + error.message + '</div>';
+            }
+        }
+        
+        // Capture console errors
+        function captureConsoleErrors() {
+            const originalError = console.error;
+            const originalWarn = console.warn;
+            const errors = [];
+            
+            console.error = function(...args) {
+                errors.push('ERROR: ' + args.join(' '));
+                originalError.apply(console, args);
+            };
+            
+            console.warn = function(...args) {
+                errors.push('WARN: ' + args.join(' '));
+                originalWarn.apply(console, args);
+            };
+            
+            // Update error display every second
+            setInterval(() => {
+                const errorDiv = document.getElementById('consoleErrors');
+                if (errors.length > 0) {
+                    errorDiv.innerHTML = '<div class="error">' + errors.join('<br>') + '</div>';
+                } else {
+                    errorDiv.innerHTML = '<div class="success">✅ No console errors detected</div>';
+                }
+            }, 1000);
+        }
+        
+        // Run tests
+        document.addEventListener('DOMContentLoaded', function() {
+            testFileLoading();
+            testJavaScript();
+            captureConsoleErrors();
+        });
+    </script>
+</body>
+</html>
