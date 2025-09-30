@@ -2561,11 +2561,20 @@ async function handlePhotoCaptureOptimized(file) {
     reader.readAsDataURL(compressedFile);
 }
 
-// Add progress indicator for analysis
+// Enhanced progress indicator for analysis
 function analyzePhotos() {
     showLoadingSpinner();
     
-    // Show progress indicator
+    // Update analyze button text
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    const analyzeText = document.getElementById('analyzeText');
+    const analyzeTime = document.getElementById('analyzeTime');
+    
+    if (analyzeText) analyzeText.textContent = currentLanguage === 'hi' ? 'विश्लेषण चल रहा है...' : 'Analyzing...';
+    if (analyzeTime) analyzeTime.textContent = currentLanguage === 'hi' ? '(15-30 सेकंड)' : '(15-30 seconds)';
+    if (analyzeBtn) analyzeBtn.disabled = true;
+    
+    // Show enhanced progress indicator
     const progressContainer = document.createElement('div');
     progressContainer.className = 'analysis-progress';
     const t = translations[currentLanguage];
