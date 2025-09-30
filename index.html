@@ -8,6 +8,7 @@
     <meta http-equiv="Expires" content="0">
     <title>🌱 CropGuard AI - Smart Crop Disease Detection</title>
     <link rel="stylesheet" href="styles.css?v=2025">
+    <link rel="stylesheet" href="calculation-styles.css?v=2025">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
@@ -48,6 +49,7 @@
             <div class="nav-menu">
                 <a href="#home" class="nav-link active">Home</a>
                 <a href="#upload" class="nav-link">My Scans</a>
+                <a href="#ai-agent" class="nav-link">AI Assistant</a>
                 <a href="#about" class="nav-link">About</a>
                 <a href="#contact" class="nav-link">Contact</a>
                 <div class="language-toggle">
@@ -235,32 +237,88 @@
                                 </div>
                             </div>
                             
-                            <!-- Photo Quality Tips -->
+                            <!-- Enhanced Photo Quality Guide -->
                             <div class="photo-tips">
-                                <h4>📸 Photo Quality Tips</h4>
+                                <h4>📸 Photo Quality Guide - Good vs Bad Examples</h4>
                                 <div class="tips-grid">
                                     <div class="tip-item good">
                                         <i class="fas fa-check-circle"></i>
                                         <div>
-                                            <strong>✅ Good Examples:</strong>
-                                            <ul>
-                                                <li>Clear, well-lit affected area</li>
-                                                <li>Close-up of disease symptoms</li>
-                                                <li>Sharp focus on problem area</li>
-                                                <li>Simple background</li>
-                                            </ul>
+                                            <strong>✅ GOOD PHOTOS:</strong>
+                                            <div class="example-photos">
+                                                <div class="example-photo good-example">
+                                                    <div class="photo-placeholder good">
+                                                        <i class="fas fa-image"></i>
+                                                        <span>Clear, well-lit affected area</span>
+                                                    </div>
+                                                    <p>✓ Sharp focus on disease symptoms</p>
+                                                </div>
+                                                <div class="example-photo good-example">
+                                                    <div class="photo-placeholder good">
+                                                        <i class="fas fa-image"></i>
+                                                        <span>Close-up of leaf spots</span>
+                                                    </div>
+                                                    <p>✓ Shows disease details clearly</p>
+                                                </div>
+                                                <div class="example-photo good-example">
+                                                    <div class="photo-placeholder good">
+                                                        <i class="fas fa-image"></i>
+                                                        <span>Multiple angles</span>
+                                                    </div>
+                                                    <p>✓ Different views of same plant</p>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="tip-item bad">
                                         <i class="fas fa-times-circle"></i>
                                         <div>
-                                            <strong>❌ Avoid These:</strong>
-                                            <ul>
-                                                <li>Blurry or dark photos</li>
-                                                <li>Too far away from problem</li>
-                                                <li>Busy background</li>
-                                                <li>Multiple diseases in one photo</li>
-                                            </ul>
+                                            <strong>❌ BAD PHOTOS:</strong>
+                                            <div class="example-photos">
+                                                <div class="example-photo bad-example">
+                                                    <div class="photo-placeholder bad">
+                                                        <i class="fas fa-image"></i>
+                                                        <span>Blurry or dark photo</span>
+                                                    </div>
+                                                    <p>✗ Cannot see disease symptoms</p>
+                                                </div>
+                                                <div class="example-photo bad-example">
+                                                    <div class="photo-placeholder bad">
+                                                        <i class="fas fa-image"></i>
+                                                        <span>Too far away</span>
+                                                    </div>
+                                                    <p>✗ No detail visible</p>
+                                                </div>
+                                                <div class="example-photo bad-example">
+                                                    <div class="photo-placeholder bad">
+                                                        <i class="fas fa-image"></i>
+                                                        <span>Only healthy parts</span>
+                                                    </div>
+                                                    <p>✗ No disease symptoms shown</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="photo-requirements">
+                                    <h5>📋 Photo Requirements:</h5>
+                                    <div class="requirements-grid">
+                                        <div class="requirement">
+                                            <i class="fas fa-camera"></i>
+                                            <span><strong>3 Photos Required:</strong> Different angles of the same plant</span>
+                                        </div>
+                                        <div class="requirement">
+                                            <i class="fas fa-ruler"></i>
+                                            <span><strong>Size:</strong> At least 500x500 pixels</span>
+                                        </div>
+                                        <div class="requirement">
+                                            <i class="fas fa-file-image"></i>
+                                            <span><strong>Format:</strong> JPG, PNG, or WebP</span>
+                                        </div>
+                                        <div class="requirement">
+                                            <i class="fas fa-weight"></i>
+                                            <span><strong>File Size:</strong> Under 10MB per photo</span>
                                         </div>
                                     </div>
                                 </div>
@@ -388,6 +446,169 @@
             </div>
 
             <div class="uploaded-images" id="uploadedImages"></div>
+        </div>
+    </section>
+
+    <!-- AI Voice Agent Section -->
+    <section id="ai-agent" class="ai-agent-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>🤖 Happy - AI Voice Assistant</h2>
+                <p>Talk to Happy in your language - Hindi, English, or regional dialects. Say "Happy" to activate!</p>
+            </div>
+            
+            <div class="ai-agent-container">
+                <div class="agent-interface">
+                    <div class="agent-avatar">
+                        <div class="avatar-circle">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="agent-status">
+                            <span class="status-indicator" id="agentStatus">Ready</span>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-container">
+                            <div class="chat-messages" id="chatMessages">
+                            <div class="message agent-message">
+                                <div class="message-avatar">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <div class="message-content">
+                                    <p>👋 नमस्ते! मैं Happy हूं। मुझे activate करने के लिए 'Happy' बोलिए, फिर मैं आपकी मदद करूंगा। मैं आपसे दोस्त की तरह बात करूंगा।</p>
+                                    <div class="message-time">Just now</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="chat-input-container">
+            <div class="input-modes">
+                <button class="input-mode-btn active" data-mode="voice" onclick="setInputMode('voice')">
+                    <i class="fas fa-microphone"></i>
+                    <span>Voice</span>
+                </button>
+                <button class="input-mode-btn" data-mode="text" onclick="setInputMode('text')">
+                    <i class="fas fa-keyboard"></i>
+                    <span>Type</span>
+                </button>
+                <button class="input-mode-btn" data-mode="photo" onclick="setInputMode('photo')">
+                    <i class="fas fa-camera"></i>
+                    <span>Photo</span>
+                </button>
+                <button class="input-mode-btn" id="muteBtn" onclick="toggleMute()">
+                    <i class="fas fa-volume-up"></i>
+                    <span>Mute</span>
+                </button>
+                <button class="input-mode-btn" onclick="testHappyDirect()" style="background: #ff6b6b;">
+                    <i class="fas fa-bug"></i>
+                    <span>Test</span>
+                </button>
+            </div>
+                            
+                            <div class="chat-input-wrapper">
+                                <div class="voice-input" id="voiceInput">
+                                    <button class="voice-btn" id="voiceBtn" onclick="startVoiceInput()">
+                                        <i class="fas fa-microphone"></i>
+                                        <span>Hold to speak</span>
+                                    </button>
+                                    <div class="voice-status" id="voiceStatus">
+                                        <span>Click and hold to speak in Hindi or English</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="text-input" id="textInput" style="display: none;">
+                                    <input type="text" id="textMessageInput" placeholder="Type your question here... (Hindi or English)">
+                                    <button class="send-btn" onclick="sendTextMessage()">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </button>
+                                </div>
+                                
+                                <div class="photo-input" id="photoInput" style="display: none;">
+                                    <input type="file" id="photoUploadInput" accept="image/*" onchange="handlePhotoUpload(event)" style="display: none;">
+                                    <button class="photo-upload-btn" onclick="document.getElementById('photoUploadInput').click()">
+                                        <i class="fas fa-camera"></i>
+                                        <span>Upload Photo</span>
+                                    </button>
+                                    <div class="photo-preview" id="photoPreview" style="display: none;">
+                                        <img id="previewImage" src="" alt="Preview">
+                                        <button class="remove-photo-btn" onclick="removePhoto()">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="quick-questions">
+                                <h5>Quick Questions:</h5>
+                                <div class="quick-buttons">
+                                    <button class="quick-btn" onclick="askQuickQuestion('Tomato mein patte pe kale dhabbe aa rahe hain')">
+                                        Tomato में पत्ते पर काले धब्बे
+                                    </button>
+                                    <button class="quick-btn" onclick="askQuickQuestion('Rice blast ka treatment kya hai')">
+                                        Rice blast का treatment
+                                    </button>
+                                    <button class="quick-btn" onclick="askQuickQuestion('Organic medicine for chili diseases')">
+                                        Chili के लिए organic medicine
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="agent-features">
+                    <h3>🎯 AI Agent Features</h3>
+                    <div class="features-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-language"></i>
+                            </div>
+                            <h4>Multilingual Support</h4>
+                            <p>Speak in Hindi, English, or regional dialects. AI understands natural farmer language.</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                            <h4>Smart Understanding</h4>
+                            <p>Understands context, remembers conversation, and provides accurate agricultural advice.</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-voice"></i>
+                            </div>
+                            <h4>Natural Voice</h4>
+                            <p>Responds in natural, rural-style voice that farmers can easily understand.</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-database"></i>
+                            </div>
+                            <h4>Expert Knowledge</h4>
+                            <p>Trained on ICAR guidelines, disease databases, and verified treatment methods.</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <h4>Safety First</h4>
+                            <p>Always recommends consulting local experts for chemical treatments and provides safety warnings.</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-mobile-alt"></i>
+                            </div>
+                            <h4>Offline Capable</h4>
+                            <p>Works even with poor internet connection using edge computing and cached responses.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -1424,6 +1645,44 @@
                                 <i class="fas fa-times-circle"></i>
                                 <span><strong>Not Yet Supported:</strong> Ornamental plants, Medicinal herbs</span>
                             </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Complete Disease Database -->
+                    <div class="disease-database">
+                        <h3>🔍 Complete Disease Database</h3>
+                        <div class="database-search">
+                            <div class="search-input-group">
+                                <input type="text" id="diseaseSearch" placeholder="Search crop or disease (e.g., 'Tomato blight', 'Rice blast')">
+                                <button class="search-btn" onclick="searchDiseases()">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                                <button class="voice-search-btn" onclick="startVoiceSearch()">
+                                    <i class="fas fa-microphone"></i>
+                                </button>
+                            </div>
+                            <div class="search-filters">
+                                <select id="cropFilter">
+                                    <option value="">All Crops</option>
+                                    <option value="rice">Rice (चावल)</option>
+                                    <option value="wheat">Wheat (गेहूं)</option>
+                                    <option value="tomato">Tomato (टमाटर)</option>
+                                    <option value="potato">Potato (आलू)</option>
+                                    <option value="chili">Chili (मिर्च)</option>
+                                    <option value="mango">Mango (आम)</option>
+                                </select>
+                                <select id="regionFilter">
+                                    <option value="">All Regions</option>
+                                    <option value="north">North India</option>
+                                    <option value="south">South India</option>
+                                    <option value="east">East India</option>
+                                    <option value="west">West India</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="disease-grid" id="diseaseGrid">
+                            <!-- Disease cards will be populated by JavaScript -->
                         </div>
                     </div>
                     

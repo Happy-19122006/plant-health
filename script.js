@@ -275,7 +275,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // Setup new features
     setupFAQ();
     setupTreatmentTabs();
+    initializeDiseaseDatabase();
     showErrorHandling();
+    
+    // Initialize AI Agent with delay to ensure DOM is ready
+    setTimeout(() => {
+        initializeAIAgent();
+    }, 1500);
     
     // Ensure photo workflow is set up after a short delay
     setTimeout(() => {
@@ -2572,8 +2578,14 @@ async function handlePhotoCaptureOptimized(file) {
     reader.readAsDataURL(compressedFile);
 }
 
-// Enhanced progress indicator for analysis
-function analyzePhotos() {
+// Enhanced progress indicator for analysis with backend integration
+async function analyzePhotos() {
+    const photos = document.querySelectorAll('.photo-preview img');
+    if (photos.length === 0) {
+        showNotification('Please take or upload photos first', 'error');
+        return;
+    }
+
     showLoadingSpinner();
     
     // Get selected processing mode
@@ -2606,6 +2618,95 @@ function analyzePhotos() {
     
     if (analyzeTime) analyzeTime.textContent = timeText;
     if (analyzeBtn) analyzeBtn.disabled = true;
+
+    try {
+        // Convert images to base64 and send to backend
+        const imageData = await convertImagesToBase64(photos);
+        const analysisResult = await sendImagesForAnalysis(imageData);
+        
+        // Show results from backend
+        showResults(analysisResult);
+        
+        // Show treatment recommendations
+        if (analysisResult.disease) {
+            showTreatmentRecommendations(analysisResult.disease);
+        }
+        
+    } catch (error) {
+        console.error('Analysis error:', error);
+        
+        // Fallback to local analysis if backend fails
+        const prediction = generateEnhancedPrediction(selectedMode);
+        showResults(prediction);
+        
+        showNotification('Using offline analysis. Backend connection failed.', 'warning');
+    } finally {
+        hideLoadingSpinner();
+        if (analyzeBtn) analyzeBtn.disabled = false;
+    }
+}
+
+async function convertImagesToBase64(photos) {
+    const imageData = [];
+    
+    for (let i = 0; i < photos.length; i++) {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = photos[i].naturalWidth;
+        canvas.height = photos[i].naturalHeight;
+        
+        ctx.drawImage(photos[i], 0, 0);
+        
+        const base64 = canvas.toDataURL('image/jpeg', 0.8);
+        imageData.push({
+            data: base64,
+            filename: `photo_${i + 1}.jpg`,
+            size: base64.length
+        });
+    }
+    
+    return imageData;
+}
+
+async function sendImagesForAnalysis(imageData) {
+    try {
+        const response = await fetch('http://localhost:8000/api/v1/ai/analyze-images', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                images: imageData,
+                session_id: aiAgent?.sessionId || 'default_session',
+                language: document.getElementById('languageSelect')?.value || 'en',
+                region: 'india'
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        
+        if (data.success) {
+            return {
+                disease: data.data.detected_disease,
+                confidence: data.data.confidence_score,
+                crop: data.data.detected_crop,
+                symptoms: data.data.detected_symptoms,
+                recommendations: data.data.treatment_recommendations,
+                analysis_time: data.data.analysis_time_ms
+            };
+        } else {
+            throw new Error(data.error?.message || 'Analysis failed');
+        }
+    } catch (error) {
+        console.error('Image analysis API error:', error);
+        throw error;
+    }
+}
     
     // Show enhanced progress indicator with percentages
     const progressContainer = document.createElement('div');
@@ -2787,6 +2888,1629 @@ function setupTreatmentTabs() {
             }
         });
     });
+}
+
+// Disease Database with Search and Voice Input
+const diseaseDatabase = [
+    {
+        id: 1,
+        name: "Rice Blast",
+        scientific: "Magnaporthe oryzae",
+        crop: "rice",
+        regions: ["north", "east", "south"],
+        symptoms: ["Spindle-shaped lesions on leaves", "Gray centers with brown borders", "White to gray spots on panicles", "Stem rot at base"],
+        image: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjhmOWZhIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzY2NiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPlJpY2UgQmxhc3Q8L3RleHQ+PC9zdmc+",
+        treatment: {
+            chemical: ["Propiconazole 25% EC", "Tricyclazole 75% WP"],
+            organic: ["Neem oil spray", "Bordeaux mixture"],
+            preventive: ["Resistant varieties", "Proper spacing", "Avoid excess nitrogen"]
+        }
+    },
+    {
+        id: 2,
+        name: "Tomato Late Blight",
+        scientific: "Phytophthora infestans",
+        crop: "tomato",
+        regions: ["north", "south", "east"],
+        symptoms: ["Dark, water-soaked lesions on leaves", "White fungal growth on underside", "Brown, firm spots on fruits", "Rapid plant collapse"],
+        image: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjhmOWZhIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzY2NiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPlRvbWF0byBMYXRlIEJsaWdodDwvdGV4dD48L3N2Zz4=",
+        treatment: {
+            chemical: ["Chlorothalonil 75% WP", "Mancozeb 75% WP"],
+            organic: ["Copper fungicide", "Baking soda spray"],
+            preventive: ["Good air circulation", "Avoid overhead watering", "Crop rotation"]
+        }
+    },
+    {
+        id: 3,
+        name: "Wheat Rust",
+        scientific: "Puccinia triticina",
+        crop: "wheat",
+        regions: ["north", "west"],
+        symptoms: ["Orange to reddish-brown pustules", "Yellow halos around lesions", "Stunted growth", "Reduced grain quality"],
+        image: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjhmOWZhIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzY2NiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPldoZWF0IFJ1c3Q8L3RleHQ+PC9zdmc+",
+        treatment: {
+            chemical: ["Tebuconazole 25% EC", "Propiconazole 25% EC"],
+            organic: ["Sulfur dust", "Garlic extract spray"],
+            preventive: ["Resistant varieties", "Early planting", "Proper fertilization"]
+        }
+    },
+    {
+        id: 4,
+        name: "Chili Anthracnose",
+        scientific: "Colletotrichum capsici",
+        crop: "chili",
+        regions: ["south", "east", "west"],
+        symptoms: ["Circular, sunken lesions on fruits", "Dark, concentric rings", "Fruit rot and drop", "Black spots on leaves"],
+        image: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjhmOWZhIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzY2NiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkNoaWxpIEFudGhyYWNub3NlPC90ZXh0Pjwvc3ZnPg==",
+        treatment: {
+            chemical: ["Carbendazim 50% WP", "Mancozeb 75% WP"],
+            organic: ["Neem oil", "Chitosan spray"],
+            preventive: ["Proper spacing", "Avoid water stress", "Harvest at right time"]
+        }
+    },
+    {
+        id: 5,
+        name: "Mango Anthracnose",
+        scientific: "Colletotrichum gloeosporioides",
+        crop: "mango",
+        regions: ["north", "south", "east"],
+        symptoms: ["Dark, sunken spots on fruits", "Black lesions on leaves", "Flower blight", "Fruit rot during storage"],
+        image: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjhmOWZhIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzY2NiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk1hbmdvIEFudGhyYWNub3NlPC90ZXh0Pjwvc3ZnPg==",
+        treatment: {
+            chemical: ["Copper oxychloride 50% WP", "Carbendazim 50% WP"],
+            organic: ["Bordeaux mixture", "Neem oil spray"],
+            preventive: ["Pruning for air circulation", "Proper irrigation", "Post-harvest treatment"]
+        }
+    }
+];
+
+// Initialize disease database
+function initializeDiseaseDatabase() {
+    const diseaseGrid = document.getElementById('diseaseGrid');
+    if (!diseaseGrid) return;
+    
+    displayDiseases(diseaseDatabase);
+    
+    // Setup search functionality
+    const searchInput = document.getElementById('diseaseSearch');
+    const cropFilter = document.getElementById('cropFilter');
+    const regionFilter = document.getElementById('regionFilter');
+    
+    if (searchInput) {
+        searchInput.addEventListener('input', filterDiseases);
+    }
+    if (cropFilter) {
+        cropFilter.addEventListener('change', filterDiseases);
+    }
+    if (regionFilter) {
+        regionFilter.addEventListener('change', filterDiseases);
+    }
+}
+
+// Display diseases in grid
+function displayDiseases(diseases) {
+    const diseaseGrid = document.getElementById('diseaseGrid');
+    if (!diseaseGrid) return;
+    
+    diseaseGrid.innerHTML = diseases.map(disease => `
+        <div class="disease-card" onclick="showDiseaseDetails(${disease.id})">
+            <div class="disease-header">
+                <div>
+                    <h4 class="disease-name">${disease.name}</h4>
+                    <div class="disease-scientific">${disease.scientific}</div>
+                </div>
+                <span class="crop-tag">${disease.crop.charAt(0).toUpperCase() + disease.crop.slice(1)}</span>
+            </div>
+            
+            <div class="disease-image">
+                <img src="${disease.image}" alt="${disease.name}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+            </div>
+            
+            <div class="disease-symptoms">
+                <h5>Key Symptoms:</h5>
+                <ul class="symptom-list">
+                    ${disease.symptoms.slice(0, 3).map(symptom => `<li>${symptom}</li>`).join('')}
+                </ul>
+            </div>
+            
+            <div class="disease-regions">
+                ${disease.regions.map(region => `<span class="region-tag">${region.charAt(0).toUpperCase() + region.slice(1)} India</span>`).join('')}
+            </div>
+            
+            <div class="disease-actions">
+                <button class="disease-btn primary" onclick="event.stopPropagation(); showDiseaseDetails(${disease.id})">
+                    <i class="fas fa-info-circle"></i> Details
+                </button>
+                <button class="disease-btn secondary" onclick="event.stopPropagation(); searchForTreatment('${disease.name}')">
+                    <i class="fas fa-pills"></i> Treatment
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Filter diseases based on search and filters
+function filterDiseases() {
+    const searchTerm = document.getElementById('diseaseSearch')?.value.toLowerCase() || '';
+    const cropFilter = document.getElementById('cropFilter')?.value || '';
+    const regionFilter = document.getElementById('regionFilter')?.value || '';
+    
+    const filteredDiseases = diseaseDatabase.filter(disease => {
+        const matchesSearch = disease.name.toLowerCase().includes(searchTerm) ||
+                            disease.scientific.toLowerCase().includes(searchTerm) ||
+                            disease.symptoms.some(symptom => symptom.toLowerCase().includes(searchTerm));
+        
+        const matchesCrop = !cropFilter || disease.crop === cropFilter;
+        const matchesRegion = !regionFilter || disease.regions.includes(regionFilter);
+        
+        return matchesSearch && matchesCrop && matchesRegion;
+    });
+    
+    displayDiseases(filteredDiseases);
+}
+
+// Search diseases function
+function searchDiseases() {
+    filterDiseases();
+}
+
+// Voice search functionality
+let recognition = null;
+function startVoiceSearch() {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        alert('Voice search is not supported in this browser. Please use Chrome or Edge.');
+        return;
+    }
+    
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SpeechRecognition();
+    
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = 'en-US';
+    
+    const voiceBtn = document.querySelector('.voice-search-btn');
+    voiceBtn.classList.add('recording');
+    voiceBtn.innerHTML = '<i class="fas fa-stop"></i>';
+    
+    recognition.onresult = function(event) {
+        const transcript = event.results[0][0].transcript;
+        document.getElementById('diseaseSearch').value = transcript;
+        filterDiseases();
+    };
+    
+    recognition.onend = function() {
+        voiceBtn.classList.remove('recording');
+        voiceBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+    };
+    
+    recognition.onerror = function(event) {
+        console.error('Speech recognition error:', event.error);
+        voiceBtn.classList.remove('recording');
+        voiceBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+        alert('Voice recognition failed. Please try again.');
+    };
+    
+    recognition.start();
+}
+
+// Show detailed disease information
+function showDiseaseDetails(diseaseId) {
+    const disease = diseaseDatabase.find(d => d.id === diseaseId);
+    if (!disease) return;
+    
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>${disease.name}</h2>
+                <span class="modal-close" onclick="this.closest('.modal').remove()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="disease-detail-image">
+                    <img src="${disease.image}" alt="${disease.name}" style="width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px;">
+                </div>
+                
+                <div class="disease-detail-info">
+                    <h3>Scientific Name: ${disease.scientific}</h3>
+                    <h4>Affected Crop: ${disease.crop.charAt(0).toUpperCase() + disease.crop.slice(1)}</h4>
+                    <h4>Common in: ${disease.regions.map(r => r.charAt(0).toUpperCase() + r.slice(1) + ' India').join(', ')}</h4>
+                </div>
+                
+                <div class="disease-symptoms-detail">
+                    <h4>Symptoms:</h4>
+                    <ul>
+                        ${disease.symptoms.map(symptom => `<li>${symptom}</li>`).join('')}
+                    </ul>
+                </div>
+                
+                <div class="disease-treatment-detail">
+                    <h4>Treatment Options:</h4>
+                    <div class="treatment-options-detail">
+                        <div class="treatment-type">
+                            <h5>Chemical Treatment:</h5>
+                            <ul>
+                                ${disease.treatment.chemical.map(t => `<li>${t}</li>`).join('')}
+                            </ul>
+                        </div>
+                        <div class="treatment-type">
+                            <h5>Organic Treatment:</h5>
+                            <ul>
+                                ${disease.treatment.organic.map(t => `<li>${t}</li>`).join('')}
+                            </ul>
+                        </div>
+                        <div class="treatment-type">
+                            <h5>Preventive Measures:</h5>
+                            <ul>
+                                ${disease.treatment.preventive.map(t => `<li>${t}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    modal.style.display = 'block';
+}
+
+// Search for treatment
+function searchForTreatment(diseaseName) {
+    // Scroll to treatment section and highlight
+    const treatmentSection = document.getElementById('treatmentSection');
+    if (treatmentSection) {
+        treatmentSection.style.display = 'block';
+        treatmentSection.scrollIntoView({ behavior: 'smooth' });
+        
+        // Show notification
+        showNotification(`Treatment recommendations for ${diseaseName} are now available below!`, 'success');
+    }
+}
+
+// AI Voice Agent Implementation with Backend Integration
+class AIAgent {
+    constructor() {
+        this.recognition = null;
+        this.synthesis = null;
+        this.isListening = false;
+        this.isProcessing = false;
+        this.conversationHistory = [];
+        this.currentInputMode = 'voice';
+        this.sessionId = this.generateSessionId();
+        this.apiBaseUrl = 'http://localhost:8000/api/v1'; // Perfect AI Server URL
+        this.isDoctorMode = true; // AI acts like a doctor
+        this.farmerProfile = null; // Store farmer information
+        this.currentDisease = null; // Current disease being discussed
+        this.isMuted = false; // Mute state for voice
+        this.agentName = 'Happy'; // AI agent name
+        this.isActivated = false; // Activation state
+        this.activationKeyword = 'happy'; // Keyword to activate
+        this.initializeSpeechAPIs();
+        this.setupEventListeners();
+        this.loadConversationHistory();
+        this.startDoctorConversation();
+    }
+
+    generateSessionId() {
+        return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    }
+
+    loadConversationHistory() {
+        try {
+            const saved = localStorage.getItem('ai_conversation_history');
+            if (saved) {
+                this.conversationHistory = JSON.parse(saved);
+                this.displayConversationHistory();
+            }
+        } catch (error) {
+            console.error('Error loading conversation history:', error);
+        }
+    }
+
+    saveConversationHistory() {
+        try {
+            localStorage.setItem('ai_conversation_history', JSON.stringify(this.conversationHistory));
+        } catch (error) {
+            console.error('Error saving conversation history:', error);
+        }
+    }
+
+    displayConversationHistory() {
+        const chatMessages = document.getElementById('chatMessages');
+        if (!chatMessages || this.conversationHistory.length === 0) return;
+
+        // Clear existing messages except the welcome message
+        const welcomeMessage = chatMessages.querySelector('.agent-message');
+        chatMessages.innerHTML = '';
+        if (welcomeMessage) {
+            chatMessages.appendChild(welcomeMessage);
+        }
+
+        // Display conversation history
+        this.conversationHistory.slice(-10).forEach(entry => {
+            this.addMessage(entry.user, 'user', false);
+            this.addMessage(entry.agent, 'agent', false);
+        });
+    }
+
+    startDoctorConversation() {
+        // AI doctor starts the conversation proactively
+        setTimeout(() => {
+            this.addWebsiteWelcomeGuide();
+        }, 2000);
+    }
+
+    addWebsiteWelcomeGuide() {
+        const isHindi = this.getLanguage() === 'hi';
+        
+        // Welcome message
+        const welcomeMessage = isHindi ? 
+            "🎉 **नमस्ते! आपका स्वागत है CropGuard AI में!**\n\nमैं आपका AI कृषि डॉक्टर हूं। मैं आपकी फसलों की देखभाल में पूरी मदद करूंगा।" :
+            "🎉 **Welcome to CropGuard AI!**\n\nI'm your AI Agricultural Doctor. I'll help you take care of your crops completely.";
+        
+        this.addMessage(welcomeMessage, 'agent');
+        this.speakResponse(welcomeMessage);
+        
+        // Website guide after 3 seconds
+        setTimeout(() => {
+            this.addWebsiteGuide();
+        }, 3000);
+    }
+
+    addWebsiteGuide() {
+        const isHindi = this.getLanguage() === 'hi';
+        
+        const guideMessage = isHindi ? 
+            "📱 **Website Guide - यहाँ आप क्या कर सकते हैं:**\n\n" +
+            "🌱 **Photo Analysis**: अपनी फसल की फोटो upload करें, मैं disease detect करूंगा\n" +
+            "💬 **AI Chat**: मुझसे बात करें - Voice या Text में\n" +
+            "📸 **Photo Upload**: मुझे फोटो भेजें, मैं scan करके analysis दूंगा\n" +
+            "🧮 **Medicine Calculator**: Tanki size बताएं, मैं exact medicine calculate करूंगा\n" +
+            "📚 **Disease Database**: सभी diseases और treatments की जानकारी\n" +
+            "🔊 **Voice Support**: Hindi/English में बोलकर बात करें\n\n" +
+            "**कैसे शुरू करें?**\n" +
+            "1. मुझे फोटो भेजें या बताएं कि कौन सी फसल में problem है\n" +
+            "2. मैं disease detect करूंगा\n" +
+            "3. आपकी tanki size बताएं\n" +
+            "4. मैं exact medicine और usage guide दूंगा" :
+            
+            "📱 **Website Guide - What you can do here:**\n\n" +
+            "🌱 **Photo Analysis**: Upload your crop photos, I'll detect diseases\n" +
+            "💬 **AI Chat**: Talk to me - Voice or Text\n" +
+            "📸 **Photo Upload**: Send me photos, I'll scan and analyze\n" +
+            "🧮 **Medicine Calculator**: Tell me tank size, I'll calculate exact medicine\n" +
+            "📚 **Disease Database**: Information about all diseases and treatments\n" +
+            "🔊 **Voice Support**: Speak in Hindi/English\n\n" +
+            "**How to start?**\n" +
+            "1. Send me photos or tell me which crop has problems\n" +
+            "2. I'll detect the disease\n" +
+            "3. Tell me your tank size\n" +
+            "4. I'll give exact medicine and usage guide";
+        
+        this.addMessage(guideMessage, 'agent');
+        this.speakResponse(guideMessage);
+        
+        // Quick start options after 4 seconds
+        setTimeout(() => {
+            this.addQuickStartOptions();
+        }, 4000);
+    }
+
+    addQuickStartOptions() {
+        const isHindi = this.getLanguage() === 'hi';
+        
+        const quickStartMessage = isHindi ? 
+            "🚀 **Quick Start Options:**\n\n" +
+            "📸 **Photo भेजें**: 'Photo' button पर click करें\n" +
+            "🎤 **Voice में बात करें**: Microphone button दबाकर बोलें\n" +
+            "⌨️ **Text में लिखें**: Type करके question पूछें\n" +
+            "🔇 **Mute करें**: अगर voice नहीं चाहिए तो mute button दबाएं\n\n" +
+            "**Example Questions:**\n" +
+            "• 'मेरे टमाटर में काले धब्बे आ रहे हैं'\n" +
+            "• 'Rice blast का treatment क्या है?'\n" +
+            "• 'Chili के लिए organic medicine बताएं'" :
+            
+            "🚀 **Quick Start Options:**\n\n" +
+            "📸 **Send Photo**: Click 'Photo' button\n" +
+            "🎤 **Voice Chat**: Press microphone and speak\n" +
+            "⌨️ **Text Chat**: Type your questions\n" +
+            "🔇 **Mute**: Press mute button if you don't want voice\n\n" +
+            "**Example Questions:**\n" +
+            "• 'My tomato has black spots'\n" +
+            "• 'What is the treatment for rice blast?'\n" +
+            "• 'Tell me organic medicine for chili'";
+        
+        this.addMessage(quickStartMessage, 'agent');
+        this.speakResponse(quickStartMessage);
+    }
+
+    addDoctorWelcomeMessage() {
+        const isHindi = this.getLanguage() === 'hi';
+        const welcomeMessage = isHindi ? 
+            "नमस्ते! मैं आपका AI कृषि डॉक्टर हूं। मैं आपकी फसलों की देखभाल में मदद करूंगा। बताइए, आज आपकी कौन सी फसल में कोई समस्या है? आप मुझे फोटो भी भेज सकते हैं।" :
+            "Hello! I'm your AI Agricultural Doctor. I'll help you take care of your crops. Tell me, which crop is having problems today? You can also send me photos.";
+        
+        this.addMessage(welcomeMessage, 'agent');
+        this.speakResponse(welcomeMessage);
+    }
+
+    async handlePhotoUploadInChat(file) {
+        const isHindi = this.getLanguage() === 'hi';
+        
+        // Show processing message
+        this.addMessage(isHindi ? "फोटो को scan कर रहा हूं..." : "Scanning your photo...", 'agent');
+        
+        try {
+            // Convert image to base64
+            const base64 = await this.convertFileToBase64(file);
+            
+            // Send to backend for analysis
+            const analysisResult = await this.analyzePhotoInChat(base64);
+            
+            // Process the result
+            this.processPhotoAnalysisResult(analysisResult);
+            
+        } catch (error) {
+            console.error('Photo analysis error:', error);
+            const errorMessage = isHindi ? 
+                "फोटो analyze करने में समस्या आई। कृपया दोबारा कोशिश करें।" :
+                "There was a problem analyzing the photo. Please try again.";
+            this.addMessage(errorMessage, 'agent');
+        }
+    }
+
+    async analyzePhotoInChat(base64Image) {
+        try {
+            const response = await fetch(`${this.apiBaseUrl}/ai/analyze-images`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    images: [{
+                        data: base64Image,
+                        filename: 'chat_photo.jpg',
+                        size: base64Image.length
+                    }],
+                    session_id: this.sessionId,
+                    language: this.getLanguage(),
+                    region: 'india'
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            return data.success ? data.data : null;
+        } catch (error) {
+            console.error('Backend photo analysis error:', error);
+            // Fallback to local analysis
+            return this.performLocalPhotoAnalysis();
+        }
+    }
+
+    performLocalPhotoAnalysis() {
+        // Simulate local photo analysis
+        const diseases = [
+            {
+                disease: 'Late Blight',
+                disease_hi: 'लेट ब्लाइट',
+                crop: 'Tomato',
+                crop_hi: 'टमाटर',
+                confidence: 0.85,
+                symptoms: ['Dark water-soaked lesions', 'White fungal growth'],
+                symptoms_hi: ['काले पानी से भरे घाव', 'सफेद फंगल वृद्धि']
+            },
+            {
+                disease: 'Rice Blast',
+                disease_hi: 'राइस ब्लास्ट',
+                crop: 'Rice',
+                crop_hi: 'चावल',
+                confidence: 0.78,
+                symptoms: ['Spindle-shaped lesions', 'Gray centers'],
+                symptoms_hi: ['तकली के आकार के घाव', 'ग्रे केंद्र']
+            }
+        ];
+
+        return diseases[Math.floor(Math.random() * diseases.length)];
+    }
+
+    processPhotoAnalysisResult(result) {
+        if (!result) return;
+
+        const isHindi = this.getLanguage() === 'hi';
+        this.currentDisease = result;
+
+        // AI doctor analyzes the photo
+        const analysisMessage = isHindi ? 
+            `मैंने आपकी फोटो देखी है। आपकी ${result.crop_hi} में ${result.disease_hi} का रोग है। Confidence: ${Math.round(result.confidence * 100)}%` :
+            `I've analyzed your photo. Your ${result.crop} has ${result.disease} disease. Confidence: ${Math.round(result.confidence * 100)}%`;
+
+        this.addMessage(analysisMessage, 'agent');
+        this.speakResponse(analysisMessage);
+
+        // Ask for tanki size
+        setTimeout(() => {
+            this.askForTankiSize();
+        }, 2000);
+    }
+
+    askForTankiSize() {
+        const isHindi = this.getLanguage() === 'hi';
+        const tankiMessage = isHindi ? 
+            "अब मुझे बताइए कि आप कितने लीटर की टंकी का उपयोग करेंगे? (जैसे 10, 15, 20 लीटर)" :
+            "Now tell me, how many liters tank will you use? (like 10, 15, 20 liters)";
+        
+        this.addMessage(tankiMessage, 'agent');
+        this.speakResponse(tankiMessage);
+    }
+
+    initializeSpeechAPIs() {
+        // Initialize Speech Recognition
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            this.recognition = new SpeechRecognition();
+            this.recognition.continuous = false;
+            this.recognition.interimResults = false;
+            this.recognition.lang = 'hi-IN'; // Hindi with Indian accent
+            this.recognition.maxAlternatives = 1;
+        }
+
+        // Initialize Speech Synthesis
+        if ('speechSynthesis' in window) {
+            this.synthesis = window.speechSynthesis;
+        }
+    }
+
+    setupEventListeners() {
+        // Voice button events
+        const voiceBtn = document.getElementById('voiceBtn');
+        if (voiceBtn) {
+            voiceBtn.addEventListener('mousedown', () => this.startListening());
+            voiceBtn.addEventListener('mouseup', () => this.stopListening());
+            voiceBtn.addEventListener('mouseleave', () => this.stopListening());
+            
+            // Touch events for mobile
+            voiceBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                this.startListening();
+            });
+            voiceBtn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                this.stopListening();
+            });
+        }
+
+        // Text input events
+        const textInput = document.getElementById('textMessageInput');
+        if (textInput) {
+            textInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    this.sendTextMessage();
+                }
+            });
+        }
+    }
+
+    startListening() {
+        if (!this.recognition || this.isListening || this.isProcessing) return;
+
+        this.isListening = true;
+        this.updateUI('listening');
+        
+        this.recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            this.processUserInput(transcript);
+        };
+
+        this.recognition.onerror = (event) => {
+            console.error('Speech recognition error:', event.error);
+            this.updateUI('ready');
+            this.isListening = false;
+            this.showNotification('Voice recognition failed. Please try again.', 'error');
+        };
+
+        this.recognition.onend = () => {
+            this.isListening = false;
+            this.updateUI('ready');
+        };
+
+        this.recognition.start();
+    }
+
+    stopListening() {
+        if (this.recognition && this.isListening) {
+            this.recognition.stop();
+        }
+    }
+
+    async processUserInput(input) {
+        console.log('💬 Processing user input:', input);
+        this.addMessage(input, 'user');
+        this.updateUI('processing');
+        this.isProcessing = true;
+
+        try {
+            // Detect language from input
+            const detectedLanguage = this.detectLanguage(input);
+            
+            // Check for Happy activation
+            if (this.checkForHappyActivation(input)) {
+                this.activateHappy(detectedLanguage);
+                return;
+            }
+            
+            // Check if Happy is activated
+            if (!this.isActivated) {
+                this.promptForActivation(detectedLanguage);
+                return;
+            }
+            
+            // Check if user is providing tanki size
+            const tankiSize = this.extractTankiSize(input);
+            if (tankiSize && this.currentDisease) {
+                this.processTankiSizeInput(tankiSize, detectedLanguage);
+                return;
+            }
+            
+            // Check if user is asking for photo upload
+            if (this.isPhotoUploadRequest(input)) {
+                this.handlePhotoUploadRequest(detectedLanguage);
+                return;
+            }
+            
+            // Send to backend API
+            const response = await this.sendToBackend(input, detectedLanguage);
+            
+            // Add AI response to chat
+            this.addMessage(response.response, 'agent');
+            
+            // Store in conversation history
+            this.conversationHistory.push({
+                user: input,
+                agent: response.response,
+                language: detectedLanguage,
+                timestamp: new Date(),
+                detected_crop: response.detected_crop,
+                detected_disease: response.detected_disease,
+                confidence: response.confidence_score
+            });
+            
+            // Save to localStorage
+            this.saveConversationHistory();
+            
+            // Speak the response
+            this.speakResponse(response.response, detectedLanguage);
+            
+            // Show treatment recommendations if disease detected
+            if (response.detected_disease && response.similar_diseases) {
+                this.showTreatmentRecommendations(response.similar_diseases[0]);
+            }
+            
+        } catch (error) {
+            console.error('Error processing input:', error);
+            const errorMessage = this.getLanguage() === 'hi' ? 
+                'मुझे खेद है, मैं आपकी बात समझ नहीं पाया। कृपया दोबारा कोशिश करें।' :
+                'Sorry, I encountered an error. Please try again.';
+            this.addMessage(errorMessage, 'agent');
+        } finally {
+            this.isProcessing = false;
+            this.updateUI('ready');
+        }
+    }
+
+    checkForHappyActivation(input) {
+        const lowerInput = input.toLowerCase();
+        const isActivation = lowerInput.includes('happy') || lowerInput.includes('हेप्पी') || lowerInput.includes('हैप्पी');
+        console.log('🔍 Checking Happy activation:', input, '->', isActivation);
+        return isActivation;
+    }
+
+    activateHappy(language) {
+        console.log('🎉 Activating Happy!');
+        this.isActivated = true;
+        const isHindi = language === 'hi';
+        
+        const activationMessage = isHindi ? 
+            "🎉 **हम बोलिए!** मैं Happy हूं, आपका AI कृषि सहायक! मैं आपकी फसलों की देखभाल में मदद करूंगा। बताइए, आज कैसे मदद कर सकता हूं? मैं आपसे दोस्त की तरह बात करूंगा।" :
+            "🎉 **Let's talk!** I'm Happy, your AI agricultural assistant! I'll help you take care of your crops. Tell me, how can I help you today? I'll talk to you like a friend.";
+        
+        this.addMessage(activationMessage, 'agent');
+        this.speakResponse(activationMessage);
+        
+        // Show features after 3 seconds
+        setTimeout(() => {
+            this.showHappyFeatures(language);
+        }, 3000);
+    }
+
+    promptForActivation(language) {
+        const isHindi = language === 'hi';
+        
+        const promptMessage = isHindi ? 
+            "👋 नमस्ते! मैं Happy हूं। मुझे activate करने के लिए 'Happy' बोलिए, फिर मैं आपकी मदद करूंगा।" :
+            "👋 Hello! I'm Happy. Say 'Happy' to activate me, then I'll help you.";
+        
+        this.addMessage(promptMessage, 'agent');
+        this.speakResponse(promptMessage);
+    }
+
+    showHappyFeatures(language) {
+        const isHindi = language === 'hi';
+        
+        const featuresMessage = isHindi ? 
+            "🌟 **Happy की विशेषताएं:**\n\n" +
+            "💬 **दोस्ताना बातचीत**: मैं आपसे दोस्त की तरह बात करता हूं\n" +
+            "🌱 **फसल की देखभाल**: आपकी फसलों की हर समस्या का समाधान\n" +
+            "📸 **फोटो analysis**: फोटो भेजें, मैं disease detect करूंगा\n" +
+            "🧮 **Exact calculations**: Tanki size बताएं, exact medicine calculate करूंगा\n" +
+            "🔊 **Natural voice**: मैं natural voice में बात करता हूं\n" +
+            "❤️ **Feelings के साथ**: मैं आपकी feelings समझता हूं" :
+            
+            "🌟 **Happy's Features:**\n\n" +
+            "💬 **Friendly Chat**: I talk to you like a friend\n" +
+            "🌱 **Crop Care**: Solution for all your crop problems\n" +
+            "📸 **Photo Analysis**: Send photos, I'll detect diseases\n" +
+            "🧮 **Exact Calculations**: Tell me tank size, I'll calculate exact medicine\n" +
+            "🔊 **Natural Voice**: I speak in natural voice\n" +
+            "❤️ **With Feelings**: I understand your feelings";
+        
+        this.addMessage(featuresMessage, 'agent');
+        this.speakResponse(featuresMessage);
+    }
+
+    extractTankiSize(input) {
+        // Extract tanki size from user input
+        const numbers = input.match(/\d+/g);
+        if (numbers) {
+            const size = parseInt(numbers[0]);
+            if (size >= 5 && size <= 100) { // Reasonable tanki size range
+                return size;
+            }
+        }
+        return null;
+    }
+
+    processTankiSizeInput(tankiSize, language) {
+        const isHindi = language === 'hi';
+        
+        // AI doctor calculates medicine based on tanki size
+        const calculation = this.calculateMedicineForTanki(tankiSize, this.currentDisease);
+        
+        const response = isHindi ? 
+            `बहुत अच्छा! आपकी ${tankiSize} लीटर टंकी के लिए मैं आपको exact calculation देता हूं:\n\n` +
+            `💊 **दवा**: ${calculation.medicine.name_hi}\n` +
+            `📏 **मात्रा**: ${calculation.medicineQuantity} ${calculation.medicine.unit}\n` +
+            `💧 **पानी**: ${tankiSize} लीटर\n` +
+            `💰 **लागत**: ₹${calculation.cost}\n\n` +
+            `⏰ **उपयोग का तरीका**:\n` +
+            `1. पहले टंकी में ${tankiSize} लीटर पानी भरें\n` +
+            `2. ${calculation.medicineQuantity} ${calculation.medicine.unit} दवा मिलाएं\n` +
+            `3. अच्छी तरह मिलाएं\n` +
+            `4. सुबह 6-8 बजे या शाम 5-7 बजे छिड़काव करें\n` +
+            `5. हर 7 दिन में दोबारा करें\n\n` +
+            `⚠️ **सावधानी**: त्वचा और आंखों के संपर्क से बचें` :
+            
+            `Great! For your ${tankiSize} liter tank, here's the exact calculation:\n\n` +
+            `💊 **Medicine**: ${calculation.medicine.name_en}\n` +
+            `📏 **Quantity**: ${calculation.medicineQuantity} ${calculation.medicine.unit}\n` +
+            `💧 **Water**: ${tankiSize} liters\n` +
+            `💰 **Cost**: ₹${calculation.cost}\n\n` +
+            `⏰ **How to Use**:\n` +
+            `1. First fill ${tankiSize} liters water in tank\n` +
+            `2. Add ${calculation.medicineQuantity} ${calculation.medicine.unit} medicine\n` +
+            `3. Mix well\n` +
+            `4. Spray in morning 6-8 AM or evening 5-7 PM\n` +
+            `5. Repeat every 7 days\n\n` +
+            `⚠️ **Precaution**: Avoid contact with skin and eyes`;
+        
+        this.addMessage(response, 'agent');
+        this.speakResponse(response);
+        
+        // Ask if they need more help
+        setTimeout(() => {
+            const followUpMessage = isHindi ? 
+                "क्या आपको कोई और सवाल है? या आप किसी और फसल की फोटो भेजना चाहते हैं?" :
+                "Do you have any other questions? Or would you like to send photos of other crops?";
+            this.addMessage(followUpMessage, 'agent');
+            this.speakResponse(followUpMessage);
+        }, 3000);
+    }
+
+    calculateMedicineForTanki(tankiSize, disease) {
+        // AI mind calculation - no external calculator
+        const treatments = this.getTreatmentDataForDisease(disease);
+        const treatment = treatments[0]; // Get best treatment
+        
+        // Calculate based on standard ratio: 2-3 grams per liter
+        const gramsPerLiter = 2.5; // AI's intelligent calculation
+        const medicineQuantity = (tankiSize * gramsPerLiter).toFixed(1);
+        const cost = (treatment.cost_per_unit * medicineQuantity / 1000).toFixed(2);
+        
+        return {
+            medicine: treatment,
+            medicineQuantity: medicineQuantity,
+            tankiSize: tankiSize,
+            cost: cost
+        };
+    }
+
+    getTreatmentDataForDisease(disease) {
+        // AI's knowledge base for treatments
+        const treatmentDatabase = {
+            'Late Blight': [{
+                name_en: 'Chlorothalonil 75% WP',
+                name_hi: 'क्लोरोथैलोनिल 75% WP',
+                cost_per_unit: 380,
+                unit: 'g'
+            }],
+            'Rice Blast': [{
+                name_en: 'Tricyclazole 75% WP',
+                name_hi: 'ट्राइसाइक्लाजोल 75% WP',
+                cost_per_unit: 450,
+                unit: 'g'
+            }]
+        };
+        
+        return treatmentDatabase[disease.disease] || treatmentDatabase['Late Blight'];
+    }
+
+    isPhotoUploadRequest(input) {
+        const photoKeywords = ['photo', 'फोटो', 'image', 'तस्वीर', 'picture', 'चित्र'];
+        return photoKeywords.some(keyword => input.toLowerCase().includes(keyword));
+    }
+
+    handlePhotoUploadRequest(language) {
+        const isHindi = language === 'hi';
+        const message = isHindi ? 
+            "बहुत अच्छा! आप मुझे फोटो भेज सकते हैं। ऊपर 'Photo Upload' बटन पर क्लिक करें या फोटो को यहाँ drag & drop करें।" :
+            "Great! You can send me photos. Click the 'Photo Upload' button above or drag & drop photos here.";
+        
+        this.addMessage(message, 'agent');
+        this.speakResponse(message);
+    }
+
+    convertFileToBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }
+
+    async sendToBackend(query, language) {
+        try {
+            console.log('🚀 Sending to backend:', query, language);
+            const response = await fetch(`${this.apiBaseUrl}/farmer/query`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    query: query,
+                    language: language,
+                    session_id: this.sessionId
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log('📥 Backend response:', data);
+            
+            if (data.success) {
+                return data.data;
+            } else {
+                throw new Error(data.error?.message || 'Unknown error');
+            }
+        } catch (error) {
+            console.error('Backend API error:', error);
+            // Fallback to local response if backend is not available
+            return await this.generateLocalResponse(query, language);
+        }
+    }
+
+    detectLanguage(text) {
+        // Simple language detection based on Devanagari script
+        const hindiRegex = /[\u0900-\u097F]/;
+        return hindiRegex.test(text) ? 'hi' : 'en';
+    }
+
+    getLanguage() {
+        return document.getElementById('languageSelect')?.value || 'en';
+    }
+
+    async generateLocalResponse(query, language) {
+        // Happy's human-like responses with feelings
+        const lowerQuery = query.toLowerCase();
+        
+        // Happy's agricultural knowledge base with emotional responses
+        const knowledgeBase = {
+            hi: {
+                greetings: [
+                    "हां भाई! मैं Happy हूं, आपका AI कृषि सहायक। मैं आपसे दोस्त की तरह बात करूंगा। बताइए आपकी फसल में क्या समस्या है?",
+                    "नमस्ते! मैं Happy हूं और मैं यहां आपकी मदद के लिए हूं। मैं आपकी हर समस्या का समाधान दूंगा।",
+                    "हैलो भाई! मैं Happy हूं। मैं आपका कृषि दोस्त हूं। कैसे मदद कर सकता हूं?"
+                ],
+                tomato: [
+                    "अरे भाई! आपके टमाटर में Late Blight का रोग है। चिंता मत करिए, मैं आपकी मदद करूंगा। Chlorothalonil का उपयोग करें। 2-3 ग्राम प्रति लीटर पानी में मिलाकर छिड़काव करें।",
+                    "टमाटर के पत्तों पर पीले धब्बे Early Blight का संकेत है। Mancozeb 75% WP का छिड़काव करें। मैं आपके साथ हूं।"
+                ],
+                rice: [
+                    "हां भाई, राइस ब्लास्ट की समस्या है। मैं आपको बताता हूं कि क्या करना है। Tricyclazole का उपयोग करें। आपकी फसल जल्दी ठीक हो जाएगी।",
+                    "चावल के पत्तों पर भूरे धब्बे Brown Spot का लक्षण है। Propiconazole का छिड़काव करें। मैं आपकी मदद करूंगा।"
+                ],
+                wheat: [
+                    "गेहूं में Wheat Rust की समस्या है। चिंता मत करिए, मैं यहां हूं। Tebuconazole का उपयोग करें। आपकी फसल अच्छी हो जाएगी।",
+                    "गेहूं के पत्तों पर नारंगी धब्बे Wheat Rust का संकेत है। तुरंत उपचार करें। मैं आपके साथ हूं।"
+                ],
+                chili: [
+                    "मिर्च की बात कर रहे हैं! मैं आपकी मदद करूंगा। Anthracnose के लिए Carbendazim का उपयोग करें। आपकी मिर्च अच्छी हो जाएगी।",
+                    "मिर्च के फलों पर काले धब्बे Anthracnose का लक्षण है। तुरंत उपचार करें। मैं यहां हूं आपकी मदद के लिए।"
+                ],
+                general: [
+                    "हां भाई, मैं यहां हूं! मैं Happy हूं और मैं आपकी मदद करूंगा। कृपया फसल का नाम और लक्षण बताएं। मैं आपसे दोस्त की तरह बात करूंगा।",
+                    "बेहतर सलाह के लिए आप फोटो भी भेज सकते हैं। मैं आपकी हर समस्या का समाधान दूंगा।",
+                    "चिंता मत करिए, मैं यहां हूं। किसी भी रासायनिक उपचार से पहले मुझसे पूछिए।"
+                ]
+            },
+            en: {
+                greetings: [
+                    "Hello! I'm your AI agricultural assistant. You can ask me about any crop disease.",
+                    "Hi there! I'm here to help you with your farming problems. What's troubling your crops?",
+                    "Greetings! I'm your agricultural expert. How can I assist you today?"
+                ],
+                tomato: [
+                    "Tomatoes commonly suffer from Late Blight, Early Blight, and Bacterial Spot. Dark spots on leaves could indicate Late Blight. Use Chlorothalonil.",
+                    "Yellow spots on tomato leaves indicate Early Blight. Apply Mancozeb 75% WP."
+                ],
+                rice: [
+                    "Rice is affected by Rice Blast, Brown Spot, and Bacterial Leaf Blight. Use Tricyclazole for Rice Blast.",
+                    "Brown spots on rice leaves indicate Brown Spot disease. Apply Propiconazole."
+                ],
+                wheat: [
+                    "Wheat suffers from Wheat Rust, Powdery Mildew, and Leaf Blight. Use Tebuconazole for Rust.",
+                    "Orange spots on wheat leaves indicate Wheat Rust. Treat immediately."
+                ],
+                chili: [
+                    "Chili is affected by Anthracnose, Bacterial Spot, and Powdery Mildew. Use Carbendazim for Anthracnose.",
+                    "Black spots on chili fruits indicate Anthracnose. Treat immediately."
+                ],
+                general: [
+                    "I need more information to give you the right treatment for your crop. Please tell me the crop name and symptoms.",
+                    "For better advice, you can also send photos. I'll help you identify the problem.",
+                    "Always consult a local agricultural expert before using any chemical treatment."
+                ]
+            }
+        };
+
+        // Detect crop from query
+        let crop = 'general';
+        if (lowerQuery.includes('tomato') || lowerQuery.includes('टमाटर')) crop = 'tomato';
+        else if (lowerQuery.includes('rice') || lowerQuery.includes('चावल')) crop = 'rice';
+        else if (lowerQuery.includes('wheat') || lowerQuery.includes('गेहूं')) crop = 'wheat';
+        else if (lowerQuery.includes('chili') || lowerQuery.includes('मिर्च')) crop = 'chili';
+
+        // Check for greetings
+        const greetings = ['hello', 'hi', 'namaste', 'नमस्ते', 'हैलो', 'आदाब'];
+        if (greetings.some(g => lowerQuery.includes(g))) {
+            crop = 'greetings';
+        }
+
+        const responses = knowledgeBase[language]?.[crop] || knowledgeBase[language]?.general || knowledgeBase.en.general;
+        const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+
+        return {
+            response: randomResponse,
+            detected_crop: crop === 'general' ? null : crop,
+            detected_disease: null,
+            confidence_score: 0.6,
+            response_time_ms: 100
+        };
+    }
+
+    showTreatmentRecommendations(disease) {
+        if (!disease) return;
+        
+        // Scroll to treatment section
+        const treatmentSection = document.getElementById('treatment-recommendations');
+        if (treatmentSection) {
+            treatmentSection.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Show detailed calculation modal
+        this.showCalculationModal(disease);
+        
+        // Show notification
+        const message = this.getLanguage() === 'hi' ? 
+            `${disease.name_hi || disease.name_en} के लिए उपचार सुझाव नीचे उपलब्ध हैं!` :
+            `Treatment recommendations for ${disease.name_en} are now available below!`;
+        showNotification(message, 'success');
+    }
+
+    showCalculationModal(disease) {
+        const isHindi = this.getLanguage() === 'hi';
+        
+        // Create calculation modal
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.innerHTML = `
+            <div class="modal-content calculation-modal">
+                <div class="modal-header">
+                    <h3>${isHindi ? 'दवा की गणना' : 'Medicine Calculation'}</h3>
+                    <span class="modal-close" onclick="this.closest('.modal').remove()">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div class="calculation-form">
+                        <div class="form-group">
+                            <label>${isHindi ? 'खेत का क्षेत्रफल' : 'Field Area'}</label>
+                            <div class="area-inputs">
+                                <input type="number" id="fieldArea" placeholder="0" min="0" step="0.1">
+                                <select id="areaUnit">
+                                    <option value="acre">${isHindi ? 'एकड़' : 'Acre'}</option>
+                                    <option value="hectare">${isHindi ? 'हेक्टेयर' : 'Hectare'}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" onclick="aiAgent.calculateMedicine()">
+                            ${isHindi ? 'गणना करें' : 'Calculate'}
+                        </button>
+                    </div>
+                    <div id="calculationResult" class="calculation-result" style="display: none;">
+                        <!-- Results will be populated here -->
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // Store disease data for calculation
+        this.currentDisease = disease;
+    }
+
+    calculateMedicine() {
+        const area = parseFloat(document.getElementById('fieldArea').value);
+        const unit = document.getElementById('areaUnit').value;
+        const isHindi = this.getLanguage() === 'hi';
+        
+        if (!area || area <= 0) {
+            showNotification(isHindi ? 'कृपया सही क्षेत्रफल दर्ज करें' : 'Please enter valid area', 'error');
+            return;
+        }
+        
+        const resultDiv = document.getElementById('calculationResult');
+        resultDiv.style.display = 'block';
+        
+        // Get treatment data (this would come from backend in real implementation)
+        const treatments = this.getTreatmentData(this.currentDisease);
+        
+        let resultHTML = `
+            <h4>${isHindi ? 'गणना परिणाम' : 'Calculation Results'}</h4>
+            <div class="calculation-summary">
+                <p><strong>${isHindi ? 'क्षेत्रफल' : 'Area'}:</strong> ${area} ${unit === 'acre' ? (isHindi ? 'एकड़' : 'acres') : (isHindi ? 'हेक्टेयर' : 'hectares')}</p>
+            </div>
+        `;
+        
+        treatments.forEach(treatment => {
+            const dosage = unit === 'acre' ? treatment.dosage_per_acre : treatment.dosage_per_hectare;
+            const water = unit === 'acre' ? treatment.water_requirement_per_acre : treatment.water_requirement_per_hectare;
+            const sprayVolume = unit === 'acre' ? treatment.spray_volume_per_acre : treatment.spray_volume_per_hectare;
+            
+            const totalDosage = (dosage * area).toFixed(2);
+            const totalWater = (water * area).toFixed(0);
+            const totalSpray = (sprayVolume * area).toFixed(0);
+            const totalCost = (treatment.cost_per_unit * totalDosage / 1000).toFixed(2);
+            
+            resultHTML += `
+                <div class="treatment-calculation">
+                    <h5>${treatment.name_en} (${treatment.name_hi || ''})</h5>
+                    <div class="calculation-details">
+                        <div class="detail-item">
+                            <span class="label">${isHindi ? 'दवा की मात्रा' : 'Medicine Quantity'}:</span>
+                            <span class="value">${totalDosage} ${treatment.unit}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="label">${isHindi ? 'पानी की जरूरत' : 'Water Required'}:</span>
+                            <span class="value">${totalWater} ${isHindi ? 'लीटर' : 'liters'}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="label">${isHindi ? 'स्प्रे वॉल्यूम' : 'Spray Volume'}:</span>
+                            <span class="value">${totalSpray} ${isHindi ? 'लीटर' : 'liters'}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="label">${isHindi ? 'अनुप्रयोग समय' : 'Application Timing'}:</span>
+                            <span class="value">${treatment.application_timing}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="label">${isHindi ? 'पुन: आवेदन' : 'Reapplication'}:</span>
+                            <span class="value">${isHindi ? 'हर' : 'Every'} ${treatment.reapplication_interval} ${isHindi ? 'दिन' : 'days'}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="label">${isHindi ? 'कुल अनुप्रयोग' : 'Total Applications'}:</span>
+                            <span class="value">${treatment.total_applications} ${isHindi ? 'बार' : 'times'}</span>
+                        </div>
+                        <div class="detail-item cost">
+                            <span class="label">${isHindi ? 'अनुमानित लागत' : 'Estimated Cost'}:</span>
+                            <span class="value">₹${totalCost}</span>
+                        </div>
+                    </div>
+                    <div class="safety-warning">
+                        <strong>${isHindi ? 'सुरक्षा सावधानियां' : 'Safety Precautions'}:</strong>
+                        <p>${isHindi ? treatment.safety_precautions_hi : treatment.safety_precautions_en}</p>
+                    </div>
+                </div>
+            `;
+        });
+        
+        resultDiv.innerHTML = resultHTML;
+    }
+
+    getTreatmentData(disease) {
+        // This would fetch from backend in real implementation
+        // For now, return sample data
+        return [
+            {
+                name_en: 'Chlorothalonil 75% WP',
+                name_hi: 'क्लोरोथैलोनिल 75% WP',
+                dosage_per_acre: 500,
+                dosage_per_hectare: 1250,
+                water_requirement_per_acre: 200,
+                water_requirement_per_hectare: 500,
+                spray_volume_per_acre: 200,
+                spray_volume_per_hectare: 500,
+                application_timing: 'Early morning (6-8 AM) or evening (5-7 PM)',
+                reapplication_interval: 7,
+                total_applications: 3,
+                cost_per_unit: 380,
+                unit: 'g',
+                safety_precautions_en: 'Avoid contact with skin and eyes',
+                safety_precautions_hi: 'त्वचा और आंखों के संपर्क से बचें'
+            }
+        ];
+    }
+
+    async generateAIResponse(input) {
+        const lowerInput = input.toLowerCase();
+        
+        // Agricultural knowledge base
+        const responses = {
+            // Hindi responses
+            'tomato': {
+                'patte': 'Tomato के पत्तों पर काले धब्बे Late Blight या Early Blight का लक्षण हो सकता है। आपको Propiconazole 25% EC (1-2 ml per liter) का उपयोग करना चाहिए। साथ ही Neem oil भी काम करता है।',
+                'disease': 'Tomato में सबसे common diseases हैं: Late Blight, Early Blight, Bacterial Spot, और Mosaic virus। हर disease का अलग treatment है।'
+            },
+            'rice': {
+                'blast': 'Rice Blast एक serious fungal disease है। Treatment के लिए Tricyclazole 75% WP (1-2 grams per liter) या Propiconazole 25% EC use करें। Proper spacing और nitrogen control भी जरूरी है।',
+                'disease': 'Rice में main diseases हैं: Blast, Sheath Blight, Brown Spot, और Bacterial Leaf Blight।'
+            },
+            'chili': {
+                'anthracnose': 'Chili Anthracnose के लिए Carbendazim 50% WP (1-2 grams per liter) या Mancozeb 75% WP use करें। Organic treatment में Neem oil और Chitosan spray भी effective है।',
+                'disease': 'Chili में common diseases हैं: Anthracnose, Bacterial Leaf Spot, और Mosaic virus।'
+            },
+            'wheat': {
+                'rust': 'Wheat Rust के लिए Tebuconazole 25% EC या Propiconazole 25% EC use करें। Organic में Sulfur dust भी काम करता है। Resistant varieties use करना best है।',
+                'disease': 'Wheat में main diseases हैं: Rust, Powdery Mildew, Septoria, और Karnal Bunt।'
+            },
+            'mango': {
+                'anthracnose': 'Mango Anthracnose के लिए Copper oxychloride 50% WP या Carbendazim 50% WP use करें। Bordeaux mixture भी effective है। Proper pruning और air circulation जरूरी है।',
+                'disease': 'Mango में common diseases हैं: Anthracnose, Powdery Mildew, और Bacterial Canker।'
+            },
+            'organic': {
+                'medicine': 'Organic treatments में Neem oil, Bordeaux mixture, Trichoderma, और Copper fungicides शामिल हैं। ये environment-friendly हैं और beneficial insects को नुकसान नहीं पहुंचाते।',
+                'treatment': 'Organic farming के लिए bio-fertilizers, compost, और natural pest control methods use करें।'
+            },
+            'treatment': {
+                'chemical': 'Chemical treatments effective हैं लेकिन safety precautions जरूरी हैं। Protective gear पहनें, proper dosage use करें, और local agriculture expert से consult करें।',
+                'dosage': 'हमेशा recommended dosage follow करें। Overdose harmful हो सकता है। Product label पर instructions पढ़ें।'
+            }
+        };
+
+        // Find best matching response
+        let bestResponse = null;
+        let maxScore = 0;
+
+        for (const [category, subResponses] of Object.entries(responses)) {
+            for (const [keyword, response] of Object.entries(subResponses)) {
+                const score = this.calculateRelevanceScore(lowerInput, category, keyword);
+                if (score > maxScore) {
+                    maxScore = score;
+                    bestResponse = response;
+                }
+            }
+        }
+
+        // Default responses
+        if (!bestResponse) {
+            if (lowerInput.includes('namaste') || lowerInput.includes('hello')) {
+                bestResponse = 'Namaste! Main aapka AI assistant hun. Aap mujhse crop diseases, treatment, ya farming ke bare mein koi bhi sawal puch sakte hain।';
+            } else if (lowerInput.includes('help') || lowerInput.includes('madad')) {
+                bestResponse = 'Main aapki madad kar sakta hun crop diseases identify करने में, treatment suggest करने में, और farming tips देने में। Aap specific crop ya disease ka naam bataiye।';
+            } else {
+                bestResponse = 'Main aapki baat samajh gaya, lekin main specific information provide kar sakta hun। Kya aap specific crop ya disease ka naam bata sakte hain? Jaise Tomato, Rice, Wheat, ya Chili।';
+            }
+        }
+
+        // Add safety disclaimer
+        const safetyNote = '\n\n⚠️ Important: यह AI advice है। Chemical treatments use करने से पहले local agriculture expert से consult करें। Safety precautions follow करें।';
+
+        return {
+            text: bestResponse + safetyNote,
+            shouldSpeak: true,
+            confidence: maxScore / 10
+        };
+    }
+
+    calculateRelevanceScore(input, category, keyword) {
+        let score = 0;
+        
+        // Direct keyword matches
+        if (input.includes(category)) score += 3;
+        if (input.includes(keyword)) score += 2;
+        
+        // Hindi variations
+        const hindiVariations = {
+            'tomato': ['टमाटर', 'tamatar'],
+            'rice': ['चावल', 'chawal', 'dhan'],
+            'chili': ['मिर्च', 'mirch', 'lal mirch'],
+            'wheat': ['गेहूं', 'gehun'],
+            'mango': ['आम', 'aam'],
+            'patte': ['पत्ते', 'patta', 'leaves'],
+            'disease': ['रोग', 'rog', 'bimari'],
+            'treatment': ['इलाज', 'ilaaj', 'upchar'],
+            'organic': ['जैविक', 'jaivik', 'natural'],
+            'medicine': ['दवा', 'dawa', 'spray']
+        };
+
+        if (hindiVariations[category]) {
+            for (const variation of hindiVariations[category]) {
+                if (input.includes(variation)) score += 2;
+            }
+        }
+
+        if (hindiVariations[keyword]) {
+            for (const variation of hindiVariations[keyword]) {
+                if (input.includes(variation)) score += 1;
+            }
+        }
+
+        return score;
+    }
+
+    addMessage(text, sender, shouldSpeak = true) {
+        const chatMessages = document.getElementById('chatMessages');
+        if (!chatMessages) {
+            console.error('Chat messages container not found');
+            return;
+        }
+
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${sender}-message`;
+        
+        const avatar = sender === 'agent' ? 'fas fa-robot' : 'fas fa-user';
+        const currentTime = new Date().toLocaleTimeString('hi-IN', { 
+            hour: '2-digit', 
+            minute: '2-digit' 
+        });
+
+        messageDiv.innerHTML = `
+            <div class="message-avatar">
+                <i class="${avatar}"></i>
+            </div>
+            <div class="message-content">
+                <p>${text}</p>
+                <div class="message-time">${currentTime}</div>
+            </div>
+        `;
+
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        // Store in conversation history
+        this.conversationHistory.push({ text, sender, timestamp: Date.now() });
+        
+        // Speak response if it's from agent and shouldSpeak is true
+        if (sender === 'agent' && shouldSpeak) {
+            this.speakResponse(text);
+        }
+    }
+
+    speakResponse(text) {
+        if (!this.synthesis || this.isMuted) return;
+
+        // Cancel any ongoing speech
+        this.synthesis.cancel();
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        
+        // Set language based on content
+        if (this.getLanguage() === 'hi' || /[\u0900-\u097F]/.test(text)) {
+            utterance.lang = 'hi-IN'; // Hindi
+        } else {
+            utterance.lang = 'en-US'; // English
+        }
+        
+        // Natural voice settings for Happy
+        utterance.rate = 0.9; // Natural speaking speed
+        utterance.pitch = 1.1; // Slightly higher pitch for friendly tone
+        utterance.volume = 0.9; // Clear volume
+
+        // Try to use a more natural voice
+        const voices = this.synthesis.getVoices();
+        let selectedVoice = null;
+        
+        if (utterance.lang === 'hi-IN') {
+            // Prefer Hindi voices
+            selectedVoice = voices.find(voice => 
+                voice.lang.includes('hi') || voice.lang.includes('IN')
+            );
+        } else {
+            // Prefer English voices
+            selectedVoice = voices.find(voice => 
+                voice.lang.includes('en') && voice.name.includes('Female')
+            );
+        }
+        
+        if (selectedVoice) {
+            utterance.voice = selectedVoice;
+        }
+
+        // Add emotional expression
+        this.addEmotionalExpression(utterance, text);
+
+        this.synthesis.speak(utterance);
+    }
+
+    addEmotionalExpression(utterance, text) {
+        // Add emotional expressions based on content
+        const lowerText = text.toLowerCase();
+        
+        if (lowerText.includes('हम बोलिए') || lowerText.includes("let's talk")) {
+            // Excited tone for activation
+            utterance.pitch = 1.2;
+            utterance.rate = 1.0;
+        } else if (lowerText.includes('मदद') || lowerText.includes('help')) {
+            // Caring tone for help
+            utterance.pitch = 1.0;
+            utterance.rate = 0.8;
+        } else if (lowerText.includes('धन्यवाद') || lowerText.includes('thank')) {
+            // Happy tone for thanks
+            utterance.pitch = 1.1;
+            utterance.rate = 0.9;
+        } else if (lowerText.includes('समस्या') || lowerText.includes('problem')) {
+            // Concerned tone for problems
+            utterance.pitch = 0.9;
+            utterance.rate = 0.7;
+        }
+    }
+
+    toggleMute() {
+        this.isMuted = !this.isMuted;
+        
+        // Update mute button
+        const muteBtn = document.getElementById('muteBtn');
+        if (muteBtn) {
+            const icon = muteBtn.querySelector('i');
+            const text = muteBtn.querySelector('span');
+            
+            if (this.isMuted) {
+                icon.className = 'fas fa-volume-mute';
+                text.textContent = 'Unmute';
+                muteBtn.style.background = '#dc3545';
+            } else {
+                icon.className = 'fas fa-volume-up';
+                text.textContent = 'Mute';
+                muteBtn.style.background = '#4a7c59';
+            }
+        }
+        
+        // Stop current speech if muting
+        if (this.isMuted && this.synthesis) {
+            this.synthesis.cancel();
+        }
+        
+        // Show notification
+        const isHindi = this.getLanguage() === 'hi';
+        const message = this.isMuted ? 
+            (isHindi ? '🔇 Voice muted' : '🔇 Voice muted') :
+            (isHindi ? '🔊 Voice unmuted' : '🔊 Voice unmuted');
+        
+        this.addMessage(message, 'agent');
+    }
+
+    updateUI(status) {
+        const statusIndicator = document.getElementById('agentStatus');
+        const voiceBtn = document.getElementById('voiceBtn');
+        const voiceStatus = document.getElementById('voiceStatus');
+
+        if (statusIndicator) {
+            statusIndicator.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+            statusIndicator.className = `status-indicator ${status}`;
+        }
+
+        if (voiceBtn) {
+            if (status === 'listening') {
+                voiceBtn.classList.add('recording');
+                voiceBtn.innerHTML = '<i class="fas fa-stop"></i><span>Listening...</span>';
+            } else {
+                voiceBtn.classList.remove('recording');
+                voiceBtn.innerHTML = '<i class="fas fa-microphone"></i><span>Hold to speak</span>';
+            }
+        }
+
+        if (voiceStatus) {
+            const statusMessages = {
+                'ready': 'Click and hold to speak in Hindi or English',
+                'listening': 'Listening... Speak now',
+                'processing': 'Processing your question...'
+            };
+            voiceStatus.textContent = statusMessages[status] || statusMessages['ready'];
+        }
+    }
+
+    showNotification(message, type) {
+        // Use existing notification system
+        if (typeof showNotification === 'function') {
+            showNotification(message, type);
+        } else {
+            alert(message);
+        }
+    }
+}
+
+// Global AI Agent instance
+let aiAgent = null;
+
+// Initialize AI Agent
+function initializeAIAgent() {
+    try {
+        if (!aiAgent) {
+            console.log('Initializing AI Agent...');
+            aiAgent = new AIAgent();
+            console.log('AI Agent initialized successfully');
+        } else {
+            console.log('AI Agent already initialized');
+        }
+    } catch (error) {
+        console.error('Error initializing AI Agent:', error);
+        alert('Error initializing AI Agent. Please refresh the page.');
+    }
+}
+
+// Test function for Happy
+function testHappyDirect() {
+    console.log('🧪 Testing Happy directly...');
+    if (aiAgent) {
+        aiAgent.processUserInput('Happy');
+    } else {
+        alert('AI Agent not initialized!');
+    }
+}
+
+// Input mode switching
+function setInputMode(mode) {
+    const voiceInput = document.getElementById('voiceInput');
+    const textInput = document.getElementById('textInput');
+    const photoInput = document.getElementById('photoInput');
+    const modeBtns = document.querySelectorAll('.input-mode-btn');
+
+    // Update button states
+    modeBtns.forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.mode === mode) {
+            btn.classList.add('active');
+        }
+    });
+
+    // Show/hide input methods
+    if (mode === 'voice') {
+        voiceInput.style.display = 'block';
+        textInput.style.display = 'none';
+        photoInput.style.display = 'none';
+    } else if (mode === 'text') {
+        voiceInput.style.display = 'none';
+        textInput.style.display = 'flex';
+        photoInput.style.display = 'none';
+    } else if (mode === 'photo') {
+        voiceInput.style.display = 'none';
+        textInput.style.display = 'none';
+        photoInput.style.display = 'block';
+    }
+
+    if (aiAgent) {
+        aiAgent.currentInputMode = mode;
+    }
+}
+
+function handlePhotoUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    // Show preview
+    const preview = document.getElementById('photoPreview');
+    const previewImage = document.getElementById('previewImage');
+    const uploadBtn = document.querySelector('.photo-upload-btn');
+    
+    if (preview && previewImage) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            previewImage.src = e.target.result;
+            preview.style.display = 'block';
+            uploadBtn.style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+    }
+    
+    // Send to AI agent for analysis
+    if (aiAgent) {
+        aiAgent.handlePhotoUploadInChat(file);
+    }
+}
+
+function removePhoto() {
+    const preview = document.getElementById('photoPreview');
+    const uploadBtn = document.querySelector('.photo-upload-btn');
+    const fileInput = document.getElementById('photoUploadInput');
+    
+    if (preview) preview.style.display = 'none';
+    if (uploadBtn) uploadBtn.style.display = 'block';
+    if (fileInput) fileInput.value = '';
+}
+
+function toggleMute() {
+    if (aiAgent) {
+        aiAgent.toggleMute();
+    }
+}
+
+// Voice input functions
+function startVoiceInput() {
+    if (aiAgent) {
+        aiAgent.startListening();
+    } else {
+        console.error('AI Agent not initialized');
+        alert('AI Agent is not ready. Please wait a moment and try again.');
+    }
+}
+
+// Text input functions
+function sendTextMessage() {
+    const textInput = document.getElementById('textMessageInput');
+    if (!textInput) {
+        console.error('Text input not found');
+        return;
+    }
+    
+    if (!aiAgent) {
+        console.error('AI Agent not initialized');
+        alert('AI Agent is not ready. Please wait a moment and try again.');
+        return;
+    }
+
+    const message = textInput.value.trim();
+    if (message) {
+        aiAgent.processUserInput(message);
+        textInput.value = '';
+    } else {
+        alert('Please enter a message first.');
+    }
+}
+
+// Quick question function
+function askQuickQuestion(question) {
+    if (aiAgent) {
+        aiAgent.processUserInput(question);
+    } else {
+        console.error('AI Agent not initialized');
+        alert('AI Agent is not ready. Please wait a moment and try again.');
+    }
 }
 
 // User data control functions

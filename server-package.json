@@ -1,0 +1,36 @@
+{
+  "name": "happy-ai-server",
+  "version": "1.0.0",
+  "description": "Perfect AI Server for Happy - Agricultural Assistant",
+  "main": "perfect-ai-server.js",
+  "scripts": {
+    "start": "node perfect-ai-server.js",
+    "dev": "nodemon perfect-ai-server.js",
+    "test": "node test-server.js",
+    "setup": "npm install && npm start"
+  },
+  "keywords": [
+    "ai",
+    "agriculture",
+    "happy",
+    "crop-disease",
+    "farmer-assistant"
+  ],
+  "author": "Happy AI Team",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "express-rate-limit": "^7.1.5",
+    "uuid": "^9.0.1",
+    "compression": "^1.7.4",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

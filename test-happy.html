@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f0f8f0;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .result {
+            background: #f9f9f9;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #4CAF50;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🤖 Happy AI Agent Test</h1>
+    
+    <div class="test-section">
+        <h3>Test Happy Activation</h3>
+        <input type="text" id="testInput" placeholder="Type 'Happy' to activate" value="Happy">
+        <button onclick="testHappy()">Test Happy</button>
+        <div id="result1" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Test Backend Connection</h3>
+        <button onclick="testBackend()">Test Backend</button>
+        <div id="result2" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Test Disease Query</h3>
+        <input type="text" id="diseaseInput" placeholder="Ask about disease" value="मेरे टमाटर में काले धब्बे आ रहे हैं">
+        <button onclick="testDisease()">Test Disease Query</button>
+        <div id="result3" class="result"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000/api/v1';
+
+        async function testHappy() {
+            const input = document.getElementById('testInput').value;
+            const resultDiv = document.getElementById('result1');
+            
+            try {
+                resultDiv.innerHTML = '🔄 Testing...';
+                
+                const response = await fetch(`${API_BASE}/farmer/query`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        query: input,
+                        language: 'hi',
+                        session_id: 'test-session'
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.innerHTML = `✅ SUCCESS<br><strong>Response:</strong> ${data.data.response}`;
+                } else {
+                    resultDiv.innerHTML = `❌ ERROR: ${data.error?.message || 'Unknown error'}`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `❌ CONNECTION ERROR: ${error.message}`;
+            }
+        }
+
+        async function testBackend() {
+            const resultDiv = document.getElementById('result2');
+            
+            try {
+                resultDiv.innerHTML = '🔄 Testing backend connection...';
+                
+                const response = await fetch(`${API_BASE.replace('/api/v1', '')}/api/health`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `✅ BACKEND CONNECTED<br><strong>Status:</strong> ${data.status}<br><strong>Uptime:</strong> ${Math.round(data.uptime)}s`;
+                } else {
+                    resultDiv.innerHTML = `❌ BACKEND ERROR: ${response.status}`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `❌ CONNECTION FAILED: ${error.message}`;
+            }
+        }
+
+        async function testDisease() {
+            const input = document.getElementById('diseaseInput').value;
+            const resultDiv = document.getElementById('result3');
+            
+            try {
+                resultDiv.innerHTML = '🔄 Testing disease query...';
+                
+                const response = await fetch(`${API_BASE}/farmer/query`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        query: input,
+                        language: 'hi',
+                        session_id: 'test-session'
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.innerHTML = `✅ SUCCESS<br><strong>Response:</strong> ${data.data.response}<br><strong>Confidence:</strong> ${data.data.confidence}`;
+                } else {
+                    resultDiv.innerHTML = `❌ ERROR: ${data.error?.message || 'Unknown error'}`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `❌ CONNECTION ERROR: ${error.message}`;
+            }
+        }
+
+        // Auto-test on load
+        window.onload = function() {
+            testBackend();
+        };
+    </script>
+</body>
+</html>
