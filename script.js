@@ -280,6 +280,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize AI Agent with delay to ensure DOM is ready
     setTimeout(() => {
+        console.log('🚀 Initializing AI Agent...');
+        console.log('🔍 Checking functions availability:');
+        console.log('  - testHappyDirect:', typeof testHappyDirect);
+        console.log('  - activateHappyDirect:', typeof activateHappyDirect);
+        console.log('  - setInputMode:', typeof setInputMode);
         initializeAIAgent();
     }, 1500);
     
@@ -3537,16 +3542,23 @@ class AIAgent {
         try {
             // Detect language from input
             const detectedLanguage = this.detectLanguage(input);
+            console.log('🌍 Detected language:', detectedLanguage);
             
-            // Check for Happy activation
+            // Check for Happy activation FIRST
             if (this.checkForHappyActivation(input)) {
+                console.log('🎉 Happy activation detected!');
                 this.activateHappy(detectedLanguage);
+                this.updateUI('ready');
+                this.isProcessing = false;
                 return;
             }
             
             // Check if Happy is activated
             if (!this.isActivated) {
+                console.log('⚠️ Happy not activated, prompting...');
                 this.promptForActivation(detectedLanguage);
+                this.updateUI('ready');
+                this.isProcessing = false;
                 return;
             }
             
@@ -3619,7 +3631,8 @@ class AIAgent {
             "🎉 **हम बोलिए!** मैं Happy हूं, आपका AI कृषि सहायक! मैं आपकी फसलों की देखभाल में मदद करूंगा। बताइए, आज कैसे मदद कर सकता हूं? मैं आपसे दोस्त की तरह बात करूंगा।" :
             "🎉 **Let's talk!** I'm Happy, your AI agricultural assistant! I'll help you take care of your crops. Tell me, how can I help you today? I'll talk to you like a friend.";
         
-        this.addMessage(activationMessage, 'agent');
+        console.log('💬 Adding activation message:', activationMessage);
+        this.addMessage(activationMessage, 'ai', true);
         this.speakResponse(activationMessage);
         
         // Show features after 3 seconds
@@ -4387,11 +4400,27 @@ function initializeAIAgent() {
 // Test function for Happy
 function testHappyDirect() {
     console.log('🧪 Testing Happy directly...');
+    alert('🧪 Testing Happy activation...');
     if (aiAgent) {
         aiAgent.processUserInput('Happy');
     } else {
-        alert('AI Agent not initialized!');
+        alert('❌ AI Agent not initialized! Please refresh the page.');
     }
+}
+
+function activateHappyDirect() {
+    console.log('🎉 Activating Happy directly...');
+    alert('🎉 Activating Happy...');
+    if (aiAgent) {
+        aiAgent.activateHappy('hi');
+    } else {
+        alert('❌ AI Agent not initialized! Please refresh the page.');
+    }
+}
+
+function testButtonClick() {
+    console.log('🔧 Testing button click...');
+    alert('✅ Button click is working! JavaScript is functioning properly.');
 }
 
 // Input mode switching

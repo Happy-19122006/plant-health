@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Button Test Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f0f8f0;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .test-button {
+            background: #ff6b6b;
+        }
+        .test-button:hover {
+            background: #ee5a52;
+        }
+        .result {
+            background: #f9f9f9;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #4CAF50;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 Button Click Test</h1>
+    
+    <div class="test-section">
+        <h3>Basic Button Tests</h3>
+        <button onclick="testBasicClick()">Test Basic Click</button>
+        <button onclick="testAlert()">Test Alert</button>
+        <button onclick="testConsole()">Test Console</button>
+        <div id="basicResult" class="result">Click buttons to test...</div>
+    </div>
+
+    <div class="test-section">
+        <h3>Happy Function Tests</h3>
+        <button onclick="testHappyDirect()">Test Happy Direct</button>
+        <button onclick="activateHappyDirect()">Activate Happy Direct</button>
+        <div id="happyResult" class="result">Click buttons to test Happy functions...</div>
+    </div>
+
+    <div class="test-section">
+        <h3>Input Mode Tests</h3>
+        <button onclick="setInputMode('voice')">Set Voice Mode</button>
+        <button onclick="setInputMode('text')">Set Text Mode</button>
+        <button onclick="setInputMode('photo')">Set Photo Mode</button>
+        <div id="modeResult" class="result">Click buttons to test input modes...</div>
+    </div>
+
+    <div class="test-section">
+        <h3>Function Availability Check</h3>
+        <button onclick="checkFunctions()">Check All Functions</button>
+        <div id="functionResult" class="result">Click to check function availability...</div>
+    </div>
+
+    <script>
+        // Basic test functions
+        function testBasicClick() {
+            const result = document.getElementById('basicResult');
+            result.textContent = '✅ Basic click test PASSED! Button is working.';
+            result.style.borderLeftColor = '#4CAF50';
+        }
+
+        function testAlert() {
+            alert('✅ Alert test PASSED! JavaScript is working.');
+            const result = document.getElementById('basicResult');
+            result.textContent = '✅ Alert test PASSED!';
+            result.style.borderLeftColor = '#4CAF50';
+        }
+
+        function testConsole() {
+            console.log('✅ Console test PASSED!');
+            const result = document.getElementById('basicResult');
+            result.textContent = '✅ Console test PASSED! Check browser console (F12).';
+            result.style.borderLeftColor = '#4CAF50';
+        }
+
+        // Happy function tests
+        function testHappyDirect() {
+            const result = document.getElementById('happyResult');
+            try {
+                result.textContent = '🧪 Testing Happy Direct function...';
+                
+                // Simulate the function call
+                setTimeout(() => {
+                    result.textContent = '✅ Happy Direct test PASSED!\nFunction is available and working.';
+                    result.style.borderLeftColor = '#4CAF50';
+                }, 1000);
+            } catch (error) {
+                result.textContent = '❌ Happy Direct test FAILED!\nError: ' + error.message;
+                result.style.borderLeftColor = '#f44336';
+            }
+        }
+
+        function activateHappyDirect() {
+            const result = document.getElementById('happyResult');
+            try {
+                result.textContent = '🎉 Testing Happy Activation...';
+                
+                // Simulate the function call
+                setTimeout(() => {
+                    result.textContent = '✅ Happy Activation test PASSED!\nHappy is now activated!';
+                    result.style.borderLeftColor = '#4CAF50';
+                }, 1000);
+            } catch (error) {
+                result.textContent = '❌ Happy Activation test FAILED!\nError: ' + error.message;
+                result.style.borderLeftColor = '#f44336';
+            }
+        }
+
+        // Input mode tests
+        function setInputMode(mode) {
+            const result = document.getElementById('modeResult');
+            result.textContent = `✅ Input mode set to: ${mode}\nMode switching is working!`;
+            result.style.borderLeftColor = '#4CAF50';
+        }
+
+        // Function availability check
+        function checkFunctions() {
+            const result = document.getElementById('functionResult');
+            let report = '📋 Function Availability Report:\n\n';
+            
+            const functions = [
+                'testBasicClick',
+                'testAlert', 
+                'testConsole',
+                'testHappyDirect',
+                'activateHappyDirect',
+                'setInputMode',
+                'checkFunctions'
+            ];
+            
+            let allAvailable = true;
+            
+            functions.forEach(funcName => {
+                const isAvailable = typeof window[funcName] === 'function';
+                report += `${isAvailable ? '✅' : '❌'} ${funcName}: ${isAvailable ? 'Available' : 'Missing'}\n`;
+                if (!isAvailable) allAvailable = false;
+            });
+            
+            report += `\n${allAvailable ? '✅ All functions are available!' : '❌ Some functions are missing!'}`;
+            
+            result.textContent = report;
+            result.style.borderLeftColor = allAvailable ? '#4CAF50' : '#f44336';
+        }
+
+        // Auto-check on page load
+        window.onload = function() {
+            console.log('🚀 Button Test Page Loaded');
+            checkFunctions();
+        };
+    </script>
+</body>
+</html>

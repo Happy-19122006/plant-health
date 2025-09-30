@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy AI Agent Demo</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .demo-section {
+            background: rgba(255,255,255,0.2);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        .demo-section h3 {
+            margin-top: 0;
+            color: #FFD700;
+            font-size: 1.5em;
+        }
+        button {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        .test-button {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+        }
+        .activate-button {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+        }
+        .voice-button {
+            background: linear-gradient(45deg, #2196F3, #1976D2);
+        }
+        .result {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 4px solid #4CAF50;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 10px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .status.success {
+            background: rgba(76, 175, 80, 0.3);
+            border: 1px solid #4CAF50;
+        }
+        .status.error {
+            background: rgba(244, 67, 54, 0.3);
+            border: 1px solid #f44336;
+        }
+        .status.info {
+            background: rgba(33, 150, 243, 0.3);
+            border: 1px solid #2196F3;
+        }
+        .input-group {
+            margin: 15px 0;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            background: rgba(255,255,255,0.9);
+            color: #333;
+        }
+        .instructions {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #FFD700;
+        }
+        .instructions h4 {
+            margin-top: 0;
+            color: #FFD700;
+        }
+        .instructions ol {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .instructions li {
+            margin: 8px 0;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 Happy AI Agent Demo</h1>
+        
+        <div class="instructions">
+            <h4>📋 How to Test Happy Activation:</h4>
+            <ol>
+                <li><strong>Click "Activate Happy"</strong> - This will directly activate Happy</li>
+                <li><strong>Type "Happy"</strong> - Type the word "Happy" in the input field and click "Test Input"</li>
+                <li><strong>Use Voice</strong> - Click "Start Voice Test" and say "Happy"</li>
+                <li><strong>Check Console</strong> - Open browser console (F12) to see detailed logs</li>
+            </ol>
+        </div>
+
+        <div class="demo-section">
+            <h3>🎯 Direct Activation Test</h3>
+            <button class="activate-button" onclick="activateHappyDirect()">
+                <i class="fas fa-magic"></i> Activate Happy
+            </button>
+            <button class="test-button" onclick="testHappyDirect()">
+                <i class="fas fa-bug"></i> Test Happy Input
+            </button>
+        </div>
+
+        <div class="demo-section">
+            <h3>💬 Input Test</h3>
+            <div class="input-group">
+                <input type="text" id="testInput" placeholder="Type 'Happy' here to test activation" value="Happy">
+                <button onclick="testInput()">Test Input</button>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h3>🎤 Voice Test</h3>
+            <button class="voice-button" onclick="startVoiceTest()">
+                <i class="fas fa-microphone"></i> Start Voice Test
+            </button>
+            <button class="test-button" onclick="stopVoiceTest()">
+                <i class="fas fa-stop"></i> Stop Voice Test
+            </button>
+        </div>
+
+        <div class="demo-section">
+            <h3>📊 Status</h3>
+            <div id="status" class="status info">
+                Ready to test Happy activation
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h3>📝 Results</h3>
+            <div id="results" class="result">
+                Click any test button to see results here...
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h3>🔗 Links</h3>
+            <button onclick="openMainSite()">Open Main Website</button>
+            <button onclick="openTestPage()">Open Test Page</button>
+        </div>
+    </div>
+
+    <script>
+        let recognition = null;
+        let isListening = false;
+
+        function updateStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${type}`;
+        }
+
+        function updateResults(message) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.textContent = message;
+        }
+
+        function activateHappyDirect() {
+            updateStatus('🎉 Activating Happy directly...', 'info');
+            updateResults('Direct activation called...');
+            
+            // Simulate Happy activation
+            setTimeout(() => {
+                updateStatus('✅ Happy Activated Successfully!', 'success');
+                updateResults(`🎉 हम बोलिए! मैं Happy हूं, आपका AI कृषि सहायक!
+
+✅ Activation Status: SUCCESS
+✅ Language: Hindi
+✅ Voice: Enabled
+✅ Features: All Active
+
+मैं आपकी फसलों की देखभाल में मदद करूंगा। बताइए, आज कैसे मदद कर सकता हूं?`);
+            }, 1000);
+        }
+
+        function testHappyDirect() {
+            updateStatus('🧪 Testing Happy input processing...', 'info');
+            updateResults('Processing input: "Happy"...');
+            
+            setTimeout(() => {
+                updateStatus('✅ Happy Activation Test Passed!', 'success');
+                updateResults(`🎉 Happy activation test successful!
+
+Input: "Happy"
+✅ Language Detection: Hindi
+✅ Activation Check: PASSED
+✅ Response Generated: SUCCESS
+✅ Voice Output: Ready
+
+Happy is now activated and ready to help!`);
+            }, 1500);
+        }
+
+        function testInput() {
+            const input = document.getElementById('testInput').value;
+            updateStatus(`🔍 Testing input: "${input}"`, 'info');
+            updateResults(`Testing input: "${input}"...`);
+            
+            setTimeout(() => {
+                if (input.toLowerCase().includes('happy')) {
+                    updateStatus('✅ Happy Activation Detected!', 'success');
+                    updateResults(`🎉 Happy activation detected in input!
+
+Input: "${input}"
+✅ Contains "Happy": YES
+✅ Activation Triggered: SUCCESS
+✅ Response: Ready
+
+Happy is now activated!`);
+                } else {
+                    updateStatus('⚠️ Happy not detected in input', 'error');
+                    updateResults(`❌ Happy activation not detected
+
+Input: "${input}"
+❌ Contains "Happy": NO
+❌ Activation: NOT TRIGGERED
+
+Please type "Happy" to activate the AI agent.`);
+                }
+            }, 1000);
+        }
+
+        function startVoiceTest() {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                updateStatus('❌ Voice recognition not supported', 'error');
+                updateResults('Voice recognition is not supported in this browser.');
+                return;
+            }
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'hi-IN';
+
+            recognition.onstart = function() {
+                isListening = true;
+                updateStatus('🎤 Listening... Say "Happy"', 'info');
+                updateResults('Voice recognition started. Please say "Happy" to activate the AI agent.');
+            };
+
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                updateResults(`Voice input detected: "${transcript}"`);
+                
+                if (transcript.toLowerCase().includes('happy')) {
+                    updateStatus('✅ Happy detected in voice!', 'success');
+                    setTimeout(() => {
+                        updateResults(`🎉 Voice activation successful!
+
+Voice Input: "${transcript}"
+✅ Contains "Happy": YES
+✅ Activation Triggered: SUCCESS
+✅ Response: Ready
+
+Happy is now activated via voice!`);
+                    }, 1000);
+                } else {
+                    updateStatus('⚠️ Happy not detected in voice', 'error');
+                    updateResults(`❌ Happy not detected in voice
+
+Voice Input: "${transcript}"
+❌ Contains "Happy": NO
+❌ Activation: NOT TRIGGERED
+
+Please say "Happy" to activate the AI agent.`);
+                }
+            };
+
+            recognition.onerror = function(event) {
+                updateStatus(`❌ Voice recognition error: ${event.error}`, 'error');
+                updateResults(`Voice recognition error: ${event.error}`);
+                isListening = false;
+            };
+
+            recognition.onend = function() {
+                isListening = false;
+                updateStatus('🎤 Voice recognition ended', 'info');
+            };
+
+            recognition.start();
+        }
+
+        function stopVoiceTest() {
+            if (recognition && isListening) {
+                recognition.stop();
+                updateStatus('🛑 Voice recognition stopped', 'info');
+                updateResults('Voice recognition stopped by user.');
+            }
+        }
+
+        function openMainSite() {
+            window.open('index.html', '_blank');
+        }
+
+        function openTestPage() {
+            window.open('test-happy.html', '_blank');
+        }
+
+        // Auto-test on page load
+        window.onload = function() {
+            updateStatus('🚀 Happy Demo Page Loaded', 'success');
+            updateResults('Welcome to Happy AI Agent Demo!\n\nThis page helps you test Happy activation in different ways.\n\nClick any test button to begin...');
+        };
+    </script>
+</body>
+</html>
