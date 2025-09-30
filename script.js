@@ -272,6 +272,10 @@ document.addEventListener('DOMContentLoaded', function() {
     loadGallery();
     setTheme(currentTheme);
     
+    // Setup new features
+    setupFAQ();
+    showErrorHandling();
+    
     // Ensure photo workflow is set up after a short delay
     setTimeout(() => {
         console.log('Setting up photo workflow after delay...');
@@ -2651,4 +2655,231 @@ function analyzePhotos() {
         });
         
     }, 3000); // 3 seconds for demo
+}
+
+// FAQ functionality
+function setupFAQ() {
+    const faqCategoryBtns = document.querySelectorAll('.faq-category-btn');
+    const faqCategories = document.querySelectorAll('.faq-category');
+    const faqItems = document.querySelectorAll('.faq-item');
+    
+    // FAQ category switching
+    faqCategoryBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const category = btn.dataset.category;
+            
+            // Update active button
+            faqCategoryBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            // Show/hide categories
+            faqCategories.forEach(cat => {
+                if (cat.id === category) {
+                    cat.style.display = 'block';
+                } else {
+                    cat.style.display = 'none';
+                }
+            });
+        });
+    });
+    
+    // FAQ item toggling
+    faqItems.forEach(item => {
+        const question = item.querySelector('.faq-question');
+        question.addEventListener('click', () => {
+            const isActive = item.classList.contains('active');
+            
+            // Close all other items
+            faqItems.forEach(otherItem => {
+                if (otherItem !== item) {
+                    otherItem.classList.remove('active');
+                }
+            });
+            
+            // Toggle current item
+            if (isActive) {
+                item.classList.remove('active');
+            } else {
+                item.classList.add('active');
+            }
+        });
+    });
+}
+
+// User data control functions
+function deleteAllData() {
+    if (confirm('Are you sure you want to delete all your images? This action cannot be undone.')) {
+        // Simulate data deletion
+        localStorage.removeItem('uploadedImages');
+        localStorage.removeItem('capturedPhotos');
+        
+        // Clear any displayed images
+        const uploadedImages = document.getElementById('uploadedImages');
+        if (uploadedImages) {
+            uploadedImages.innerHTML = '';
+        }
+        
+        // Show success message
+        showNotification('All your images have been deleted successfully.', 'success');
+    }
+}
+
+function optOutTraining() {
+    if (confirm('Opt out of using your images for model training? You can opt back in anytime.')) {
+        localStorage.setItem('optOutTraining', 'true');
+        showNotification('You have opted out of model training. Your images will only be used for diagnosis.', 'success');
+    }
+}
+
+function downloadMyData() {
+    // Simulate data download
+    const userData = {
+        uploadedImages: JSON.parse(localStorage.getItem('uploadedImages') || '[]'),
+        capturedPhotos: JSON.parse(localStorage.getItem('capturedPhotos') || '[]'),
+        optOutTraining: localStorage.getItem('optOutTraining') || 'false',
+        downloadDate: new Date().toISOString()
+    };
+    
+    const dataStr = JSON.stringify(userData, null, 2);
+    const dataBlob = new Blob([dataStr], {type: 'application/json'});
+    
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(dataBlob);
+    link.download = 'cropguard-ai-data.json';
+    link.click();
+    
+    showNotification('Your data has been downloaded successfully.', 'success');
+}
+
+// Enhanced error handling
+function showErrorHandling() {
+    // Check for common error scenarios
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    if (analyzeBtn) {
+        analyzeBtn.addEventListener('click', () => {
+            // Simulate potential errors
+            setTimeout(() => {
+                const random = Math.random();
+                if (random < 0.1) { // 10% chance of error
+                    showNoDetectionError();
+                } else if (random < 0.15) { // 5% chance of server error
+                    showServerError();
+                }
+            }, 2000);
+        });
+    }
+}
+
+function showNoDetectionError() {
+    const errorModal = document.createElement('div');
+    errorModal.className = 'error-modal';
+    errorModal.innerHTML = `
+        <div class="error-content">
+            <div class="error-header">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3>No Disease Detected</h3>
+            </div>
+            <div class="error-body">
+                <p>We couldn't detect any disease in your photos. This could be because:</p>
+                <ul>
+                    <li>Photos are too blurry or dark</li>
+                    <li>Disease is in early stage</li>
+                    <li>Plant is healthy</li>
+                    <li>Disease not in our database</li>
+                </ul>
+                <div class="error-actions">
+                    <button class="btn-retry" onclick="retakePhotos()">Retake Photos</button>
+                    <button class="btn-feedback" onclick="sendFeedback()">Send Feedback</button>
+                    <button class="btn-close" onclick="closeErrorModal()">Close</button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(errorModal);
+    setTimeout(() => errorModal.classList.add('show'), 100);
+}
+
+function showServerError() {
+    const errorModal = document.createElement('div');
+    errorModal.className = 'error-modal';
+    errorModal.innerHTML = `
+        <div class="error-content">
+            <div class="error-header">
+                <i class="fas fa-server"></i>
+                <h3>Server Error</h3>
+            </div>
+            <div class="error-body">
+                <p>We're experiencing technical difficulties. Please try again in a few moments.</p>
+                <div class="error-actions">
+                    <button class="btn-retry" onclick="retryAnalysis()">Try Again</button>
+                    <button class="btn-close" onclick="closeErrorModal()">Close</button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(errorModal);
+    setTimeout(() => errorModal.classList.add('show'), 100);
+}
+
+function retakePhotos() {
+    closeErrorModal();
+    // Reset photo workflow
+    currentStep = 1;
+    capturedPhotos = [];
+    updateProgress();
+    document.getElementById('captureArea').style.display = 'block';
+    document.getElementById('photoPreview').style.display = 'none';
+}
+
+function sendFeedback() {
+    closeErrorModal();
+    // Open feedback form
+    const feedbackForm = document.getElementById('feedbackForm');
+    if (feedbackForm) {
+        feedbackForm.style.display = 'block';
+    }
+}
+
+function retryAnalysis() {
+    closeErrorModal();
+    analyzePhotos();
+}
+
+function closeErrorModal() {
+    const errorModal = document.querySelector('.error-modal');
+    if (errorModal) {
+        errorModal.classList.remove('show');
+        setTimeout(() => errorModal.remove(), 300);
+    }
+}
+
+// Notification system
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.innerHTML = `
+        <div class="notification-content">
+            <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+            <span>${message}</span>
+            <button class="notification-close" onclick="closeNotification(this)">×</button>
+        </div>
+    `;
+    
+    document.body.appendChild(notification);
+    setTimeout(() => notification.classList.add('show'), 100);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        if (notification.parentNode) {
+            closeNotification(notification.querySelector('.notification-close'));
+        }
+    }, 5000);
+}
+
+function closeNotification(button) {
+    const notification = button.closest('.notification');
+    notification.classList.remove('show');
+    setTimeout(() => notification.remove(), 300);
 }
