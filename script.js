@@ -274,6 +274,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Setup new features
     setupFAQ();
+    setupTreatmentTabs();
     showErrorHandling();
     
     // Ensure photo workflow is set up after a short delay
@@ -1539,7 +1540,7 @@ function analyzePhotos() {
 }
 
 // Generate enhanced prediction
-function generateEnhancedPrediction() {
+function generateEnhancedPrediction(mode = 'fast') {
     const diseases = [
         {
             name: "Late Blight",
@@ -1812,6 +1813,12 @@ function showResults(prediction) {
     setupTreatmentTabs();
     
     resultsSection.style.display = 'block';
+    
+    // Show treatment recommendations section
+    const treatmentSection = document.getElementById('treatmentSection');
+    if (treatmentSection) {
+        treatmentSection.style.display = 'block';
+    }
 }
 
 // Setup treatment tabs
@@ -2569,16 +2576,38 @@ async function handlePhotoCaptureOptimized(file) {
 function analyzePhotos() {
     showLoadingSpinner();
     
+    // Get selected processing mode
+    const selectedMode = document.querySelector('input[name="processingMode"]:checked')?.value || 'fast';
+    
     // Update analyze button text
     const analyzeBtn = document.getElementById('analyzeBtn');
     const analyzeText = document.getElementById('analyzeText');
     const analyzeTime = document.getElementById('analyzeTime');
     
     if (analyzeText) analyzeText.textContent = currentLanguage === 'hi' ? 'विश्लेषण चल रहा है...' : 'Analyzing...';
-    if (analyzeTime) analyzeTime.textContent = currentLanguage === 'hi' ? '(15-30 सेकंड)' : '(15-30 seconds)';
+    
+    // Update timing based on mode
+    let timeText = '';
+    let totalTime = 0;
+    switch(selectedMode) {
+        case 'fast':
+            timeText = currentLanguage === 'hi' ? '(8-15 सेकंड)' : '(8-15 seconds)';
+            totalTime = 12000; // 12 seconds
+            break;
+        case 'accurate':
+            timeText = currentLanguage === 'hi' ? '(15-25 सेकंड)' : '(15-25 seconds)';
+            totalTime = 20000; // 20 seconds
+            break;
+        case 'offline':
+            timeText = currentLanguage === 'hi' ? '(5-10 सेकंड)' : '(5-10 seconds)';
+            totalTime = 8000; // 8 seconds
+            break;
+    }
+    
+    if (analyzeTime) analyzeTime.textContent = timeText;
     if (analyzeBtn) analyzeBtn.disabled = true;
     
-    // Show enhanced progress indicator
+    // Show enhanced progress indicator with percentages
     const progressContainer = document.createElement('div');
     progressContainer.className = 'analysis-progress';
     const t = translations[currentLanguage];
@@ -2586,20 +2615,35 @@ function analyzePhotos() {
         ? ['छवियां प्रसंस्करण', 'AI विश्लेषण', 'परिणाम उत्पन्न करना']
         : ['Processing Images', 'AI Analysis', 'Generating Results'];
     const secondsText = currentLanguage === 'hi' ? 'सेकंड' : 'seconds';
+    const modeText = currentLanguage === 'hi' 
+        ? (selectedMode === 'fast' ? 'तेज़ मोड' : selectedMode === 'accurate' ? 'सटीक मोड' : 'ऑफ़लाइन मोड')
+        : (selectedMode === 'fast' ? 'Fast Mode' : selectedMode === 'accurate' ? 'Accurate Mode' : 'Offline Mode');
     
     progressContainer.innerHTML = `
+        <div class="progress-header">
+            <h4>${modeText}</h4>
+            <div class="progress-percentage">
+                <span id="progressPercent">0</span>%
+            </div>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
         <div class="progress-steps">
             <div class="step active" data-step="1">
                 <i class="fas fa-image"></i>
                 <span>${stepTexts[0]}</span>
+                <div class="step-percentage">0%</div>
             </div>
             <div class="step" data-step="2">
                 <i class="fas fa-brain"></i>
                 <span>${stepTexts[1]}</span>
+                <div class="step-percentage">0%</div>
             </div>
             <div class="step" data-step="3">
                 <i class="fas fa-check"></i>
                 <span>${stepTexts[2]}</span>
+                <div class="step-percentage">0%</div>
             </div>
         </div>
         <div class="progress-timer">
@@ -2609,23 +2653,39 @@ function analyzePhotos() {
     
     document.body.appendChild(progressContainer);
     
-    // Update progress steps
+    // Update progress with percentages
     let currentProgressStep = 1;
+    let overallProgress = 0;
     const progressSteps = progressContainer.querySelectorAll('.step');
+    const progressPercent = document.getElementById('progressPercent');
+    const progressFill = document.getElementById('progressFill');
     
     const progressInterval = setInterval(() => {
+        // Update overall progress
+        overallProgress += (100 / (totalTime / 100));
+        if (overallProgress > 100) overallProgress = 100;
+        
+        progressPercent.textContent = Math.round(overallProgress);
+        progressFill.style.width = overallProgress + '%';
+        
+        // Update step progress
         progressSteps.forEach((step, index) => {
+            const stepPercentage = step.querySelector('.step-percentage');
             if (index + 1 <= currentProgressStep) {
                 step.classList.add('active');
+                const stepProgress = Math.min(100, (overallProgress - (index * 33.33)) * 3);
+                stepPercentage.textContent = Math.round(Math.max(0, stepProgress)) + '%';
             } else {
                 step.classList.remove('active');
+                stepPercentage.textContent = '0%';
             }
         });
         
-        if (currentProgressStep < 3) {
+        // Move to next step
+        if (currentProgressStep < 3 && overallProgress > (currentProgressStep * 33.33)) {
             currentProgressStep++;
         }
-    }, 1000);
+    }, 100);
     
     // Timer
     let seconds = 0;
@@ -2634,7 +2694,7 @@ function analyzePhotos() {
         document.getElementById('timer').textContent = seconds;
     }, 1000);
     
-    // Simulate AI analysis
+    // Simulate AI analysis with dynamic timing
     setTimeout(() => {
         clearInterval(progressInterval);
         clearInterval(timerInterval);
@@ -2642,8 +2702,8 @@ function analyzePhotos() {
         
         hideLoadingSpinner();
         
-        // Generate enhanced prediction
-        const prediction = generateEnhancedPrediction();
+        // Generate enhanced prediction based on mode
+        const prediction = generateEnhancedPrediction(selectedMode);
         
         // Show results
         showResults(prediction);
@@ -2654,7 +2714,7 @@ function analyzePhotos() {
             block: 'start' 
         });
         
-    }, 3000); // 3 seconds for demo
+    }, totalTime);
 }
 
 // FAQ functionality
@@ -2701,6 +2761,29 @@ function setupFAQ() {
                 item.classList.remove('active');
             } else {
                 item.classList.add('active');
+            }
+        });
+    });
+}
+
+// Setup Treatment Tabs functionality
+function setupTreatmentTabs() {
+    const treatmentTabs = document.querySelectorAll('.treatment-tab');
+    const treatmentPanels = document.querySelectorAll('.treatment-panel');
+    
+    treatmentTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            // Remove active class from all tabs
+            treatmentTabs.forEach(t => t.classList.remove('active'));
+            // Add active class to clicked tab
+            tab.classList.add('active');
+            
+            // Hide all panels
+            treatmentPanels.forEach(panel => panel.classList.remove('active'));
+            // Show selected panel
+            const targetPanel = document.getElementById(tab.dataset.tab + '-panel');
+            if (targetPanel) {
+                targetPanel.classList.add('active');
             }
         });
     });

@@ -345,18 +345,44 @@
                 <button class="btn-analyze" id="analyzeBtn">
                     <i class="fas fa-search"></i>
                     <span id="analyzeText">Analyze Photos</span>
-                    <span id="analyzeTime">(15-30 seconds)</span>
+                    <span id="analyzeTime">(8-15 seconds)</span>
                 </button>
                 <div class="analyze-info">
                     <p class="analyze-note">We'll analyze your photos and provide detailed disease diagnosis with treatment recommendations</p>
                     <div class="processing-optimization">
                         <h4>⚡ Optimized Processing</h4>
                         <ul>
-                            <li><i class="fas fa-check"></i> Edge computing for faster results</li>
-                            <li><i class="fas fa-check"></i> Real-time progress updates</li>
-                            <li><i class="fas fa-check"></i> Offline-capable analysis</li>
-                            <li><i class="fas fa-check"></i> Low bandwidth optimization</li>
+                            <li><i class="fas fa-check"></i> Edge computing for faster results (8-15s)</li>
+                            <li><i class="fas fa-check"></i> Real-time progress with percentages</li>
+                            <li><i class="fas fa-check"></i> Low bandwidth mode available</li>
+                            <li><i class="fas fa-check"></i> Image compression for faster upload</li>
                         </ul>
+                    </div>
+                    <div class="processing-modes">
+                        <h5>🚀 Processing Modes</h5>
+                        <div class="mode-options">
+                            <label class="mode-option">
+                                <input type="radio" name="processingMode" value="fast" checked>
+                                <span class="mode-label">
+                                    <strong>Fast Mode</strong>
+                                    <small>8-15 seconds, optimized for speed</small>
+                                </span>
+                            </label>
+                            <label class="mode-option">
+                                <input type="radio" name="processingMode" value="accurate">
+                                <span class="mode-label">
+                                    <strong>Accurate Mode</strong>
+                                    <small>15-25 seconds, maximum accuracy</small>
+                                </span>
+                            </label>
+                            <label class="mode-option">
+                                <input type="radio" name="processingMode" value="offline">
+                                <span class="mode-label">
+                                    <strong>Offline Mode</strong>
+                                    <small>Works without internet, basic analysis</small>
+                                </span>
+                            </label>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -375,6 +401,216 @@
 
             <div class="results-content" id="resultsContent">
                 <!-- Results will be populated by JavaScript -->
+            </div>
+
+            <!-- Treatment Recommendations Section -->
+            <div class="treatment-recommendations" id="treatmentSection" style="display: none;">
+                <h3>💊 Treatment Recommendations</h3>
+                <div class="treatment-tabs">
+                    <button class="treatment-tab active" data-tab="chemical">Chemical Treatment</button>
+                    <button class="treatment-tab" data-tab="organic">Organic Treatment</button>
+                    <button class="treatment-tab" data-tab="preventive">Preventive Measures</button>
+                </div>
+                
+                <div class="treatment-content">
+                    <div class="treatment-panel active" id="chemical-panel">
+                        <h4>🧪 Chemical Treatment Options</h4>
+                        <div class="treatment-options">
+                            <div class="treatment-option">
+                                <div class="product-info">
+                                    <h5>Fungicide - Propiconazole 25% EC</h5>
+                                    <p class="product-desc">Effective against fungal diseases like blast, blight, and rust</p>
+                                    <div class="dosage-info">
+                                        <span class="dosage">Dosage: 1-2 ml per liter of water</span>
+                                        <span class="interval">Interval: 10-15 days</span>
+                                    </div>
+                                    <div class="safety-info">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        <span>Use protective gear, avoid during flowering</span>
+                                    </div>
+                                </div>
+                                <div class="product-links">
+                                    <a href="https://www.bighaat.com/products/propiconazole-25-ec" target="_blank" class="buy-link">
+                                        <i class="fas fa-shopping-cart"></i>
+                                        Buy on BigHaat - ₹450/500ml
+                                    </a>
+                                    <a href="https://www.agriplex.in/products/propiconazole-25-ec" target="_blank" class="buy-link">
+                                        <i class="fas fa-store"></i>
+                                        AgriPlex - ₹420/500ml
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <div class="treatment-option">
+                                <div class="product-info">
+                                    <h5>Bactericide - Copper Oxychloride 50% WP</h5>
+                                    <p class="product-desc">Controls bacterial diseases and some fungal infections</p>
+                                    <div class="dosage-info">
+                                        <span class="dosage">Dosage: 2-3 grams per liter</span>
+                                        <span class="interval">Interval: 7-10 days</span>
+                                    </div>
+                                    <div class="safety-info">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        <span>Don't mix with alkaline solutions</span>
+                                    </div>
+                                </div>
+                                <div class="product-links">
+                                    <a href="https://www.bighaat.com/products/copper-oxychloride-50-wp" target="_blank" class="buy-link">
+                                        <i class="fas fa-shopping-cart"></i>
+                                        BigHaat - ₹380/1kg
+                                    </a>
+                                    <a href="https://www.agriplex.in/products/copper-oxychloride-50-wp" target="_blank" class="buy-link">
+                                        <i class="fas fa-store"></i>
+                                        AgriPlex - ₹350/1kg
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <div class="treatment-option">
+                                <div class="product-info">
+                                    <h5>Systemic Fungicide - Carbendazim 50% WP</h5>
+                                    <p class="product-desc">Systemic action against various fungal diseases</p>
+                                    <div class="dosage-info">
+                                        <span class="dosage">Dosage: 1-2 grams per liter</span>
+                                        <span class="interval">Interval: 15-20 days</span>
+                                    </div>
+                                    <div class="safety-info">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        <span>Rotate with other fungicides to prevent resistance</span>
+                                    </div>
+                                </div>
+                                <div class="product-links">
+                                    <a href="https://www.bighaat.com/products/carbendazim-50-wp" target="_blank" class="buy-link">
+                                        <i class="fas fa-shopping-cart"></i>
+                                        BigHaat - ₹320/500g
+                                    </a>
+                                    <a href="https://www.agriplex.in/products/carbendazim-50-wp" target="_blank" class="buy-link">
+                                        <i class="fas fa-store"></i>
+                                        AgriPlex - ₹300/500g
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="treatment-panel" id="organic-panel">
+                        <h4>🌱 Organic Treatment Options</h4>
+                        <div class="treatment-options">
+                            <div class="treatment-option">
+                                <div class="product-info">
+                                    <h5>Neem Oil 5% EC</h5>
+                                    <p class="product-desc">Natural fungicide and insecticide from neem seeds</p>
+                                    <div class="dosage-info">
+                                        <span class="dosage">Dosage: 2-3 ml per liter</span>
+                                        <span class="interval">Interval: 7-10 days</span>
+                                    </div>
+                                    <div class="safety-info">
+                                        <i class="fas fa-leaf"></i>
+                                        <span>Safe for beneficial insects, organic certified</span>
+                                    </div>
+                                </div>
+                                <div class="product-links">
+                                    <a href="https://www.bighaat.com/products/neem-oil-5-ec" target="_blank" class="buy-link">
+                                        <i class="fas fa-shopping-cart"></i>
+                                        BigHaat - ₹280/500ml
+                                    </a>
+                                    <a href="https://www.agriplex.in/products/neem-oil-5-ec" target="_blank" class="buy-link">
+                                        <i class="fas fa-store"></i>
+                                        AgriPlex - ₹250/500ml
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <div class="treatment-option">
+                                <div class="product-info">
+                                    <h5>Trichoderma Viride Bio-Fungicide</h5>
+                                    <p class="product-desc">Beneficial fungus that fights soil-borne diseases</p>
+                                    <div class="dosage-info">
+                                        <span class="dosage">Dosage: 5-10 grams per liter</span>
+                                        <span class="interval">Interval: 15 days</span>
+                                    </div>
+                                    <div class="safety-info">
+                                        <i class="fas fa-leaf"></i>
+                                        <span>Improves soil health, completely organic</span>
+                                    </div>
+                                </div>
+                                <div class="product-links">
+                                    <a href="https://www.bighaat.com/products/trichoderma-viride" target="_blank" class="buy-link">
+                                        <i class="fas fa-shopping-cart"></i>
+                                        BigHaat - ₹180/200g
+                                    </a>
+                                    <a href="https://www.agriplex.in/products/trichoderma-viride" target="_blank" class="buy-link">
+                                        <i class="fas fa-store"></i>
+                                        AgriPlex - ₹160/200g
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <div class="treatment-option">
+                                <div class="product-info">
+                                    <h5>Bordeaux Mixture (Homemade)</h5>
+                                    <p class="product-desc">Traditional copper-based fungicide, can be made at home</p>
+                                    <div class="dosage-info">
+                                        <span class="dosage">Recipe: 100g copper sulfate + 100g lime + 10L water</span>
+                                        <span class="interval">Apply immediately after mixing</span>
+                                    </div>
+                                    <div class="safety-info">
+                                        <i class="fas fa-leaf"></i>
+                                        <span>Cost-effective, traditional method</span>
+                                    </div>
+                                </div>
+                                <div class="product-links">
+                                    <a href="https://www.bighaat.com/products/copper-sulfate" target="_blank" class="buy-link">
+                                        <i class="fas fa-shopping-cart"></i>
+                                        Copper Sulfate - ₹120/kg
+                                    </a>
+                                    <a href="https://www.agriplex.in/products/agricultural-lime" target="_blank" class="buy-link">
+                                        <i class="fas fa-store"></i>
+                                        Agricultural Lime - ₹80/kg
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="treatment-panel" id="preventive-panel">
+                        <h4>🛡️ Preventive Measures</h4>
+                        <div class="preventive-measures">
+                            <div class="measure-category">
+                                <h5>🌱 Cultural Practices</h5>
+                                <ul>
+                                    <li>Use disease-resistant varieties when available</li>
+                                    <li>Practice crop rotation (3-4 year cycle)</li>
+                                    <li>Maintain proper plant spacing for air circulation</li>
+                                    <li>Remove and destroy infected plant debris</li>
+                                    <li>Avoid overhead irrigation during disease-prone periods</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="measure-category">
+                                <h5>🌿 Soil Health</h5>
+                                <ul>
+                                    <li>Test soil pH and maintain optimal levels (6.0-7.0)</li>
+                                    <li>Add organic matter (compost, farmyard manure)</li>
+                                    <li>Use bio-fertilizers (Rhizobium, Azotobacter)</li>
+                                    <li>Practice green manuring with legumes</li>
+                                    <li>Ensure proper drainage to prevent waterlogging</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="measure-category">
+                                <h5>🔍 Monitoring & Early Detection</h5>
+                                <ul>
+                                    <li>Regular field scouting (weekly during growing season)</li>
+                                    <li>Use CropGuard AI for early disease detection</li>
+                                    <li>Monitor weather conditions (humidity, temperature)</li>
+                                    <li>Keep records of disease occurrence patterns</li>
+                                    <li>Consult local agriculture extension officers</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Feedback Section -->
@@ -1023,36 +1259,171 @@
                         </div>
                     </div>
                     
-                    <h3>Supported Crops & Diseases</h3>
+                    <h3>🇮🇳 India-Specific Crop & Disease Coverage</h3>
+                    <div class="coverage-overview">
+                        <div class="coverage-stats">
+                            <div class="stat-item">
+                                <span class="stat-number">25+</span>
+                                <span class="stat-label">Crop Types</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number">50+</span>
+                                <span class="stat-label">Diseases</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number">28</span>
+                                <span class="stat-label">States Covered</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number">95%</span>
+                                <span class="stat-label">Indian Crops</span>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <div class="crop-coverage">
                         <div class="crop-category">
-                            <h4>Major Crops (India)</h4>
-                            <ul>
-                                <li><strong>Rice:</strong> Blast, Sheath Blight, Brown Spot, Bacterial Leaf Blight</li>
-                                <li><strong>Wheat:</strong> Rust, Powdery Mildew, Septoria, Karnal Bunt</li>
-                                <li><strong>Maize:</strong> Leaf Blight, Rust, Downy Mildew, Ear Rot</li>
-                                <li><strong>Sugarcane:</strong> Red Rot, Smut, Wilt, Mosaic</li>
-                                <li><strong>Cotton:</strong> Bacterial Blight, Verticillium Wilt, Boll Rot</li>
-                            </ul>
+                            <h4>🌾 Major Food Crops (भारत के मुख्य अनाज)</h4>
+                            <div class="crop-details">
+                                <div class="crop-item">
+                                    <strong>Rice (चावल)</strong>
+                                    <div class="diseases">
+                                        <span class="disease-tag">Blast (ब्लास्ट)</span>
+                                        <span class="disease-tag">Sheath Blight (शीथ ब्लाइट)</span>
+                                        <span class="disease-tag">Brown Spot (ब्राउन स्पॉट)</span>
+                                        <span class="disease-tag">Bacterial Leaf Blight (बैक्टीरियल लीफ ब्लाइट)</span>
+                                    </div>
+                                    <div class="regions">Punjab, Haryana, UP, Bihar, West Bengal, Tamil Nadu</div>
+                                </div>
+                                
+                                <div class="crop-item">
+                                    <strong>Wheat (गेहूं)</strong>
+                                    <div class="diseases">
+                                        <span class="disease-tag">Rust (रस्ट)</span>
+                                        <span class="disease-tag">Powdery Mildew (पाउडरी मिल्ड्यू)</span>
+                                        <span class="disease-tag">Septoria (सेप्टोरिया)</span>
+                                        <span class="disease-tag">Karnal Bunt (करनाल बंट)</span>
+                                    </div>
+                                    <div class="regions">Punjab, Haryana, UP, MP, Rajasthan</div>
+                                </div>
+                                
+                                <div class="crop-item">
+                                    <strong>Maize (मक्का)</strong>
+                                    <div class="diseases">
+                                        <span class="disease-tag">Leaf Blight (लीफ ब्लाइट)</span>
+                                        <span class="disease-tag">Rust (रस्ट)</span>
+                                        <span class="disease-tag">Downy Mildew (डाउनी मिल्ड्यू)</span>
+                                        <span class="disease-tag">Ear Rot (ईयर रॉट)</span>
+                                    </div>
+                                    <div class="regions">Karnataka, Andhra Pradesh, Bihar, UP</div>
+                                </div>
+                            </div>
                         </div>
+                        
                         <div class="crop-category">
-                            <h4>Vegetables</h4>
-                            <ul>
-                                <li><strong>Tomato:</strong> Early Blight, Late Blight, Bacterial Spot, Mosaic</li>
-                                <li><strong>Potato:</strong> Late Blight, Early Blight, Scab, Wilt</li>
-                                <li><strong>Chili:</strong> Anthracnose, Bacterial Leaf Spot, Mosaic</li>
-                                <li><strong>Brinjal:</strong> Bacterial Wilt, Phomopsis Blight, Mosaic</li>
-                                <li><strong>Okra:</strong> Yellow Vein Mosaic, Powdery Mildew, Wilt</li>
-                            </ul>
+                            <h4>🥬 Vegetables (सब्जियां)</h4>
+                            <div class="crop-details">
+                                <div class="crop-item">
+                                    <strong>Tomato (टमाटर)</strong>
+                                    <div class="diseases">
+                                        <span class="disease-tag">Early Blight (अर्ली ब्लाइट)</span>
+                                        <span class="disease-tag">Late Blight (लेट ब्लाइट)</span>
+                                        <span class="disease-tag">Bacterial Spot (बैक्टीरियल स्पॉट)</span>
+                                        <span class="disease-tag">Mosaic (मोज़ेक)</span>
+                                    </div>
+                                    <div class="regions">Maharashtra, Karnataka, Andhra Pradesh, Tamil Nadu</div>
+                                </div>
+                                
+                                <div class="crop-item">
+                                    <strong>Potato (आलू)</strong>
+                                    <div class="diseases">
+                                        <span class="disease-tag">Late Blight (लेट ब्लाइट)</span>
+                                        <span class="disease-tag">Early Blight (अर्ली ब्लाइट)</span>
+                                        <span class="disease-tag">Scab (स्कैब)</span>
+                                        <span class="disease-tag">Wilt (विल्ट)</span>
+                                    </div>
+                                    <div class="regions">UP, West Bengal, Bihar, Punjab</div>
+                                </div>
+                                
+                                <div class="crop-item">
+                                    <strong>Chili (मिर्च)</strong>
+                                    <div class="diseases">
+                                        <span class="disease-tag">Anthracnose (एंथ्रेक्नोज़)</span>
+                                        <span class="disease-tag">Bacterial Leaf Spot (बैक्टीरियल लीफ स्पॉट)</span>
+                                        <span class="disease-tag">Mosaic (मोज़ेक)</span>
+                                    </div>
+                                    <div class="regions">Andhra Pradesh, Karnataka, Tamil Nadu, Maharashtra</div>
+                                </div>
+                            </div>
                         </div>
+                        
                         <div class="crop-category">
-                            <h4>Fruits</h4>
-                            <ul>
-                                <li><strong>Mango:</strong> Anthracnose, Powdery Mildew, Bacterial Canker</li>
-                                <li><strong>Citrus:</strong> Citrus Canker, Greening, Melanose</li>
-                                <li><strong>Banana:</strong> Sigatoka, Panama Wilt, Bunchy Top</li>
-                                <li><strong>Grapes:</strong> Downy Mildew, Powdery Mildew, Anthracnose</li>
-                            </ul>
+                            <h4>🍎 Fruits (फल)</h4>
+                            <div class="crop-details">
+                                <div class="crop-item">
+                                    <strong>Mango (आम)</strong>
+                                    <div class="diseases">
+                                        <span class="disease-tag">Anthracnose (एंथ्रेक्नोज़)</span>
+                                        <span class="disease-tag">Powdery Mildew (पाउडरी मिल्ड्यू)</span>
+                                        <span class="disease-tag">Bacterial Canker (बैक्टीरियल कैंकर)</span>
+                                    </div>
+                                    <div class="regions">UP, Bihar, West Bengal, Andhra Pradesh, Karnataka</div>
+                                </div>
+                                
+                                <div class="crop-item">
+                                    <strong>Citrus (नींबू वर्ग)</strong>
+                                    <div class="diseases">
+                                        <span class="disease-tag">Citrus Canker (सिट्रस कैंकर)</span>
+                                        <span class="disease-tag">Greening (ग्रीनिंग)</span>
+                                        <span class="disease-tag">Melanose (मेलानोज़)</span>
+                                    </div>
+                                    <div class="regions">Maharashtra, Andhra Pradesh, Punjab, Karnataka</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="crop-category">
+                            <h4>🌱 Cash Crops (नकदी फसलें)</h4>
+                            <div class="crop-details">
+                                <div class="crop-item">
+                                    <strong>Sugarcane (गन्ना)</strong>
+                                    <div class="diseases">
+                                        <span class="disease-tag">Red Rot (रेड रॉट)</span>
+                                        <span class="disease-tag">Smut (स्मट)</span>
+                                        <span class="disease-tag">Wilt (विल्ट)</span>
+                                        <span class="disease-tag">Mosaic (मोज़ेक)</span>
+                                    </div>
+                                    <div class="regions">UP, Maharashtra, Karnataka, Tamil Nadu</div>
+                                </div>
+                                
+                                <div class="crop-item">
+                                    <strong>Cotton (कपास)</strong>
+                                    <div class="diseases">
+                                        <span class="disease-tag">Bacterial Blight (बैक्टीरियल ब्लाइट)</span>
+                                        <span class="disease-tag">Verticillium Wilt (वर्टिसिलियम विल्ट)</span>
+                                        <span class="disease-tag">Boll Rot (बोल रॉट)</span>
+                                    </div>
+                                    <div class="regions">Gujarat, Maharashtra, Telangana, Andhra Pradesh</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="coverage-note">
+                        <h4>📋 Coverage Status</h4>
+                        <div class="status-grid">
+                            <div class="status-item supported">
+                                <i class="fas fa-check-circle"></i>
+                                <span><strong>Fully Supported:</strong> 25+ crops with 50+ diseases</span>
+                            </div>
+                            <div class="status-item partial">
+                                <i class="fas fa-clock"></i>
+                                <span><strong>Coming Soon:</strong> Coconut, Arecanut, Spices</span>
+                            </div>
+                            <div class="status-item not-supported">
+                                <i class="fas fa-times-circle"></i>
+                                <span><strong>Not Yet Supported:</strong> Ornamental plants, Medicinal herbs</span>
+                            </div>
                         </div>
                     </div>
                     
