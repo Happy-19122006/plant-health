@@ -3108,6 +3108,11 @@ html {
     justify-content: center;
     gap: 8px;
     font-weight: 500;
+    position: relative;
+    z-index: 10;
+    pointer-events: auto;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .input-mode-btn.active {

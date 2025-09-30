@@ -282,9 +282,18 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(() => {
         console.log('🚀 Initializing AI Agent...');
         console.log('🔍 Checking functions availability:');
-        console.log('  - testHappyDirect:', typeof testHappyDirect);
-        console.log('  - activateHappyDirect:', typeof activateHappyDirect);
-        console.log('  - setInputMode:', typeof setInputMode);
+        console.log('  - testHappyDirect:', typeof window.testHappyDirect);
+        console.log('  - activateHappyDirect:', typeof window.activateHappyDirect);
+        console.log('  - setInputMode:', typeof window.setInputMode);
+        console.log('  - testButtonClick:', typeof window.testButtonClick);
+        
+        // Check if all buttons exist
+        const buttons = document.querySelectorAll('.input-mode-btn');
+        console.log('🔘 Found buttons:', buttons.length);
+        buttons.forEach((btn, index) => {
+            console.log(`  Button ${index}:`, btn.textContent.trim(), 'onclick:', btn.onclick);
+        });
+        
         initializeAIAgent();
     }, 1500);
     
@@ -3799,6 +3808,9 @@ class AIAgent {
     async sendToBackend(query, language) {
         try {
             console.log('🚀 Sending to backend:', query, language);
+            console.log('🌐 API URL:', `${this.apiBaseUrl}/farmer/query`);
+            
+            const startTime = Date.now();
             const response = await fetch(`${this.apiBaseUrl}/farmer/query`, {
                 method: 'POST',
                 headers: {
@@ -3816,7 +3828,11 @@ class AIAgent {
             }
 
             const data = await response.json();
+            const endTime = Date.now();
+            const responseTime = endTime - startTime;
+            
             console.log('📥 Backend response:', data);
+            console.log('⏱️ Response time:', responseTime + 'ms');
             
             if (data.success) {
                 return data.data;
@@ -4397,34 +4413,45 @@ function initializeAIAgent() {
     }
 }
 
-// Test function for Happy
-function testHappyDirect() {
+// Global error handler
+window.addEventListener('error', function(e) {
+    console.error('🚨 Global JavaScript Error:', e.error);
+    console.error('Error details:', {
+        message: e.message,
+        filename: e.filename,
+        lineno: e.lineno,
+        colno: e.colno
+    });
+});
+
+// Global functions for button events - MUST be in global scope
+window.testHappyDirect = function() {
     console.log('🧪 Testing Happy directly...');
     alert('🧪 Testing Happy activation...');
-    if (aiAgent) {
-        aiAgent.processUserInput('Happy');
+    if (window.aiAgent) {
+        window.aiAgent.processUserInput('Happy');
     } else {
         alert('❌ AI Agent not initialized! Please refresh the page.');
     }
-}
+};
 
-function activateHappyDirect() {
+window.activateHappyDirect = function() {
     console.log('🎉 Activating Happy directly...');
     alert('🎉 Activating Happy...');
-    if (aiAgent) {
-        aiAgent.activateHappy('hi');
+    if (window.aiAgent) {
+        window.aiAgent.activateHappy('hi');
     } else {
         alert('❌ AI Agent not initialized! Please refresh the page.');
     }
-}
+};
 
-function testButtonClick() {
+window.testButtonClick = function() {
     console.log('🔧 Testing button click...');
     alert('✅ Button click is working! JavaScript is functioning properly.');
-}
+};
 
-// Input mode switching
-function setInputMode(mode) {
+// Input mode switching - Global function
+window.setInputMode = function(mode) {
     const voiceInput = document.getElementById('voiceInput');
     const textInput = document.getElementById('textInput');
     const photoInput = document.getElementById('photoInput');
@@ -4493,21 +4520,25 @@ function removePhoto() {
     if (fileInput) fileInput.value = '';
 }
 
-function toggleMute() {
-    if (aiAgent) {
-        aiAgent.toggleMute();
+window.toggleMute = function() {
+    console.log('🔇 Toggle mute clicked');
+    if (window.aiAgent) {
+        window.aiAgent.toggleMute();
+    } else {
+        alert('❌ AI Agent not initialized!');
     }
-}
+};
 
-// Voice input functions
-function startVoiceInput() {
-    if (aiAgent) {
-        aiAgent.startListening();
+// Voice input functions - Global scope
+window.startVoiceInput = function() {
+    console.log('🎤 Start voice input clicked');
+    if (window.aiAgent) {
+        window.aiAgent.startListening();
     } else {
         console.error('AI Agent not initialized');
-        alert('AI Agent is not ready. Please wait a moment and try again.');
+        alert('❌ AI Agent is not ready. Please wait a moment and try again.');
     }
-}
+};
 
 // Text input functions
 function sendTextMessage() {

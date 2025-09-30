@@ -483,31 +483,31 @@
                         
                         <div class="chat-input-container">
             <div class="input-modes">
-                <button class="input-mode-btn active" data-mode="voice" onclick="setInputMode('voice')">
+                <button class="input-mode-btn active" data-mode="voice" onclick="window.setInputMode('voice')">
                     <i class="fas fa-microphone"></i>
                     <span>Voice</span>
                 </button>
-                <button class="input-mode-btn" data-mode="text" onclick="setInputMode('text')">
+                <button class="input-mode-btn" data-mode="text" onclick="window.setInputMode('text')">
                     <i class="fas fa-keyboard"></i>
                     <span>Type</span>
                 </button>
-                <button class="input-mode-btn" data-mode="photo" onclick="setInputMode('photo')">
+                <button class="input-mode-btn" data-mode="photo" onclick="window.setInputMode('photo')">
                     <i class="fas fa-camera"></i>
                     <span>Photo</span>
                 </button>
-                <button class="input-mode-btn" id="muteBtn" onclick="toggleMute()">
+                <button class="input-mode-btn" id="muteBtn" onclick="window.toggleMute()">
                     <i class="fas fa-volume-up"></i>
                     <span>Mute</span>
                 </button>
-                <button class="input-mode-btn" onclick="testHappyDirect()" style="background: #ff6b6b;">
+                <button class="input-mode-btn" onclick="window.testHappyDirect()" style="background: #ff6b6b;">
                     <i class="fas fa-bug"></i>
                     <span>Test Happy</span>
                 </button>
-                <button class="input-mode-btn" onclick="activateHappyDirect()" style="background: #4CAF50;">
+                <button class="input-mode-btn" onclick="window.activateHappyDirect()" style="background: #4CAF50;">
                     <i class="fas fa-magic"></i>
                     <span>Activate Happy</span>
                 </button>
-                <button class="input-mode-btn" onclick="testButtonClick()" style="background: #FF9800;">
+                <button class="input-mode-btn" onclick="window.testButtonClick()" style="background: #FF9800;">
                     <i class="fas fa-check"></i>
                     <span>Test Click</span>
                 </button>
@@ -515,7 +515,7 @@
                             
                             <div class="chat-input-wrapper">
                                 <div class="voice-input" id="voiceInput">
-                                    <button class="voice-btn" id="voiceBtn" onclick="startVoiceInput()">
+                                    <button class="voice-btn" id="voiceBtn" onclick="window.startVoiceInput()">
                                         <i class="fas fa-microphone"></i>
                                         <span>Hold to speak</span>
                                     </button>

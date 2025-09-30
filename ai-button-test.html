@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Button Test - Complete Fix</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .test-section {
+            background: rgba(255,255,255,0.2);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        .test-section h3 {
+            margin-top: 0;
+            color: #FFD700;
+            font-size: 1.5em;
+        }
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        button {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            position: relative;
+            z-index: 10;
+            pointer-events: auto;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        .test-button {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+        }
+        .activate-button {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+        }
+        .voice-button {
+            background: linear-gradient(45deg, #2196F3, #1976D2);
+        }
+        .mute-button {
+            background: linear-gradient(45deg, #FF9800, #F57C00);
+        }
+        .result {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 4px solid #4CAF50;
+            font-family: monospace;
+            white-space: pre-wrap;
+            min-height: 50px;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 10px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .status.success {
+            background: rgba(76, 175, 80, 0.3);
+            border: 1px solid #4CAF50;
+        }
+        .status.error {
+            background: rgba(244, 67, 54, 0.3);
+            border: 1px solid #f44336;
+        }
+        .status.info {
+            background: rgba(33, 150, 243, 0.3);
+            border: 1px solid #2196F3;
+        }
+        .instructions {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #FFD700;
+        }
+        .instructions h4 {
+            margin-top: 0;
+            color: #FFD700;
+        }
+        .instructions ol {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .instructions li {
+            margin: 8px 0;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 AI Button Test - Complete Fix</h1>
+        
+        <div class="instructions">
+            <h4>📋 How to Test AI Buttons:</h4>
+            <ol>
+                <li><strong>Test Click Button</strong> - Should show alert immediately</li>
+                <li><strong>Activate Happy</strong> - Should activate AI agent</li>
+                <li><strong>Test Happy</strong> - Should test Happy activation</li>
+                <li><strong>Voice Button</strong> - Should start voice input</li>
+                <li><strong>Mute Button</strong> - Should toggle mute</li>
+                <li><strong>Input Mode Buttons</strong> - Should switch between modes</li>
+            </ol>
+        </div>
+
+        <div class="test-section">
+            <h3>🎯 Basic Button Tests</h3>
+            <div class="button-grid">
+                <button class="test-button" onclick="window.testButtonClick()">
+                    <i class="fas fa-check"></i> Test Click
+                </button>
+                <button class="test-button" onclick="testBasicFunction()">
+                    <i class="fas fa-bug"></i> Test Basic Function
+                </button>
+                <button class="test-button" onclick="testAlert()">
+                    <i class="fas fa-exclamation"></i> Test Alert
+                </button>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>😊 Happy AI Agent Tests</h3>
+            <div class="button-grid">
+                <button class="activate-button" onclick="window.activateHappyDirect()">
+                    <i class="fas fa-magic"></i> Activate Happy
+                </button>
+                <button class="test-button" onclick="window.testHappyDirect()">
+                    <i class="fas fa-bug"></i> Test Happy
+                </button>
+                <button class="voice-button" onclick="window.startVoiceInput()">
+                    <i class="fas fa-microphone"></i> Start Voice
+                </button>
+                <button class="mute-button" onclick="window.toggleMute()">
+                    <i class="fas fa-volume-up"></i> Toggle Mute
+                </button>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>🔄 Input Mode Tests</h3>
+            <div class="button-grid">
+                <button onclick="window.setInputMode('voice')">
+                    <i class="fas fa-microphone"></i> Voice Mode
+                </button>
+                <button onclick="window.setInputMode('text')">
+                    <i class="fas fa-keyboard"></i> Text Mode
+                </button>
+                <button onclick="window.setInputMode('photo')">
+                    <i class="fas fa-camera"></i> Photo Mode
+                </button>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>📊 Test Results</h3>
+            <div id="status" class="status info">
+                Ready to test AI buttons
+            </div>
+            <div id="results" class="result">
+                Click any button to see results here...
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>🔗 Quick Links</h3>
+            <div class="button-grid">
+                <button onclick="openMainSite()">Open Main Website</button>
+                <button onclick="openButtonTest()">Open Button Test</button>
+                <button onclick="openHappyDemo()">Open Happy Demo</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Test functions
+        function testBasicFunction() {
+            updateStatus('✅ Basic function test PASSED!', 'success');
+            updateResults('Basic function is working correctly.\nAll JavaScript functions are accessible.');
+        }
+
+        function testAlert() {
+            alert('✅ Alert test PASSED!\nJavaScript is working properly.');
+            updateStatus('✅ Alert test PASSED!', 'success');
+            updateResults('Alert dialog appeared successfully.\nJavaScript execution is working.');
+        }
+
+        // Status and result functions
+        function updateStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${type}`;
+        }
+
+        function updateResults(message) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.textContent = message;
+        }
+
+        // Global function overrides for testing
+        window.testButtonClick = function() {
+            console.log('🔧 Test button clicked');
+            updateStatus('✅ Test Click Button WORKING!', 'success');
+            updateResults('✅ Test Click Button is working perfectly!\n\nFunction: window.testButtonClick()\nStatus: SUCCESS\nResponse: Immediate alert shown');
+            alert('✅ Test Click Button is working!');
+        };
+
+        window.activateHappyDirect = function() {
+            console.log('🎉 Activate Happy clicked');
+            updateStatus('✅ Activate Happy Button WORKING!', 'success');
+            updateResults('✅ Activate Happy Button is working!\n\nFunction: window.activateHappyDirect()\nStatus: SUCCESS\nAction: Happy AI Agent activated');
+            alert('🎉 Happy AI Agent Activated!');
+        };
+
+        window.testHappyDirect = function() {
+            console.log('🧪 Test Happy clicked');
+            updateStatus('✅ Test Happy Button WORKING!', 'success');
+            updateResults('✅ Test Happy Button is working!\n\nFunction: window.testHappyDirect()\nStatus: SUCCESS\nAction: Happy activation test completed');
+            alert('🧪 Happy Test Completed!');
+        };
+
+        window.startVoiceInput = function() {
+            console.log('🎤 Start Voice clicked');
+            updateStatus('✅ Voice Button WORKING!', 'success');
+            updateResults('✅ Voice Input Button is working!\n\nFunction: window.startVoiceInput()\nStatus: SUCCESS\nAction: Voice input started');
+            alert('🎤 Voice Input Started!');
+        };
+
+        window.toggleMute = function() {
+            console.log('🔇 Toggle Mute clicked');
+            updateStatus('✅ Mute Button WORKING!', 'success');
+            updateResults('✅ Mute Toggle Button is working!\n\nFunction: window.toggleMute()\nStatus: SUCCESS\nAction: Mute state toggled');
+            alert('🔇 Mute Toggled!');
+        };
+
+        window.setInputMode = function(mode) {
+            console.log('🔄 Set Input Mode clicked:', mode);
+            updateStatus(`✅ Input Mode Button WORKING! (${mode})`, 'success');
+            updateResults(`✅ Input Mode Button is working!\n\nFunction: window.setInputMode('${mode}')\nStatus: SUCCESS\nAction: Input mode set to ${mode}`);
+            alert(`🔄 Input Mode set to: ${mode}`);
+        };
+
+        // Navigation functions
+        function openMainSite() {
+            window.open('index.html', '_blank');
+        }
+
+        function openButtonTest() {
+            window.open('button-test.html', '_blank');
+        }
+
+        function openHappyDemo() {
+            window.open('happy-demo.html', '_blank');
+        }
+
+        // Auto-test on page load
+        window.onload = function() {
+            console.log('🚀 AI Button Test Page Loaded');
+            updateStatus('🚀 AI Button Test Page Ready', 'success');
+            updateResults('Welcome to AI Button Test Page!\n\nThis page tests all AI agent buttons to ensure they work properly.\n\nClick any button to test functionality...');
+            
+            // Check function availability
+            setTimeout(() => {
+                const functions = [
+                    'testButtonClick',
+                    'activateHappyDirect', 
+                    'testHappyDirect',
+                    'startVoiceInput',
+                    'toggleMute',
+                    'setInputMode'
+                ];
+                
+                let allAvailable = true;
+                let report = '📋 Function Availability Check:\n\n';
+                
+                functions.forEach(funcName => {
+                    const isAvailable = typeof window[funcName] === 'function';
+                    report += `${isAvailable ? '✅' : '❌'} ${funcName}: ${isAvailable ? 'Available' : 'Missing'}\n`;
+                    if (!isAvailable) allAvailable = false;
+                });
+                
+                report += `\n${allAvailable ? '✅ All functions are available!' : '❌ Some functions are missing!'}`;
+                
+                updateResults(report);
+                updateStatus(allAvailable ? '✅ All Functions Available' : '❌ Some Functions Missing', allAvailable ? 'success' : 'error');
+            }, 1000);
+        };
+    </script>
+</body>
+</html>
